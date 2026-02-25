@@ -1,0 +1,369 @@
+/* Hero section — landing page */
+.md-typeset .hero {
+  text-align: center;
+  padding: 3rem 1rem;
+  margin-bottom: 2rem;
+}
+
+.md-typeset .hero__headline {
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+}
+
+.md-typeset .hero__tagline {
+  font-size: 1.1rem;
+  color: var(--md-default-fg-color--light);
+  max-width: 52ch;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+/* Jade gradient accent on the tagline keyword */
+.md-typeset .hero__accent {
+  color: var(--sumi-accent);
+  font-weight: 600;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .hero__accent {
+  color: var(--sumi-accent-dark);
+}
+
+/* Hero CTA buttons */
+.md-typeset .hero__actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+/* Hero badge strip */
+.md-typeset .hero__badges {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  color: var(--md-default-fg-color--lighter);
+}
+
+/* ── .hero-container / .hero-section — primary hero block for index.md ─── */
+.md-typeset .hero-container,
+.md-typeset .hero-section {
+  text-align: center;
+  padding: 3.5rem 1.5rem 3rem;
+  margin: -0.4rem -0.8rem 2.5rem;
+  border-radius: var(--sumi-radius-xl);
+  background: linear-gradient(135deg, #0b8f6c 0%, #0ea27a 50%, #12b085 100%);
+  border: none;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(14, 162, 122, 0.25);
+}
+
+.md-typeset .hero-content,
+.md-typeset .hero-inner {
+  max-width: 52rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Logo */
+.md-typeset .hero-logo {
+  width: 96px;
+  height: 96px;
+  display: block;
+  margin: 0 auto 0.25rem;
+  filter: drop-shadow(0 0 0 transparent);
+  transition: filter var(--sumi-transition-normal);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .hero-logo {
+  filter: drop-shadow(0 0 18px rgba(14, 162, 122, 0.40)) drop-shadow(0 0 5px rgba(63, 217, 168, 0.25));
+}
+
+/* Title — suppress the MkDocs Material h1 underline / margin */
+.md-typeset .hero-title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: #ffffff !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-bottom: none !important;
+}
+
+/* Tagline */
+.md-typeset .hero-tagline,
+.md-typeset .hero-container .hero-tagline,
+.md-typeset .hero-section .hero-tagline {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.88) !important;
+  max-width: 50ch;
+  margin: 0;
+  line-height: 1.65;
+}
+
+/* CTA buttons */
+.md-typeset .hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.md-typeset .hero-actions .md-button {
+  min-width: 7rem;
+  border-radius: var(--sumi-radius-control, 999px);
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: #ffffff !important;
+}
+
+.md-typeset .hero-actions .md-button--primary {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #0b8f6c !important;
+}
+
+/* Dark-mode hero — deeper jade gradient */
+[data-md-color-scheme="slate"] .md-typeset .hero-container,
+[data-md-color-scheme="slate"] .md-typeset .hero-section {
+  background: linear-gradient(135deg, #0a7a5c 0%, #0c8a6a 50%, #0ea27a 100%);
+  box-shadow: 0 4px 24px rgba(14, 162, 122, 0.35);
+}
+
+/* ── .hero-cta — full-bleed gradient hero for prominent landing sections ─── */
+/* Uses the accent/primary fg colors as gradient stops so both light and
+   dark mode get a vivid jade-toned band with legible white-on-jade text.   */
+.hero-cta {
+  background: linear-gradient(135deg, var(--md-primary-fg-color), var(--md-accent-fg-color));
+  padding: 4rem 2rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.hero-cta .hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white !important;
+  margin-bottom: 1rem;
+}
+
+.hero-cta .hero-tagline {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.85) !important;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.hero-cta .hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* ── Zen quote — injected by extra.js into .hero-container or .hero-cta ─── */
+.hero-zen-quote {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 1.5rem;
+  letter-spacing: 0.01em;
+}
+
+/* Light-mode hero: quote uses ink color since background is ivory */
+[data-md-color-scheme="default"] .md-typeset .hero-container .hero-zen-quote,
+[data-md-color-scheme="default"] .md-typeset .hero-section .hero-zen-quote {
+  color: var(--sumi-light-fg-muted);
+}
+
+/* Dark-mode hero: quote uses parchment-muted color */
+[data-md-color-scheme="slate"] .md-typeset .hero-container .hero-zen-quote,
+[data-md-color-scheme="slate"] .md-typeset .hero-section .hero-zen-quote {
+  color: var(--sumi-fg-muted);
+}
+
+/* ============================================================
+   TWO-COLUMN HERO (home.html template)
+   ============================================================ */
+.zen-hero {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  padding: 2.5rem 1.5rem 3rem;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(114, 232, 196, 0.18), transparent 24%),
+    radial-gradient(circle at 82% 18%, rgba(14, 162, 122, 0.12), transparent 26%),
+    linear-gradient(180deg, #eef7f4 0%, #f6fbf9 46%, #faf8f5 100%);
+  border-radius: 0;
+  margin: -0.6rem -0.8rem 2rem;
+  min-height: 340px;
+  border-bottom: 1px solid rgba(11, 122, 92, 0.12);
+}
+
+.zen-hero__content {
+  flex: 1 1 55%;
+  min-width: 0;
+}
+
+.zen-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.85rem;
+  padding: 0.4rem 0.75rem 0.4rem 0.5rem;
+  border: 1px solid rgba(11, 122, 92, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--sumi-light-fg1);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 26px rgba(8, 24, 28, 0.08);
+}
+
+.zen-hero__seal {
+  width: 1.7rem;
+  height: 1.7rem;
+  flex: 0 0 auto;
+}
+
+.zen-hero__content h1 {
+  color: var(--sumi-light-fg0) !important;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  max-width: 13ch;
+}
+
+.zen-hero__motto {
+  color: var(--sumi-light-fg-muted);
+  font-style: italic;
+  margin-bottom: 0.85rem;
+}
+
+.zen-hero__content>p:not(.zen-hero__motto) {
+  color: var(--sumi-light-fg1);
+  max-width: 56ch;
+}
+
+.zen-hero__lead {
+  color: var(--sumi-light-fg1);
+  max-width: 52ch;
+}
+
+.zen-hero__motto-icon {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  vertical-align: middle;
+  margin-right: 0.3em;
+}
+
+/* Buttons inside zen-hero — white primary, transparent outline secondary */
+.zen-hero .md-button {
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+  min-height: 2.6rem;
+  border-radius: var(--sumi-radius-control, 999px);
+  padding-inline: 1rem;
+  border: 1px solid rgba(11, 122, 92, 0.16);
+  color: var(--sumi-light-fg0) !important;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 8px 18px rgba(8, 24, 28, 0.08);
+}
+
+.zen-hero .md-button:not(.md-button--primary) {
+  color: var(--sumi-light-fg0) !important;
+}
+
+.zen-hero .md-button--primary {
+  background: var(--sumi-accent) !important;
+  border-color: var(--sumi-accent) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.zen-hero .md-button:hover {
+  background: #ffffff !important;
+  border-color: rgba(11, 122, 92, 0.28) !important;
+  color: var(--sumi-light-fg0) !important;
+  box-shadow: 0 12px 24px rgba(8, 24, 28, 0.12);
+}
+
+.zen-hero__media {
+  flex: 0 0 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.zen-hero__svg {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.24));
+  opacity: 0.98;
+}
+
+/* Dark mode adjustments */
+:is(html, body)[data-md-color-scheme="slate"] .zen-hero {
+  background:
+    radial-gradient(circle at 18% 24%, rgba(63, 217, 168, 0.16), transparent 24%),
+    radial-gradient(circle at 82% 20%, rgba(114, 232, 196, 0.10), transparent 22%),
+    linear-gradient(180deg, #153036 0%, #193842 42%, #1b2c37 100%);
+  border-bottom-color: rgba(114, 232, 196, 0.18);
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .zen-hero__content>p:not(.zen-hero__motto) {
+  color: rgba(237, 244, 238, 0.92);
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .zen-hero__motto {
+  color: rgba(228, 223, 212, 0.8);
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .zen-hero__eyebrow {
+  border-color: rgba(114, 232, 196, 0.18);
+  background: rgba(16, 34, 36, 0.52);
+  color: rgba(237, 244, 238, 0.86);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .zen-hero__lead {
+  color: rgba(237, 244, 238, 0.92);
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .zen-hero .md-button:not(.md-button--primary) {
+  color: #18222b !important;
+  border-color: rgba(228, 223, 212, 0.28) !important;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .zen-hero {
+    flex-direction: column;
+    text-align: center;
+    min-height: unset;
+  }
+
+  .zen-hero__eyebrow {
+    justify-content: center;
+  }
+
+  .zen-hero__media {
+    display: none;
+  }
+}

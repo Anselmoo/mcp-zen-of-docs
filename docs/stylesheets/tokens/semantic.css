@@ -1,0 +1,45 @@
+/* Semantic aliases — bridge design tokens to MkDocs Material variables */
+:root {
+  /* Surface hierarchy */
+  --sumi-surface-base: var(--sumi-bg0);
+  --sumi-surface-raised: var(--sumi-bg1);
+  --sumi-surface-elevated: var(--sumi-bg2);
+  --sumi-surface-overlay: var(--sumi-bg-overlay);
+
+  /* Typography hierarchy */
+  --sumi-text-primary: var(--sumi-fg0);
+  --sumi-text-secondary: var(--sumi-fg1);
+  --sumi-text-muted: var(--sumi-fg-muted);
+  --sumi-text-faint: var(--sumi-fg-faint);
+
+  /* Interactive states */
+  --sumi-interactive: var(--sumi-accent);
+  --sumi-interactive-hover: var(--sumi-accent-soft);
+  --sumi-interactive-press: var(--sumi-accent-muted);
+  --sumi-interactive-focus-ring: 0 0 0 0.2rem var(--sumi-accent-glow);
+
+  /* Border */
+  --sumi-border: color-mix(in oklch, var(--sumi-fg0) 12%, transparent);
+  --sumi-border-subtle: color-mix(in oklch, var(--sumi-fg0) 7%, transparent);
+  --sumi-border-strong: color-mix(in oklch, var(--sumi-fg0) 24%, transparent);
+
+  /* Component sizing */
+  --sumi-radius-sm: 0.25rem;
+  --sumi-radius-md: 0.5rem;
+  --sumi-radius-lg: 0.75rem;
+  --sumi-radius-xl: 1rem;
+  --sumi-radius-control: 999px;
+
+  /* Spacing rhythm (4px base) */
+  --sumi-space-1: 0.25rem;
+  --sumi-space-2: 0.5rem;
+  --sumi-space-3: 0.75rem;
+  --sumi-space-4: 1rem;
+  --sumi-space-6: 1.5rem;
+  --sumi-space-8: 2rem;
+
+  /* Transition */
+  --sumi-transition-fast: 150ms ease;
+  --sumi-transition-normal: 250ms ease;
+  --sumi-transition-slow: 400ms ease;
+}

@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="640" viewBox="0 0 880 640" role="img" aria-label="Mount Fuji above layered cedar forest and drifting mist in a calm forest palette">
+  <title>Mount Fuji above cedar forest and mist</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d1318"/>
+      <stop offset="34%" stop-color="#162026"/>
+      <stop offset="72%" stop-color="#1a2830"/>
+      <stop offset="100%" stop-color="#202630"/>
+    </linearGradient>
+    <radialGradient id="moonGlow" cx="0.72" cy="0.18" r="0.22">
+      <stop offset="0%" stop-color="#dff3ea" stop-opacity="0.85"/>
+      <stop offset="45%" stop-color="#9fd7c1" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#9fd7c1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mistGlow" cx="0.42" cy="0.48" r="0.42">
+      <stop offset="0%" stop-color="#dbe8e2" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#dbe8e2" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fuji" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dde6e4"/>
+      <stop offset="42%" stop-color="#9eaba9"/>
+      <stop offset="78%" stop-color="#667678"/>
+      <stop offset="100%" stop-color="#49565d"/>
+    </linearGradient>
+    <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fbfcfc"/>
+      <stop offset="100%" stop-color="#dfe7e4"/>
+    </linearGradient>
+    <linearGradient id="snowShadow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#edf3f1" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#b8c6c2" stop-opacity="0.5"/>
+    </linearGradient>
+    <linearGradient id="ridgeFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#304944"/>
+      <stop offset="100%" stop-color="#20322f"/>
+    </linearGradient>
+    <linearGradient id="ridgeNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#22332d"/>
+      <stop offset="60%" stop-color="#162621"/>
+      <stop offset="100%" stop-color="#101a18"/>
+    </linearGradient>
+    <linearGradient id="ridgeMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2e4b42"/>
+      <stop offset="54%" stop-color="#21362f"/>
+      <stop offset="100%" stop-color="#172925"/>
+    </linearGradient>
+    <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dbe8e2" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#dbe8e2" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="treeFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#11231e"/>
+      <stop offset="100%" stop-color="#0b1513"/>
+    </linearGradient>
+    <filter id="softBlur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="12" />
+    </filter>
+    <filter id="mistBlur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="18" />
+    </filter>
+  </defs>
+
+  <rect width="880" height="640" fill="url(#sky)"/>
+  <rect width="880" height="640" fill="url(#moonGlow)"/>
+  <rect width="880" height="640" fill="url(#mistGlow)"/>
+
+  <circle cx="640" cy="118" r="44" fill="#eaf5ef" opacity="0.92"/>
+  <circle cx="640" cy="118" r="78" fill="#d4eee2" opacity="0.1" filter="url(#softBlur)"/>
+
+  <path d="M278 392 L440 116 L602 392 Z" fill="url(#fuji)"/>
+  <path d="M392 196 L440 116 L487 197 L520 255 L360 255 Z" fill="url(#snow)"/>
+  <path d="M391 198 L440 136 L486 198 L506 240 L374 240 Z" fill="url(#snowShadow)" opacity="0.42"/>
+  <path d="M438 116 L454 164 L425 164 Z" fill="#eef5f3" opacity="0.7"/>
+  <path d="M410 248 L426 210 L438 284" stroke="#b4c1bf" stroke-width="3" stroke-linecap="round" opacity="0.34"/>
+  <path d="M466 232 L450 200 L447 286" stroke="#aebdbc" stroke-width="3" stroke-linecap="round" opacity="0.28"/>
+
+  <path d="M0 380 C94 356, 168 356, 246 392 C318 424, 396 430, 476 400 C552 372, 626 364, 720 386 C782 400, 828 414, 880 420 L880 640 L0 640 Z" fill="url(#ridgeFar)" opacity="0.74"/>
+  <path d="M0 426 C86 390, 176 392, 264 425 C352 458, 440 450, 528 420 C616 390, 704 390, 880 438 L880 640 L0 640 Z" fill="url(#ridgeMid)"/>
+  <path d="M0 482 C118 442, 238 438, 356 488 C474 536, 592 530, 708 482 C790 448, 838 452, 880 464 L880 640 L0 640 Z" fill="url(#ridgeNear)"/>
+
+  <g opacity="0.42" stroke="#d7e8df" stroke-width="2" stroke-linecap="round">
+    <path d="M112 404 C168 388, 242 390, 312 412"/>
+    <path d="M548 404 C598 386, 676 384, 760 408"/>
+    <path d="M264 452 C328 432, 402 438, 470 456"/>
+  </g>
+
+  <g fill="url(#treeFill)">
+    <path d="M58 640 L74 544 L88 492 L106 640 Z"/>
+    <path d="M86 640 L104 514 L124 640 Z"/>
+    <path d="M118 640 L136 560 L150 476 L170 640 Z"/>
+    <path d="M154 640 L172 506 L192 640 Z"/>
+    <path d="M190 640 L208 560 L222 506 L240 640 Z"/>
+    <path d="M226 640 L246 468 L268 640 Z"/>
+    <path d="M262 640 L280 560 L298 516 L320 640 Z"/>
+    <path d="M304 640 L322 592 L336 474 L358 640 Z"/>
+    <path d="M344 640 L364 462 L384 640 Z"/>
+    <path d="M386 640 L404 566 L414 508 L436 640 Z"/>
+    <path d="M428 640 L446 580 L460 470 L482 640 Z"/>
+    <path d="M470 640 L488 546 L502 496 L522 640 Z"/>
+    <path d="M514 640 L532 576 L544 516 L566 640 Z"/>
+    <path d="M560 640 L578 534 L598 460 L622 640 Z"/>
+    <path d="M610 640 L628 590 L642 520 L664 640 Z"/>
+    <path d="M660 640 L678 548 L696 486 L720 640 Z"/>
+    <path d="M714 640 L732 598 L748 530 L770 640 Z"/>
+    <path d="M768 640 L786 548 L806 640 Z"/>
+  </g>
+
+  <g stroke="#223b34" stroke-width="3" stroke-linecap="round" opacity="0.48">
+    <path d="M74 546 L58 566"/>
+    <path d="M74 546 L92 562"/>
+    <path d="M172 508 L154 530"/>
+    <path d="M172 508 L192 528"/>
+    <path d="M322 594 L306 616"/>
+    <path d="M322 594 L338 616"/>
+    <path d="M446 582 L426 606"/>
+    <path d="M446 582 L462 606"/>
+    <path d="M578 536 L560 560"/>
+    <path d="M578 536 L596 558"/>
+    <path d="M732 600 L716 620"/>
+    <path d="M732 600 L748 620"/>
+  </g>
+
+  <path d="M0 466 C114 430, 250 432, 366 458 C500 488, 642 482, 880 440 L880 536 C660 560, 504 562, 352 530 C216 502, 108 502, 0 526 Z" fill="url(#mist)"/>
+  <path d="M0 530 C140 504, 286 506, 424 534 C562 562, 688 560, 880 520 L880 588 C708 610, 576 612, 422 592 C280 574, 122 574, 0 594 Z" fill="url(#mist)" opacity="0.72"/>
+  <path d="M46 446 C156 430, 280 430, 406 452 C532 474, 654 470, 828 436" fill="none" stroke="#e7f2ed" stroke-opacity="0.12" stroke-width="22" stroke-linecap="round" filter="url(#mistBlur)"/>
+  <path d="M88 506 C214 488, 332 494, 466 522 C596 548, 702 548, 836 520" fill="none" stroke="#eff6f1" stroke-opacity="0.08" stroke-width="18" stroke-linecap="round" filter="url(#mistBlur)"/>
+</svg>

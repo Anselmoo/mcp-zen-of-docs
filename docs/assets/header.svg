@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="120" viewBox="0 0 1200 120"
+     role="img" aria-label="mcp-zen-of-docs page header banner">
+  <title>mcp-zen-of-docs header banner</title>
+
+  <defs>
+    <!-- ── Horizontal gradient: deep charcoal-blue → lifted surface ── -->
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#131720"/>
+      <stop offset="100%" stop-color="#1a2030"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ── Background ────────────────────────────────────────────────────── -->
+  <rect width="1200" height="120" fill="url(#headerGrad)"/>
+
+  <!-- ── Enso watermark ────────────────────────────────────────────────
+       Large enso circle centered at (~1115, 60), radius ~90.
+       Mostly outside the banner — cropped by viewBox for artistic effect.
+       Bezier circle approximation: k = 0.5523 × 90 ≈ 49.7
+       Opens at top (gap between start M and end of last curve).
+  ──────────────────────────────────────────────────────────────────────── -->
+  <path d="M 1115 -30
+           C 1165 -30, 1205 10, 1205 60
+           C 1205 110, 1165 150, 1115 150
+           C 1065 150, 1025 110, 1025 60
+           C 1025 10, 1060 -28, 1105 -30"
+        fill="none"
+        stroke="#0ea27a"
+        stroke-width="16"
+        stroke-linecap="round"
+        opacity="0.06"/>
+
+  <!-- ── Jade accent line at bottom: full width, 2 px ─────────────────── -->
+  <rect x="0" y="118" width="1200" height="2" fill="#0ea27a"/>
+
+</svg>

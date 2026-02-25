@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="Guides chapter illustration showing a compass and route markers">
+  <rect width="960" height="320" rx="28" fill="#f8f6f1"/>
+  <circle cx="302" cy="160" r="96" fill="#ffffff" stroke="#c9e2d8" stroke-width="4"/>
+  <circle cx="302" cy="160" r="18" fill="#0ea27a" opacity="0.22"/>
+  <path d="M302 88v144M230 160h144" stroke="#d7ddd9" stroke-width="4"/>
+  <path d="M302 160 360 104" stroke="#0b7a5c" stroke-width="8" stroke-linecap="round"/>
+  <path d="M302 160 264 216" stroke="#3fd9a8" stroke-width="8" stroke-linecap="round"/>
+  <path d="M494 216 C568 184, 634 168, 724 168 C776 168, 824 154, 872 118" fill="none" stroke="#0ea27a" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 12"/>
+  <g fill="#ffffff" stroke="#0ea27a" stroke-width="3">
+    <circle cx="564" cy="188" r="14"/>
+    <circle cx="688" cy="168" r="14"/>
+    <circle cx="808" cy="140" r="14"/>
+  </g>
+</svg>

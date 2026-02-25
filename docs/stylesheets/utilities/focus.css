@@ -1,0 +1,19 @@
+/* Focus indicators — visible, accessible */
+:focus-visible {
+  outline:        2px solid var(--sumi-accent);
+  outline-offset: 2px;
+  border-radius:  var(--sumi-radius-sm, 0.25rem);
+}
+
+[data-md-color-scheme="slate"] :focus-visible {
+  outline-color: var(--sumi-accent-dark);
+}
+
+/* Skip-to-content */
+.md-skip {
+  background-color: var(--sumi-accent);
+  color:            var(--sumi-light-bg0);
+  border-radius:    var(--sumi-radius-md, 0.5rem);
+  padding:          0.4rem 1rem;
+  font-weight:      600;
+}

@@ -1,0 +1,13 @@
+{
+  "servers": {
+    "zen-of-docs": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}",
+        "mcp-zen-of-docs-server"
+      ]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{% extends "main.html" %}
+
+{% block hero %}
+<section class="zen-hero md-typeset">
+  <div class="zen-hero__content">
+    <p class="zen-hero__eyebrow">
+      <img class="zen-hero__seal" src="{{ 'assets/zen-seal.svg' | url }}" alt="" aria-hidden="true" />
+      <span>Framework-aware documentation, rendered with intent</span>
+    </p>
+    <h1>MCP Zen of Docs</h1>
+    <p class="zen-hero__motto">
+      <em>
+        <span class="zen-hero__motto-icon" aria-hidden="true">
+          <!-- inline SVG icon: a zen brush/ink drop -->
+          <svg viewBox="0 0 24 24" focusable="false" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+              fill="currentColor" opacity="0.88" />
+          </svg>
+        </span>
+        The map should calm the reader before it instructs them.
+      </em>
+    </p>
+    <p>Like a path through cedar mist with Fuji holding the horizon, mcp-zen-of-docs gives your AI tools a calm sense of
+      place before they write a single line.</p>
+    <p class="zen-hero__lead">It reads the framework you already have, then returns the syntax that actually belongs on
+      the page in front of you.</p>
+    <p>
+      <a class="md-button md-button--primary" href="{{ 'quickstart/' | url }}">Get started</a>
+      <a class="md-button" href="{{ 'tools/' | url }}">Browse tools</a>
+      <a class="md-button" href="{{ 'guides/why-zen-docs/' | url }}">Why this exists</a>
+    </p>
+  </div>
+  <div class="zen-hero__media">
+    <img class="zen-hero__svg" src="{{ 'assets/hero-fuji-forest.svg' | url }}"
+      alt="A quiet Mount Fuji scene above cedar forest and mist, rendered in the mcp-zen-of-docs palette." />
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "main.html" %}
+
+{% block content %}
+<div class="md-content__inner md-typeset">
+  <h1>404 — This path leads nowhere</h1>
+  <p>The page you requested could not be found. Return to a known path below.</p>
+  <p>
+    <a class="md-button md-button--primary" href="{{ base_url }}/">Go Home</a>
+    <a class="md-button" href="{{ base_url }}/quickstart/">Quickstart</a>
+    <a class="md-button" href="{{ base_url }}/tools/">Tools</a>
+  </p>
+</div>
+{% endblock %}

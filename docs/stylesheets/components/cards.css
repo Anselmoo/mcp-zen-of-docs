@@ -1,0 +1,47 @@
+/* Cards grid — subtle ink border, warm surface */
+.md-typeset .grid {
+  gap: 1rem;
+}
+
+.md-typeset .grid.cards > * {
+  border:           1px solid var(--sumi-border);
+  border-radius:    var(--sumi-radius-lg, 0.75rem);
+  background-color: var(--md-default-bg-color);
+  padding:          1.2rem;
+  transition:       border-color var(--sumi-transition-fast, 150ms ease),
+                    box-shadow var(--sumi-transition-fast, 150ms ease),
+                    transform 120ms ease;
+}
+
+.md-typeset .grid.cards > *:hover {
+  border-color: var(--sumi-accent);
+  box-shadow:   0 4px 16px var(--sumi-accent-glow);
+  transform:    translateY(-2px);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > * {
+  background-color: var(--sumi-bg1);
+  border-color:     color-mix(in oklch, var(--sumi-fg-muted) 30%, transparent);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > *:hover {
+  border-color: var(--sumi-accent-dark);
+  box-shadow:   0 4px 16px rgba(63, 217, 168, 0.16);
+}
+
+/* Card icon */
+.md-typeset .grid.cards > * > .twemoji,
+.md-typeset .grid.cards > * .md-icon {
+  color: var(--sumi-accent);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > * > .twemoji,
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > * .md-icon {
+  color: var(--sumi-accent-dark);
+}
+
+/* Card separator hr */
+.md-typeset .grid.cards > * > hr {
+  margin:      0.6rem 0;
+  border-color: var(--sumi-border-subtle);
+}

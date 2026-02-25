@@ -1,0 +1,185 @@
+/* Footer — richer OSS footer shell plus compact meta row */
+body .md-footer {
+  font-size: 0.82rem;
+  margin-top: 3rem;
+  background:
+    linear-gradient(180deg, color-mix(in oklch, var(--sumi-accent) 7%, var(--md-default-bg-color)), var(--md-default-bg-color));
+}
+
+.zen-footer-shell {
+  border-top: 1px solid var(--sumi-border-subtle);
+  background: transparent;
+}
+
+.zen-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.2rem 1rem 0.4rem;
+  border-bottom: 1px solid var(--sumi-border-subtle);
+}
+
+.zen-footer-nav .md-footer__link {
+  color: var(--md-default-fg-color--light);
+}
+
+.zen-footer-nav .md-footer__direction {
+  color: var(--md-default-fg-color--lighter);
+}
+
+.zen-footer-shell__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 1.65rem 1rem 1.2rem;
+}
+
+.zen-footer-card {
+  min-width: 0;
+}
+
+.zen-footer-card__title {
+  margin: 0 0 0.7rem;
+  font-size: 0.74rem;
+  font-weight: var(--sumi-fw-semibold, 600);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter);
+}
+
+.zen-footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.75rem;
+  color: inherit;
+  font-size: 1rem;
+  font-weight: var(--sumi-fw-semibold, 600);
+  text-decoration: none;
+}
+
+.zen-footer-brand:hover {
+  color: var(--sumi-accent);
+}
+
+.zen-footer-brand__logo {
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+}
+
+.zen-footer-brand__summary,
+.zen-footer-card__description {
+  margin: 0;
+  color: var(--md-default-fg-color--light);
+  line-height: 1.65;
+}
+
+.zen-footer-links {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.zen-footer-links a {
+  color: var(--md-default-fg-color--light);
+  text-decoration: none;
+}
+
+.zen-footer-links a:hover,
+.zen-footer-links a:focus-visible {
+  color: var(--sumi-accent);
+}
+
+body .md-footer .md-footer-meta {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body .md-footer .md-footer-meta__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1.5rem;
+  border-top: 1px solid color-mix(in oklch, var(--sumi-accent) 10%, var(--sumi-border-subtle));
+}
+
+.md-copyright {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.md-copyright__highlight {
+  color: var(--md-default-fg-color);
+  margin-right: 0.4rem;
+}
+
+.md-copyright a {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+}
+
+.zen-footer-quote {
+  margin: 0.8rem 0 0;
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--md-default-fg-color--light);
+  opacity: 0.82;
+}
+
+[data-md-color-scheme="slate"] .zen-footer-shell {
+  background: transparent;
+}
+
+[data-md-color-scheme="slate"] body .md-footer,
+body[data-md-color-scheme="slate"] .md-footer {
+  background:
+    linear-gradient(180deg, color-mix(in oklch, var(--sumi-accent-dark) 8%, var(--sumi-bg1)), var(--sumi-bg1));
+}
+
+[data-md-color-scheme="slate"] .zen-footer-brand:hover,
+[data-md-color-scheme="slate"] .zen-footer-links a:hover,
+[data-md-color-scheme="slate"] .zen-footer-links a:focus-visible {
+  color: var(--sumi-accent-dark);
+}
+
+[data-md-color-scheme="slate"] body .md-copyright,
+body[data-md-color-scheme="slate"] .md-copyright {
+  color: color-mix(in oklch, var(--md-default-fg-color) 78%, transparent);
+}
+
+[data-md-color-scheme="slate"] body .md-copyright__highlight,
+body[data-md-color-scheme="slate"] .md-copyright__highlight {
+  color: var(--md-default-fg-color);
+}
+
+@media screen and (max-width: 76.1875em) {
+  .zen-footer-nav {
+    flex-direction: column;
+  }
+
+  .zen-footer-shell__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .md-footer-meta__inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .md-copyright {
+    gap: 0.25rem 0.45rem;
+  }
+}

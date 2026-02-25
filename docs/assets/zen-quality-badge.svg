@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="20" viewBox="0 0 120 20"
+     role="img" aria-label="docs: zen quality">
+  <title>docs: zen quality</title>
+
+  <!-- ── Clip mask: rounds all four outer corners ──────────────────────── -->
+  <defs>
+    <clipPath id="badgeClip">
+      <rect width="120" height="20" rx="3"/>
+    </clipPath>
+  </defs>
+
+  <!-- ── Two-tone background ───────────────────────────────────────────── -->
+  <g clip-path="url(#badgeClip)">
+    <!-- Left segment: dark surface -->
+    <rect x="0"  width="38"  height="20" fill="#1a2030"/>
+    <!-- Right segment: jade -->
+    <rect x="38" width="82"  height="20" fill="#0ea27a"/>
+    <!-- Subtle inner divider shadow for depth -->
+    <rect x="37" width="1"   height="20" fill="#0c1018" opacity="0.35"/>
+  </g>
+
+  <!-- ── Outer border ──────────────────────────────────────────────────── -->
+  <rect x="0.5" y="0.5" width="119" height="19" rx="2.5"
+        fill="none" stroke="#0ea27a" stroke-opacity="0.25" stroke-width="1"/>
+
+  <!-- ── Left label: "docs" ────────────────────────────────────────────── -->
+  <text x="19" y="14"
+        text-anchor="middle"
+        font-family="system-ui, -apple-system, sans-serif"
+        font-size="11"
+        font-weight="600"
+        fill="#c4bfb4">docs</text>
+
+  <!-- ── Right value: "zen quality" ───────────────────────────────────── -->
+  <text x="79" y="14"
+        text-anchor="middle"
+        font-family="system-ui, -apple-system, sans-serif"
+        font-size="11"
+        font-weight="600"
+        fill="#ffffff">zen quality</text>
+
+</svg>

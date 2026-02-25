@@ -1,0 +1,70 @@
+/* Sumi (墨) design tokens — ink-on-paper, contemplative and calm */
+:root {
+  /* ── Dark surface scale ── */
+  --sumi-bg0:          #131720;  /* deep charcoal-blue — main bg */
+  --sumi-bg1:          #1a2030;  /* lifted surface */
+  --sumi-bg2:          #222843;  /* elevated / sidebar */
+  --sumi-bg-overlay:   #2b3358;  /* modal / tooltip bg */
+
+  /* ── Dark foreground scale ── */
+  --sumi-fg0:          #e4dfd4;  /* aged parchment — primary text */
+  --sumi-fg1:          #c4bfb4;  /* secondary text */
+  --sumi-fg-muted:     #9c9890;  /* muted / captions */
+  --sumi-fg-faint:     #7a7570;  /* placeholder / disabled */
+
+  /* ── Light surface scale ── */
+  --sumi-light-bg0:        #faf8f5;  /* warm ivory — main bg */
+  --sumi-light-bg1:        #f4f1eb;  /* warm paper — sidebar / cards */
+  --sumi-light-bg2:        #ede8df;  /* warm elevated */
+  --sumi-light-bg-overlay: #ffffff;  /* pure white — modals */
+
+  /* ── Light foreground scale ── */
+  --sumi-light-fg0:     #2a2522;  /* deep sumi ink */
+  --sumi-light-fg1:     #4a433b;  /* secondary ink */
+  --sumi-light-fg-muted: #7c7267; /* brushed ink — muted */
+  --sumi-light-fg-faint: #a89e95; /* faint strokes — placeholder */
+
+  /* ── Jade accent scale (primary) ── */
+  --sumi-accent:       #0ea27a;  /* jade green */
+  --sumi-accent-soft:  #3fc99d;  /* lighter hover */
+  --sumi-accent-muted: #0b7a5c;  /* deeper pressed */
+  --sumi-accent-glow:  rgba(14, 162, 122, 0.16);
+
+  /* ── Dark-mode accent (more luminous) ── */
+  --sumi-accent-dark:       #3fd9a8;  /* luminous jade */
+  --sumi-accent-dark-soft:  #72e8c4;  /* lighter hover */
+  --sumi-accent-dark-muted: #0ea27a;  /* deeper pressed */
+
+  /* ── Syntax colours — warm & hand-crafted feel ── */
+  --sumi-syntax-keywords:  #7da7ff;  /* cornflower blue */
+  --sumi-syntax-types:     #e8a0b4;  /* dusty rose */
+  --sumi-syntax-functions: #7dd4c4;  /* jade-teal */
+  --sumi-syntax-strings:   #88c98a;  /* sage green */
+  --sumi-syntax-decorators:#d4a56a;  /* warm amber */
+  --sumi-syntax-numbers:   #b5a4e0;  /* soft purple */
+  --sumi-syntax-special:   #6fc4f0;  /* sky blue */
+  --sumi-syntax-constants: #c4a9e5;  /* lavender */
+  --sumi-syntax-comments:  #8a9a88;  /* bamboo mist */
+
+  /* ── Semantic status colours ── */
+  --sumi-error:          #c44040;
+  --sumi-error-bg:       rgba(196, 64, 64, 0.12);
+  --sumi-warning:        #c4843a;
+  --sumi-warning-bg:     rgba(196, 132, 58, 0.12);
+  --sumi-success:        #3a9e6a;
+  --sumi-success-bg:     rgba(58, 158, 106, 0.12);
+  --sumi-info:           #4a8bbf;
+  --sumi-info-bg:        rgba(74, 139, 191, 0.12);
+
+  /* ── Shared aliases ── */
+  --zen-primary:  var(--sumi-accent);
+  --zen-accent:   var(--sumi-accent-soft);
+  --zen-ring:     var(--sumi-accent);
+
+  /* ── Print tokens ── */
+  --sumi-print-bg:     var(--sumi-light-bg-overlay);
+  --sumi-print-fg:     var(--sumi-light-fg0);
+  --sumi-print-link:   var(--sumi-accent-muted);
+  --sumi-print-muted:  var(--sumi-light-fg1);
+  --sumi-print-border: color-mix(in oklch, var(--sumi-light-fg0) 22%, transparent);
+}

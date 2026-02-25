@@ -1,0 +1,45 @@
+/* Mermaid diagrams — warm surface, readable */
+.mermaid {
+  display:          flex;
+  justify-content:  center;
+  padding:          1.5rem;
+  background-color: var(--md-code-bg-color);
+  border:           1px solid var(--sumi-border-subtle);
+  border-radius:    var(--sumi-radius-md, 0.5rem);
+  overflow-x:       auto;
+}
+
+/* SVG elements inherit theme colours */
+.mermaid svg {
+  max-width: 100%;
+  height:    auto;
+}
+
+/* Flowchart nodes — warm on light, cool on dark */
+.mermaid .node rect,
+.mermaid .node circle,
+.mermaid .node ellipse,
+.mermaid .node polygon {
+  fill:         var(--md-code-bg-color) !important;
+  stroke:       var(--sumi-accent) !important;
+  stroke-width: 1.5 !important;
+}
+
+[data-md-color-scheme="slate"] .mermaid .node rect,
+[data-md-color-scheme="slate"] .mermaid .node circle {
+  fill:   var(--sumi-bg2) !important;
+  stroke: var(--sumi-accent-dark) !important;
+}
+
+.mermaid .label,
+.mermaid .nodeLabel,
+.mermaid text {
+  fill:        var(--md-default-fg-color) !important;
+  font-family: var(--sumi-font-body, sans-serif) !important;
+  font-size:   13px !important;
+}
+
+.mermaid .edgePath .path {
+  stroke:       var(--sumi-fg-muted) !important;
+  stroke-width: 1.5 !important;
+}

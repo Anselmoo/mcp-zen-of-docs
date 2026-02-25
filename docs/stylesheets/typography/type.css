@@ -1,0 +1,83 @@
+/* Typography — clean body, monospace with character */
+:root {
+  --sumi-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --sumi-font-code: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  --sumi-font-heading: var(--sumi-font-body);
+
+  --sumi-lh-body: 1.7;
+  --sumi-lh-heading: 1.25;
+  --sumi-lh-code: 1.6;
+
+  --sumi-fw-normal: 400;
+  --sumi-fw-medium: 500;
+  --sumi-fw-semibold: 600;
+  --sumi-fw-bold: 700;
+}
+
+/* Body */
+.md-typeset {
+  font-family: var(--sumi-font-body);
+  line-height: var(--sumi-lh-body);
+  font-size: 0.9rem;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+  font-family: var(--sumi-font-heading);
+  font-weight: var(--sumi-fw-semibold);
+  line-height: var(--sumi-lh-heading);
+  letter-spacing: -0.02em;
+}
+
+.md-typeset h1 {
+  font-size: 2rem;
+  font-weight: var(--sumi-fw-bold);
+}
+
+.md-typeset h2 {
+  font-size: 1.5rem;
+  margin-top: 2.1rem;
+  margin-bottom: 0.85rem;
+}
+
+.md-typeset h3 {
+  font-size: 1.2rem;
+  margin-top: 1.6rem;
+}
+
+.md-typeset h4 {
+  font-size: 1rem;
+  font-weight: var(--sumi-fw-semibold);
+}
+
+/* Code font */
+.md-typeset code,
+.md-typeset pre,
+.highlight code {
+  font-family: var(--sumi-font-code) !important;
+  font-size: 0.82em;
+  font-feature-settings: "liga" 1, "calt" 1, "zero" 1;
+  line-height: var(--sumi-lh-code);
+}
+
+/* Paragraph spacing */
+.md-typeset p {
+  margin: 0 0 1rem;
+}
+
+/* Lead text */
+.md-typeset .lead {
+  font-size: 1.1rem;
+  font-weight: var(--sumi-fw-normal);
+  color: var(--md-default-fg-color--light);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}

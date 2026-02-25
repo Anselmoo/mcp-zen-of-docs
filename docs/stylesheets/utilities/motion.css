@@ -1,0 +1,30 @@
+/* Motion — smooth transitions, respect prefers-reduced-motion */
+@media (prefers-reduced-motion: no-preference) {
+  .md-nav__link,
+  .md-typeset a,
+  .md-typeset .md-button,
+  .md-typeset .grid.cards > * {
+    transition-duration: var(--sumi-transition-fast, 150ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:        0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration:       0.001ms !important;
+    scroll-behavior:           auto !important;
+  }
+}
+
+/* Fade-in on page load — only when zen-ready is set */
+body.zen-ready .md-content {
+  animation: sumi-fade-in 0.3s ease forwards;
+}
+
+@keyframes sumi-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

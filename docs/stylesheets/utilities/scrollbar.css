@@ -1,0 +1,17 @@
+/* Custom scrollbar — subtle, matches theme */
+:root {
+  scrollbar-width:      thin;
+  scrollbar-color:      var(--sumi-border) transparent;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background:    var(--sumi-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--sumi-accent-muted); }
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--sumi-accent-dark);
+}

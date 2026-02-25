@@ -1,0 +1,164 @@
+/* LIGHT SCHEME — warm ivory parchment, deep sumi ink
+   ══════════════════════════════════════════════════════════════════════════ */
+/* :root ensures CSS vars are set on the cascade root so Material's own
+   var() references resolve correctly even before the attribute is toggled. */
+:root,
+[data-md-color-scheme="default"] {
+  color-scheme: light;
+
+  /* ── Primary ── */
+  --md-primary-fg-color: var(--sumi-accent);
+  --md-primary-fg-color--light: var(--sumi-accent-soft);
+  --md-primary-fg-color--dark: var(--sumi-accent-muted);
+  --md-primary-bg-color: var(--sumi-light-fg0);
+  --md-primary-bg-color--light: color-mix(in oklch, var(--sumi-light-bg-overlay) 70%, transparent);
+
+  /* ── Accent ── */
+  --md-accent-fg-color: var(--sumi-accent-muted);
+  --md-accent-fg-color--transparent: rgba(14, 162, 122, 0.16);
+  --md-accent-bg-color: var(--sumi-light-bg-overlay);
+  --md-accent-bg-color--light: color-mix(in oklch, var(--sumi-light-bg-overlay) 70%, transparent);
+
+  /* ── Default fg/bg ── */
+  --md-default-fg-color: var(--sumi-light-fg0);
+  --md-default-fg-color--light: var(--sumi-light-fg1);
+  --md-default-fg-color--lighter: var(--sumi-light-fg-muted);
+  --md-default-fg-color--lightest: rgba(42, 37, 34, 0.10);
+  /* Use literal value so the bg resolves even if palette.css loads late */
+  --md-default-bg-color: #faf8f5;
+  --md-default-bg-color--light: rgba(250, 248, 245, 0.72);
+  --md-default-bg-color--lighter: rgba(250, 248, 245, 0.34);
+  --md-default-bg-color--lightest: rgba(250, 248, 245, 0.14);
+
+  /* ── Code ── */
+  --md-code-fg-color: var(--sumi-light-fg0);
+  --md-code-bg-color: #f3efe8;
+  --md-code-bg-color--light: rgba(243, 239, 232, 0.9);
+  --md-code-bg-color--lighter: rgba(243, 239, 232, 0.5);
+
+  /* ── Code highlighting ── */
+  --md-code-hl-color: rgba(14, 162, 122, 0.18);
+  --md-code-hl-color--light: rgba(14, 162, 122, 0.08);
+  --md-code-hl-number-color: #7d4dc4;
+  --md-code-hl-special-color: #006d9f;
+  --md-code-hl-function-color: #0d7668;
+  --md-code-hl-constant-color: #8756b5;
+  --md-code-hl-keyword-color: #365dbd;
+  --md-code-hl-string-color: #2d7a3f;
+  --md-code-hl-name-color: var(--md-code-fg-color);
+  --md-code-hl-operator-color: var(--sumi-light-fg-muted);
+  --md-code-hl-punctuation-color: var(--sumi-light-fg-muted);
+  --md-code-hl-comment-color: var(--sumi-syntax-comments);
+  --md-code-hl-generic-color: var(--sumi-light-fg1);
+  --md-code-hl-variable-color: var(--sumi-light-fg1);
+
+  /* ── Typeset ── */
+  --md-typeset-color: var(--sumi-light-fg0);
+  --md-typeset-a-color: var(--sumi-accent-muted);
+  --md-typeset-del-color: rgba(196, 64, 64, 0.14);
+  --md-typeset-ins-color: rgba(14, 162, 122, 0.14);
+  --md-typeset-kbd-color: var(--sumi-light-bg-overlay);
+  --md-typeset-kbd-accent-color: var(--sumi-light-bg2);
+  --md-typeset-kbd-border-color: color-mix(in oklch, var(--sumi-light-fg1) 36%, transparent);
+  --md-typeset-mark-color: rgba(14, 162, 122, 0.22);
+  --md-typeset-table-color: rgba(42, 37, 34, 0.10);
+  --md-typeset-table-color--light: rgba(42, 37, 34, 0.04);
+
+  /* ── Admonition ── */
+  --md-admonition-fg-color: var(--sumi-light-fg0);
+  --md-admonition-bg-color: var(--sumi-light-bg-overlay);
+
+  /* ── Warning banner ── */
+  --md-warning-fg-color: var(--sumi-light-fg0);
+  --md-warning-bg-color: #fff7e6;
+
+  /* ── Footer ── */
+  --md-footer-fg-color: var(--sumi-light-bg0);
+  --md-footer-fg-color--light: color-mix(in oklch, var(--sumi-light-bg0) 70%, transparent);
+  --md-footer-fg-color--lighter: color-mix(in oklch, var(--sumi-light-bg0) 50%, transparent);
+  --md-footer-bg-color: #1a2030;
+  --md-footer-bg-color--dark: #131720;
+
+  /* ── Border tokens — warm light-mode, using ink foreground ── */
+  --sumi-border: color-mix(in oklch, var(--sumi-light-fg0) 14%, transparent);
+  --sumi-border-subtle: color-mix(in oklch, var(--sumi-light-fg0) 8%, transparent);
+  --sumi-border-strong: color-mix(in oklch, var(--sumi-light-fg0) 26%, transparent);
+
+  /* ── Shadows ── */
+  --md-shadow-z1:
+    0 0.2rem 0.5rem rgba(42, 37, 34, 0.07),
+    0 0 0.05rem rgba(42, 37, 34, 0.10);
+  --md-shadow-z2:
+    0 0.2rem 0.5rem rgba(42, 37, 34, 0.10),
+    0 0 0.05rem rgba(42, 37, 34, 0.18);
+  --md-shadow-z3:
+    0 0.2rem 0.5rem rgba(42, 37, 34, 0.18),
+    0 0 0.05rem rgba(42, 37, 34, 0.30);
+}
+
+/* ── Direct property overrides — ensures warm ivory applies even when
+   Material doesn't use the var() for body background.
+   :is(html,body) covers both the html root and body element, handling
+   Playwright / programmatic scheme changes as well as the toggle button. */
+body[data-md-color-scheme="default"],
+:is(html, body)[data-md-color-scheme="default"] {
+  background-color: #faf8f5 !important;
+  color: #2a2522 !important;
+}
+
+body[data-md-color-scheme="default"] .md-main,
+body[data-md-color-scheme="default"] .md-content,
+body[data-md-color-scheme="default"] .md-content__inner,
+:is(html, body)[data-md-color-scheme="default"] .md-main,
+:is(html, body)[data-md-color-scheme="default"] .md-content,
+:is(html, body)[data-md-color-scheme="default"] .md-content__inner {
+  background-color: #faf8f5 !important;
+}
+
+body[data-md-color-scheme="default"] .md-sidebar,
+:is(html, body)[data-md-color-scheme="default"] .md-sidebar {
+  background-color: transparent !important;
+}
+
+body[data-md-color-scheme="default"] .md-typeset,
+:is(html, body)[data-md-color-scheme="default"] .md-typeset {
+  color: #2a2522 !important;
+}
+
+body[data-md-color-scheme="default"] .md-typeset h1,
+body[data-md-color-scheme="default"] .md-typeset h2,
+body[data-md-color-scheme="default"] .md-typeset h3,
+body[data-md-color-scheme="default"] .md-typeset h4,
+:is(html, body)[data-md-color-scheme="default"] .md-typeset h1,
+:is(html, body)[data-md-color-scheme="default"] .md-typeset h2,
+:is(html, body)[data-md-color-scheme="default"] .md-typeset h3,
+:is(html, body)[data-md-color-scheme="default"] .md-typeset h4 {
+  color: #2a2522 !important;
+}
+
+body[data-md-color-scheme="default"] .md-typeset a:not(.md-button),
+:is(html, body)[data-md-color-scheme="default"] .md-typeset a:not(.md-button) {
+  color: #0b7a5c !important;
+}
+
+body[data-md-color-scheme="default"] .md-typeset a:not(.md-button):hover,
+:is(html, body)[data-md-color-scheme="default"] .md-typeset a:not(.md-button):hover {
+  color: #095b45 !important;
+}
+
+body[data-md-color-scheme="default"] .md-typeset code,
+:is(html, body)[data-md-color-scheme="default"] .md-typeset code {
+  color: #2a2522 !important;
+  background-color: rgba(34, 49, 44, 0.08) !important;
+}
+
+/* Hero is white-on-jade — undo ink color for headings inside .hero-container
+   and the home.html template's .zen-hero section */
+body[data-md-color-scheme="default"] .md-typeset .hero-container h1,
+body[data-md-color-scheme="default"] .md-typeset .hero-section h1,
+:is(html, body)[data-md-color-scheme="default"] .md-typeset .hero-container h1,
+:is(html, body)[data-md-color-scheme="default"] .md-typeset .hero-section h1,
+body[data-md-color-scheme="default"] .md-typeset .hero-title,
+:is(html, body)[data-md-color-scheme="default"] .md-typeset .hero-title {
+  color: #ffffff !important;
+}

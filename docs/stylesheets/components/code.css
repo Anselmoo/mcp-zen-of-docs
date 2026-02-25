@@ -1,0 +1,84 @@
+/* Code blocks — distinct surface, warm syntax palette */
+
+/* Inline code */
+.md-typeset code {
+  background-color: var(--md-code-bg-color);
+  border-radius:    var(--sumi-radius-sm, 0.25rem);
+  padding:          0.08em 0.36em;
+  border:           1px solid var(--sumi-border-subtle);
+  font-size:        0.82em;
+}
+
+/* Fenced code block wrapper */
+.md-typeset pre {
+  background-color: var(--md-code-bg-color);
+  border:           1px solid var(--sumi-border-subtle);
+  border-radius:    var(--sumi-radius-md, 0.5rem);
+  overflow:         hidden;
+}
+
+/* Code block — override pre>code to fill container */
+.md-typeset pre > code {
+  background: none;
+  border:     none;
+  padding:    1rem 1.2rem;
+  display:    block;
+  overflow-x: auto;
+  font-size:  0.83em;
+}
+
+/* Code title bar */
+.md-typeset .highlight .filename {
+  background-color: color-mix(in oklch, var(--md-code-bg-color) 92%, var(--sumi-accent));
+  border-bottom:    1px solid var(--sumi-border-subtle);
+  padding:          0.4rem 1rem;
+  font-size:        0.75rem;
+  font-weight:      500;
+  color:            var(--md-default-fg-color--light);
+  letter-spacing:   0.02em;
+}
+
+/* Copy button */
+.md-typeset .highlight .md-clipboard {
+  color: var(--md-default-fg-color--lighter);
+  transition: color var(--sumi-transition-fast, 150ms ease);
+}
+
+.md-typeset .highlight:hover .md-clipboard { color: var(--sumi-accent); }
+
+[data-md-color-scheme="slate"] .md-typeset .highlight:hover .md-clipboard {
+  color: var(--sumi-accent-dark);
+}
+
+/* Inline code — smaller padding, distinct from block code */
+.md-typeset code:not(pre > code) {
+  padding: 0.1em 0.35em;
+  border-radius: 0.2em;
+}
+
+/* Highlight wrapper border-radius */
+.md-typeset .highlight pre {
+  border-radius: 0.4rem;
+}
+
+/* Line numbers */
+.md-typeset .linenodiv pre { color: var(--md-default-fg-color--lighter); }
+
+/* Annotations */
+.md-annotation__index {
+  background-color: var(--sumi-accent);
+  color:            var(--sumi-light-bg0);
+}
+
+[data-md-color-scheme="slate"] .md-annotation__index {
+  background-color: var(--sumi-accent-dark);
+  color:            var(--sumi-bg0);
+}
+
+.md-typeset pre.is-hovered {
+  border-color: var(--sumi-accent);
+}
+
+[data-md-color-scheme="slate"] .md-typeset pre.is-hovered {
+  border-color: var(--sumi-accent-dark);
+}

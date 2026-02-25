@@ -1,0 +1,6 @@
+{
+    "chat.autopilot.enabled": true,
+    "terminal.integrated.defaultProfile.osx": "bash",
+    "terminal.integrated.fontLigatures.enabled": true,
+    "editor.fontLigatures": true,
+}

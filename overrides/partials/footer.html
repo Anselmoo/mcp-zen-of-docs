@@ -1,0 +1,78 @@
+<footer class="md-footer">
+  <section class="zen-footer-shell md-typeset" aria-label="Project footer">
+    {% if "navigation.footer" in features and (page.previous_page or page.next_page) %}
+    {% if page.meta and page.meta.hide %}
+    {% set hidden = "hidden" if "footer" in page.meta.hide %}
+    {% endif %}
+    <nav class="zen-footer-nav md-grid" aria-label="{{ lang.t('footer') }}" {{ hidden }}>
+      {% if page.previous_page %}
+      {% set direction = lang.t("footer.previous") %}
+      <a href="{{ page.previous_page.url | url }}" class="md-footer__link md-footer__link--prev"
+        aria-label="{{ direction }}: {{ page.previous_page.title | e }}">
+        <div class="md-footer__button md-icon">
+          {% set icon = config.theme.icon.previous or "material/arrow-left" %}
+          {% include ".icons/" ~ icon ~ ".svg" %}
+        </div>
+        <div class="md-footer__title">
+          <span class="md-footer__direction">{{ direction }}</span>
+          <div class="md-ellipsis">{{ page.previous_page.title }}</div>
+        </div>
+      </a>
+      {% endif %}
+      {% if page.next_page %}
+      {% set direction = lang.t("footer.next") %}
+      <a href="{{ page.next_page.url | url }}" class="md-footer__link md-footer__link--next"
+        aria-label="{{ direction }}: {{ page.next_page.title | e }}">
+        <div class="md-footer__title">
+          <span class="md-footer__direction">{{ direction }}</span>
+          <div class="md-ellipsis">{{ page.next_page.title }}</div>
+        </div>
+        <div class="md-footer__button md-icon">
+          {% set icon = config.theme.icon.next or "material/arrow-right" %}
+          {% include ".icons/" ~ icon ~ ".svg" %}
+        </div>
+      </a>
+      {% endif %}
+    </nav>
+    {% endif %}
+    <div class="md-grid zen-footer-shell__grid">
+      <div class="zen-footer-card">
+        <a class="zen-footer-brand" href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}">
+          <img class="zen-footer-brand__logo" src="{{ 'assets/logo.svg' | url }}" alt="mcp-zen-of-docs logo">
+          <span>mcp-zen-of-docs</span>
+        </a>
+        <p class="zen-footer-brand__summary">{{ config.site_description }}</p>
+        <p class="zen-footer-quote" data-zen-quote-host>"Write for the traveller who arrives after you."</p>
+      </div>
+
+      <div class="zen-footer-card">
+        <h3 class="zen-footer-card__title">Explore</h3>
+        <ul class="zen-footer-links">
+          <li><a href="{{ 'quickstart/' | url }}">Quickstart</a></li>
+          <li><a href="{{ 'tools/' | url }}">Tools</a></li>
+          <li><a href="{{ 'frameworks/' | url }}">Frameworks</a></li>
+          <li><a href="{{ 'guides/' | url }}">Guides</a></li>
+        </ul>
+      </div>
+
+      <div class="zen-footer-card">
+        <h3 class="zen-footer-card__title">Project</h3>
+        <ul class="zen-footer-links">
+          <li><a href="{{ config.repo_url }}">GitHub repository</a></li>
+          <li><a href="https://pypi.org/project/mcp-zen-of-docs/">PyPI package</a></li>
+          <li><a href="{{ 'contributing/' | url }}">Contributing</a></li>
+          <li><a href="{{ 'reference/api/' | url }}">API reference</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      {% include "partials/copyright.html" %}
+      {% if config.extra.social %}
+      {% include "partials/social.html" %}
+      {% endif %}
+    </div>
+  </div>
+</footer>

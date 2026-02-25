@@ -1,0 +1,121 @@
+[project]
+name = "mcp-zen-of-docs"
+version = "0.1.0"
+description = "FastMCP server for documentation generation and validation."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["fastmcp[tasks]>=3.0.0", "pyyaml>=6.0.0", "typer>=0.24.1"]
+
+[project.optional-dependencies]
+docs = ["mkdocstrings[python]>=0.26.0", "mkdocstrings-python>=1.11.0"]
+
+
+[project.scripts]
+mcp-zen-of-docs = "mcp_zen_of_docs.__main__:main"
+mcp-zen-of-docs-cli = "mcp_zen_of_docs.cli:main"
+mcp-zen-of-docs-server = "mcp_zen_of_docs.server:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    # Incompatible pydocstyle pairs; keep one side of each pair active.
+    "D203",
+    "D213",
+    # Formatter-owned or formatting-adjacent rules.
+    "COM812",
+    "ISC001",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-first-party = ["mcp_zen_of_docs"]
+force-single-line = true
+lines-between-types = 1
+lines-after-imports = 2
+case-sensitive = true
+combine-as-imports = false
+
+
+[tool.ruff.lint.per-file-ignores]
+"src/mcp_zen_of_docs/server.py" = [
+    # FastMCP wrapper signatures expose booleans intentionally for tool-call compatibility.
+    "FBT001",
+    "FBT002",
+]
+"tests/**/*.py" = [
+    # Pytest-style assertions and focused test ergonomics.
+    "S101",
+    "PT011",
+    "PT018",
+    # Tests are intentionally concise and may omit full API-style typing/docs.
+    "ANN001",
+    "ARG001",
+    "ARG002",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "INP001",
+    # Allow pragmatic literal checks in assertions.
+    "PLR2004",
+    # Inner imports in test methods are an intentional pytest isolation pattern.
+    "PLC0415",
+]
+
+[tool.ty]
+environment.python-version = "3.12"
+
+[[tool.ty.overrides]]
+include = ["tests/**", "**/test_*.py"]
+
+[tool.ty.overrides.rules]
+all = "warn"
+invalid-argument-type = "ignore"
+unknown-argument = "ignore"
+
+[dependency-groups]
+dev = [
+    "poethepoet>=0.42.0",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.15.2",
+    "ty>=0.0.18",
+]
+docs = [
+    "mkdocs-git-revision-date-localized-plugin>=1.5.1",
+    "mkdocs-glightbox>=0.5.2",
+    "mkdocs-minify-plugin>=0.8.0",
+    "mkdocstrings[python]>=1.0.3",
+    "zensical>=0.0.23",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.26,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.poe.tasks]
+test = "uv run pytest"
+test-cov = "uv run pytest --cov=mcp_zen_of_docs --cov-report=term-missing"
+lint = "uv run ruff check src tests"
+format = "uv run ruff format src tests"
+type-check = "uv run ty check src"
+serve = "uv run mcp-zen-of-docs-server"
+docs-serve = "uv run zensical serve"
+docs-build = "uv run zensical build --strict"
+contrast-check = "uv run python scripts/contrast_check.py"

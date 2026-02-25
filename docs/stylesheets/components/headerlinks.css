@@ -1,0 +1,23 @@
+/* Anchor / header links */
+.md-typeset h1 .headerlink,
+.md-typeset h2 .headerlink,
+.md-typeset h3 .headerlink,
+.md-typeset h4 .headerlink,
+.md-typeset h5 .headerlink,
+.md-typeset h6 .headerlink {
+  opacity:    0;
+  color:      var(--sumi-accent);
+  font-size:  0.75em;
+  margin-left: 0.4em;
+  transition: opacity var(--sumi-transition-fast, 150ms ease),
+              color var(--sumi-transition-fast, 150ms ease);
+}
+
+.md-typeset :is(h1, h2, h3, h4, h5, h6):hover .headerlink { opacity: 1; }
+.md-typeset .headerlink:hover { color: var(--sumi-accent-soft); }
+
+[data-md-color-scheme="slate"] .md-typeset h1 .headerlink,
+[data-md-color-scheme="slate"] .md-typeset h2 .headerlink,
+[data-md-color-scheme="slate"] .md-typeset h3 .headerlink {
+  color: var(--sumi-accent-dark);
+}

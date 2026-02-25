@@ -1,0 +1,223 @@
+/* DARK SCHEME — deep charcoal-blue depth, luminous jade glow
+   ══════════════════════════════════════════════════════════════════════════ */
+:is([data-md-color-scheme="slate"]) {
+  color-scheme: dark;
+
+  /* ── Primary ── */
+  --md-primary-fg-color: var(--sumi-accent-dark);
+  --md-primary-fg-color--light: var(--sumi-accent-dark-soft);
+  --md-primary-fg-color--dark: var(--sumi-accent-dark-muted);
+  --md-primary-bg-color: var(--sumi-fg0);
+  --md-primary-bg-color--light: rgba(19, 23, 32, 0.72);
+
+  /* ── Accent ── */
+  --md-accent-fg-color: var(--sumi-accent-dark-soft);
+  --md-accent-fg-color--transparent: rgba(63, 217, 168, 0.16);
+  --md-accent-bg-color: var(--sumi-bg0);
+  --md-accent-bg-color--light: rgba(19, 23, 32, 0.72);
+
+  /* ── Default fg/bg — deep blue-charcoal, not pure black ── */
+  --md-default-fg-color: var(--sumi-fg0);
+  --md-default-fg-color--light: var(--sumi-fg1);
+  --md-default-fg-color--lighter: var(--sumi-fg-muted);
+  --md-default-fg-color--lightest: rgba(228, 223, 212, 0.10);
+  --md-default-bg-color: var(--sumi-bg0);
+  --md-default-bg-color--light: rgba(26, 32, 48, 0.56);
+  --md-default-bg-color--lighter: rgba(26, 32, 48, 0.28);
+  --md-default-bg-color--lightest: rgba(26, 32, 48, 0.10);
+
+  /* ── Code ── */
+  --md-code-fg-color: var(--sumi-fg0);
+  --md-code-bg-color: var(--sumi-bg1);
+  --md-code-bg-color--light: rgba(26, 32, 48, 0.90);
+  --md-code-bg-color--lighter: rgba(26, 32, 48, 0.56);
+
+  /* ── Code highlighting ── */
+  --md-code-hl-color: rgba(63, 217, 168, 0.20);
+  --md-code-hl-color--light: rgba(63, 217, 168, 0.08);
+  --md-code-hl-number-color: var(--sumi-syntax-numbers);
+  --md-code-hl-special-color: var(--sumi-syntax-special);
+  --md-code-hl-function-color: var(--sumi-syntax-functions);
+  --md-code-hl-constant-color: var(--sumi-syntax-constants);
+  --md-code-hl-keyword-color: var(--sumi-syntax-keywords);
+  --md-code-hl-string-color: var(--sumi-syntax-strings);
+  --md-code-hl-name-color: var(--md-code-fg-color);
+  --md-code-hl-operator-color: var(--sumi-fg1);
+  --md-code-hl-punctuation-color: var(--sumi-fg1);
+  --md-code-hl-comment-color: var(--sumi-syntax-comments);
+  --md-code-hl-generic-color: var(--sumi-fg1);
+  --md-code-hl-variable-color: var(--sumi-fg1);
+
+  /* ── Typeset ── */
+  --md-typeset-color: var(--sumi-fg0);
+  --md-typeset-a-color: var(--sumi-accent-dark);
+  --md-typeset-del-color: rgba(255, 80, 80, 0.16);
+  --md-typeset-ins-color: rgba(63, 217, 168, 0.18);
+  --md-typeset-kbd-color: rgba(228, 223, 212, 0.10);
+  --md-typeset-kbd-accent-color: rgba(228, 223, 212, 0.18);
+  --md-typeset-kbd-border-color: var(--sumi-bg0);
+  --md-typeset-mark-color: rgba(63, 217, 168, 0.22);
+  --md-typeset-table-color: rgba(228, 223, 212, 0.10);
+  --md-typeset-table-color--light: rgba(228, 223, 212, 0.04);
+
+  /* ── Admonition ── */
+  --md-admonition-fg-color: var(--sumi-fg0);
+  --md-admonition-bg-color: var(--sumi-bg1);
+
+  /* ── Warning banner ── */
+  --md-warning-fg-color: var(--sumi-fg0);
+  --md-warning-bg-color: #2a2010;
+
+  /* ── Footer ── */
+  --md-footer-fg-color: var(--sumi-fg0);
+  --md-footer-fg-color--light: var(--sumi-fg1);
+  --md-footer-fg-color--lighter: var(--sumi-fg-muted);
+  --md-footer-bg-color: #0d1018;
+  --md-footer-bg-color--dark: #080c12;
+
+  /* ── Border tokens — deep mode, using parchment tint ── */
+  --sumi-border: color-mix(in oklch, var(--sumi-fg0) 18%, transparent);
+  --sumi-border-subtle: color-mix(in oklch, var(--sumi-fg0) 10%, transparent);
+  --sumi-border-strong: color-mix(in oklch, var(--sumi-fg0) 28%, transparent);
+
+  /* ── Shadows ── */
+  --md-shadow-z1:
+    0 0.2rem 0.5rem color-mix(in oklch, var(--sumi-bg0) 30%, transparent),
+    0 0 0.05rem color-mix(in oklch, var(--sumi-bg0) 45%, transparent);
+  --md-shadow-z2:
+    0 0.2rem 0.5rem color-mix(in oklch, var(--sumi-bg0) 42%, transparent),
+    0 0 0.05rem color-mix(in oklch, var(--sumi-bg0) 50%, transparent);
+  --md-shadow-z3:
+    0 0.2rem 0.5rem color-mix(in oklch, var(--sumi-bg0) 58%, transparent),
+    0 0 0.05rem color-mix(in oklch, var(--sumi-bg0) 54%, transparent);
+}
+
+/* ── Direct property overrides — beats Material's !important + inline styles
+   Works for both body[data-md-color-scheme="slate"] (Material toggle)
+   and html[data-md-color-scheme="slate"] (Playwright / programmatic) ─── */
+:is(html, body)[data-md-color-scheme="slate"] {
+  background-color: #18222b !important;
+  color: #e4dfd4 !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-main,
+:is(html, body)[data-md-color-scheme="slate"] .md-content,
+:is(html, body)[data-md-color-scheme="slate"] .md-content__inner {
+  background-color: #18222b !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-sidebar {
+  background-color: transparent !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset {
+  color: #e4dfd4 !important;
+}
+
+/* Bare h1–h4 selectors: beat Material overrides that target headings outside
+   .md-typeset (e.g. nav titles, page headers rendered without the wrapper) */
+body[data-md-color-scheme="slate"] h1,
+body[data-md-color-scheme="slate"] h2,
+body[data-md-color-scheme="slate"] h3,
+body[data-md-color-scheme="slate"] h4 {
+  color: #e4dfd4 !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset h1,
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset h2,
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset h3,
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset h4 {
+  color: #e4dfd4 !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset a:not(.md-button) {
+  color: #74ecc7 !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset a:not(.md-button):hover {
+  color: #a4f5dc !important;
+}
+
+/* Primary CTA button — jade bg, dark ink text */
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset .md-button--primary {
+  background-color: #3fd9a8 !important;
+  color: #131720 !important;
+  border-color: #3fd9a8 !important;
+}
+
+/* Secondary/outline button — parchment text, subtle border */
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset .md-button:not(.md-button--primary) {
+  color: #e4dfd4 !important;
+  border-color: rgba(228, 223, 212, 0.40) !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-header {
+  background-color: #131720 !important;
+  color: #e4dfd4 !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-header__title,
+:is(html, body)[data-md-color-scheme="slate"] .md-header__topic,
+:is(html, body)[data-md-color-scheme="slate"] .md-logo {
+  color: #e4dfd4 !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-nav__item .md-nav__link {
+  color: #d3cdc1 !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-nav__item--active>.md-nav__link {
+  color: #3fd9a8 !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset code {
+  color: #edf4ee !important;
+  background-color: rgba(41, 51, 70, 0.92) !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset mark {
+  color: #f6fbf8 !important;
+  background-color: rgba(63, 217, 168, 0.24) !important;
+}
+
+/* Hero is white-on-jade — undo the parchment text color for elements inside
+   .hero-container / .hero-section. These selectors must out-specificity the
+   generic .md-typeset h1 rule above (0-2-2), so we include both the
+   container-scoped h1 variant and the direct .hero-title class variant. */
+body[data-md-color-scheme="slate"] .md-typeset .hero-container h1,
+body[data-md-color-scheme="slate"] .md-typeset .hero-section h1,
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset .hero-container h1,
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset .hero-section h1,
+body[data-md-color-scheme="slate"] .md-typeset .hero-title,
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset .hero-title {
+  color: #ffffff !important;
+}
+
+/* Hero tagline: semi-transparent white on jade background */
+body[data-md-color-scheme="slate"] .md-typeset .hero-tagline,
+:is(html, body)[data-md-color-scheme="slate"] .md-typeset .hero-tagline {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
+/* zen-hero template (home.html) — also needs white text in dark mode */
+body[data-md-color-scheme="slate"] .zen-hero h1,
+body[data-md-color-scheme="slate"] .zen-hero__content h1,
+:is(html, body)[data-md-color-scheme="slate"] .zen-hero h1,
+:is(html, body)[data-md-color-scheme="slate"] .zen-hero__content h1 {
+  color: #ffffff !important;
+}
+
+/* Announce banner — force white text on the jade stripe in dark mode.
+   Target all children: the banner wrapper, typeset div, links and strong. */
+:is(html, body)[data-md-color-scheme="slate"] .md-banner,
+:is(html, body)[data-md-color-scheme="slate"] [data-md-component="announce"],
+:is(html, body)[data-md-color-scheme="slate"] .md-banner .md-banner__inner,
+:is(html, body)[data-md-color-scheme="slate"] .md-banner .md-typeset {
+  color: #ffffff !important;
+}
+
+:is(html, body)[data-md-color-scheme="slate"] .md-banner a,
+:is(html, body)[data-md-color-scheme="slate"] .md-banner strong,
+:is(html, body)[data-md-color-scheme="slate"] [data-md-component="announce"] a {
+  color: #ffffff !important;
+}

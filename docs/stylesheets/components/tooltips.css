@@ -1,0 +1,26 @@
+/* Tooltips — warm surface, subtle shadow */
+.md-tooltip {
+  background-color: var(--md-default-bg-color);
+  border:           1px solid var(--sumi-border);
+  border-radius:    var(--sumi-radius-md, 0.5rem);
+  box-shadow:       var(--md-shadow-z2);
+  font-size:        0.75rem;
+  padding:          0.4rem 0.7rem;
+  color:            var(--md-default-fg-color);
+}
+
+[data-md-color-scheme="slate"] .md-tooltip {
+  background-color: var(--sumi-bg2);
+  border-color:     var(--sumi-border);
+}
+
+/* Abbreviation tooltips */
+.md-typeset abbr {
+  border-bottom:  1px dotted var(--sumi-accent-muted);
+  cursor:         help;
+  text-decoration: none;
+}
+
+[data-md-color-scheme="slate"] .md-typeset abbr {
+  border-bottom-color: var(--sumi-accent-dark);
+}

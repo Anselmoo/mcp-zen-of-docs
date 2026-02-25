@@ -1,0 +1,21 @@
+/* Icons — accent-coloured, consistent sizing */
+.md-typeset .twemoji { vertical-align: middle; }
+
+/* Material icons in nav, headers */
+.md-icon svg {
+  fill: currentColor;
+}
+
+/* Status badge icons */
+.md-typeset .md-status svg {
+  fill: var(--md-default-fg-color--lighter);
+}
+
+/* Tag chip icons */
+.md-tag .md-icon {
+  color: var(--sumi-accent);
+}
+
+[data-md-color-scheme="slate"] .md-tag .md-icon {
+  color: var(--sumi-accent-dark);
+}

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="API chapter illustration showing a calm constellation of connected nodes">
+  <defs>
+    <linearGradient id="api-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10282d"/>
+      <stop offset="100%" stop-color="#1b2d37"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="320" rx="28" fill="url(#api-bg)"/>
+  <g fill="none" stroke="#72e8c4" stroke-width="3" opacity="0.65">
+    <path d="M182 190 312 120 474 172 628 110 790 174"/>
+    <path d="M312 120 338 212 474 172"/>
+    <path d="M474 172 560 226 790 174"/>
+  </g>
+  <g fill="#edf8f4">
+    <circle cx="182" cy="190" r="10"/>
+    <circle cx="312" cy="120" r="12"/>
+    <circle cx="338" cy="212" r="9"/>
+    <circle cx="474" cy="172" r="12"/>
+    <circle cx="560" cy="226" r="10"/>
+    <circle cx="628" cy="110" r="12"/>
+    <circle cx="790" cy="174" r="10"/>
+  </g>
+  <g fill="#72e8c4" opacity="0.2">
+    <circle cx="312" cy="120" r="28"/>
+    <circle cx="474" cy="172" r="32"/>
+    <circle cx="628" cy="110" r="28"/>
+  </g>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="Contributing chapter illustration showing a collaborative workbench with notes and parts">
+  <rect width="960" height="320" rx="28" fill="#eef6f3"/>
+  <rect x="118" y="86" width="724" height="168" rx="24" fill="#ffffff" stroke="#cbe4db"/>
+  <rect x="160" y="120" width="168" height="96" rx="18" fill="#f8fbfa" stroke="#d8ebe4"/>
+  <rect x="394" y="120" width="180" height="44" rx="14" fill="#0ea27a" opacity="0.12"/>
+  <rect x="394" y="180" width="220" height="14" rx="7" fill="#d7e9e2"/>
+  <rect x="394" y="206" width="184" height="14" rx="7" fill="#d7e9e2"/>
+  <circle cx="706" cy="152" r="34" fill="#d6f3e7"/>
+  <path d="M706 130v44M684 152h44" stroke="#0b7a5c" stroke-width="6" stroke-linecap="round"/>
+  <path d="M188 192 218 160 242 178 276 138" fill="none" stroke="#0ea27a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"
+     role="img" aria-label="mcp-zen-of-docs — Ten MCP tools. Four frameworks. Documentation quality for the AI era.">
+  <title>mcp-zen-of-docs social card</title>
+
+  <defs>
+    <!-- ── Subtle radial vignette: darkens the corners slightly ──────── -->
+    <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+      <stop offset="0%"   stop-color="#1a2030" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#0c1018" stop-opacity="0.55"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ── Background ────────────────────────────────────────────────────── -->
+  <rect width="1200" height="630" fill="#131720"/>
+  <rect width="1200" height="630" fill="url(#vignette)"/>
+
+  <!-- ── Jade accent bar at top: full width, 6 px ─────────────────────── -->
+  <rect width="1200" height="6" fill="#0ea27a"/>
+
+  <!-- ── Enso watermark ────────────────────────────────────────────────
+       Large brushstroke circle in bottom-right. Centered at (1080, 490),
+       radius 160. Bezier approx: k = 0.5523 × 160 ≈ 88.
+       Open at top (gap: M ends at 1060, start opens to 1080).
+       Most of the circle is outside the viewBox — artistically cropped.
+  ──────────────────────────────────────────────────────────────────────── -->
+  <path d="M 1080 330
+           C 1168 330, 1240 402, 1240 490
+           C 1240 578, 1168 650, 1080 650
+           C 992  650, 920  578, 920  490
+           C 920  402, 992  330, 1060 330"
+        fill="none"
+        stroke="#0ea27a"
+        stroke-width="26"
+        stroke-linecap="round"
+        opacity="0.05"/>
+
+  <!-- ── Logo mark (top-left, ~48 px enso) ─────────────────────────────
+       Mini enso: center (98, 74), radius 26. Open at top-right.
+  ──────────────────────────────────────────────────────────────────────── -->
+  <path d="M 99 48
+           C 83 46, 70 58, 70 74
+           C 70 90, 82 102, 98 102
+           C 114 102, 126 90, 126 74
+           C 126 63, 120 54, 112 50"
+        fill="none"
+        stroke="#0ea27a"
+        stroke-width="3.5"
+        stroke-linecap="round"/>
+
+  <!-- Mini doc lines inside logo mark -->
+  <line x1="89" y1="70" x2="107" y2="70" stroke="#0ea27a" stroke-width="2"   stroke-linecap="round"/>
+  <line x1="89" y1="76" x2="107" y2="76" stroke="#0ea27a" stroke-width="2"   stroke-linecap="round"/>
+  <line x1="89" y1="82" x2="100" y2="82" stroke="#0ea27a" stroke-width="2"   stroke-linecap="round"/>
+
+  <!-- ── Main title ────────────────────────────────────────────────────── -->
+  <text x="80" y="295"
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+        font-size="72"
+        font-weight="700"
+        fill="#e4dfd4"
+        letter-spacing="-0.025em">mcp-zen-of-docs</text>
+
+  <!-- ── Subtitle ──────────────────────────────────────────────────────── -->
+  <text x="80" y="352"
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+        font-size="28"
+        fill="#c4bfb4">Ten MCP tools. Four frameworks.</text>
+
+  <!-- ── Separator line above footer ──────────────────────────────────── -->
+  <line x1="80" y1="548" x2="1120" y2="548"
+        stroke="#0ea27a" stroke-width="1" opacity="0.2"/>
+
+  <!-- ── Bottom tagline ────────────────────────────────────────────────── -->
+  <text x="80" y="578"
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+        font-size="18"
+        font-weight="500"
+        fill="#0ea27a"
+        letter-spacing="0.06em">Documentation · Quality · AI-native</text>
+
+</svg>

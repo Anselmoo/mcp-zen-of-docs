@@ -1,0 +1,40 @@
+/* mkdocstrings API reference styling */
+.doc-heading {
+  border-bottom: 1px solid var(--sumi-border-subtle);
+  padding-bottom: 0.4rem;
+  margin-bottom:  0.8rem;
+}
+
+/* Signature */
+.doc-signature {
+  background:    var(--md-code-bg-color);
+  border:        1px solid var(--sumi-border-subtle);
+  border-radius: var(--sumi-radius-md, 0.5rem);
+  padding:       0.6rem 1rem;
+  font-family:   var(--sumi-font-code, monospace);
+  font-size:     0.82rem;
+  overflow-x:    auto;
+  margin-bottom: 0.8rem;
+}
+
+/* Parameter table */
+.doc-contents .md-typeset table {
+  font-size: 0.8rem;
+}
+
+/* Labels (Required, Optional, etc.) */
+.doc-label {
+  font-size:        0.68rem;
+  font-weight:      600;
+  letter-spacing:   0.05em;
+  text-transform:   uppercase;
+  padding:          0.15em 0.5em;
+  border-radius:    var(--sumi-radius-sm, 0.25rem);
+  background-color: var(--sumi-accent-glow);
+  color:            var(--sumi-accent-muted);
+}
+
+[data-md-color-scheme="slate"] .doc-label {
+  background-color: rgba(63, 217, 168, 0.14);
+  color:            var(--sumi-accent-dark);
+}

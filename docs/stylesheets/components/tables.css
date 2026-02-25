@@ -1,0 +1,41 @@
+/* Data tables — clean horizontal lines */
+.md-typeset table {
+  border-collapse:  collapse;
+  border-radius:    var(--sumi-radius-md, 0.5rem);
+  overflow:         hidden;
+  font-size:        0.82rem;
+  width:            100%;
+}
+
+/* Header row */
+.md-typeset table thead th {
+  background-color: var(--md-code-bg-color);
+  font-weight:      var(--sumi-fw-semibold, 600);
+  font-size:        0.78rem;
+  text-transform:   uppercase;
+  letter-spacing:   0.04em;
+  color:            var(--md-default-fg-color--light);
+  padding:          0.6rem 0.8rem;
+  border-bottom:    2px solid var(--sumi-border);
+}
+
+/* Body rows */
+.md-typeset table td {
+  padding:          0.55rem 0.8rem;
+  border-bottom:    1px solid var(--sumi-border-subtle);
+  vertical-align:   top;
+}
+
+/* Zebra striping — very subtle */
+.md-typeset table tbody tr:nth-child(even) td {
+  background-color: var(--md-typeset-table-color--light);
+}
+
+.md-typeset table tbody tr:hover td {
+  background-color: var(--md-typeset-table-color);
+}
+
+/* Code in tables */
+.md-typeset table td code {
+  font-size: 0.79em;
+}

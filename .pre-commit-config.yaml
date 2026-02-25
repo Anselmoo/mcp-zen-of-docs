@@ -1,0 +1,29 @@
+# Pre-commit hooks configuration
+# Runs Ruff and Ty on the entire repository on each commit
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-case-conflict
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.15.6
+    hooks:
+      # Run the linter.
+      - id: ruff-check
+      # Run the formatter.
+      - id: ruff-format
+  # Ruff: Fast Python linter and code formatter
+  - repo: local
+    hooks:
+
+      - id: ty-check
+        name: ty check (local install)
+        entry: uv run ty check
+        language: system
+        types: [python]
+        pass_filenames: false

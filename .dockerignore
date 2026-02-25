@@ -1,0 +1,10 @@
+.copilot/
+.git/
+.github/
+.pytest_cache/
+.ruff_cache/
+.venv/
+__pycache__/
+dist/
+site/
+tests/

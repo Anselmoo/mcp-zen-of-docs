@@ -1,0 +1,24 @@
+/* Illustration layout — center SVG assets with breathing room */
+.md-typeset .illustration {
+  display:         block;
+  margin:          2rem auto;
+  max-width:       100%;
+  height:          auto;
+}
+
+/* Framed illustration with border */
+.md-typeset .illustration--framed {
+  border:        1px solid var(--sumi-border-subtle);
+  border-radius: var(--sumi-radius-lg, 0.75rem);
+  padding:       1.5rem;
+  background:    var(--md-code-bg-color);
+}
+
+/* Inline icon-sized image */
+.md-typeset .illustration--inline {
+  display:        inline-block;
+  vertical-align: middle;
+  width:          1.4em;
+  height:         1.4em;
+  margin-right:   0.3em;
+}

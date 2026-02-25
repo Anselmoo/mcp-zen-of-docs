@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="Philosophy chapter illustration showing zen stones in a raked garden">
+  <rect width="960" height="320" rx="28" fill="#f7f3ed"/>
+  <g fill="none" stroke="#d9d1c3" stroke-width="4" stroke-linecap="round">
+    <path d="M80 120 C260 102, 444 102, 624 120 C760 134, 836 134, 900 124"/>
+    <path d="M64 158 C232 142, 432 142, 628 160 C760 172, 840 174, 912 164"/>
+    <path d="M56 198 C260 182, 466 186, 668 204 C790 214, 858 214, 914 206"/>
+    <path d="M70 238 C262 224, 464 228, 662 246 C788 258, 856 258, 906 248"/>
+  </g>
+  <g>
+    <ellipse cx="264" cy="174" rx="72" ry="52" fill="#68776e"/>
+    <ellipse cx="512" cy="152" rx="92" ry="62" fill="#4e5d63"/>
+    <ellipse cx="730" cy="196" rx="64" ry="46" fill="#7c8b84"/>
+  </g>
+  <g fill="#d8e4de" opacity="0.7">
+    <ellipse cx="264" cy="162" rx="42" ry="16"/>
+    <ellipse cx="512" cy="136" rx="56" ry="18"/>
+    <ellipse cx="730" cy="186" rx="34" ry="14"/>
+  </g>
+</svg>

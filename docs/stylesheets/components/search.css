@@ -1,0 +1,209 @@
+/* Search overlay */
+.md-search__form {
+  position: relative;
+  width: 100%;
+  min-height: 2.55rem;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08)),
+    color-mix(in oklch, var(--md-default-bg-color) 86%, transparent);
+  border: 1px solid color-mix(in oklch, var(--sumi-border-subtle) 70%, rgba(255, 255, 255, 0.12));
+  box-shadow: 0 10px 24px rgba(5, 18, 20, 0.12);
+  backdrop-filter: blur(14px);
+  transition:
+    border-color var(--sumi-transition-fast, 150ms ease),
+    box-shadow var(--sumi-transition-fast, 150ms ease),
+    background-color var(--sumi-transition-fast, 150ms ease),
+    transform var(--sumi-transition-fast, 150ms ease);
+}
+
+.md-search__form:hover,
+.md-search__form:focus-within {
+  border-color: var(--sumi-accent);
+  box-shadow: 0 14px 30px rgba(5, 18, 20, 0.16);
+  transform: translateY(-1px);
+}
+
+[data-md-color-scheme="slate"] .md-search__form:hover,
+[data-md-color-scheme="slate"] .md-search__form:focus-within {
+  border-color: var(--sumi-accent-dark);
+}
+
+.md-search__input {
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+}
+
+.md-search__label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.55rem;
+  padding-inline: 0.9rem 0.6rem;
+}
+
+.md-search__label .md-search__icon {
+  color: color-mix(in oklch, var(--sumi-accent) 68%, var(--md-default-fg-color)) !important;
+}
+
+.md-search__label>span:not(.zen-search-shortcut) {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--md-default-fg-color) !important;
+}
+
+.zen-search-shortcut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.95rem;
+  padding: 0.16rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklch, var(--sumi-border-subtle) 80%, rgba(255, 255, 255, 0.14));
+  background: rgba(255, 255, 255, 0.3);
+  color: color-mix(in oklch, var(--md-default-fg-color) 70%, transparent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+[data-md-color-scheme="default"] .md-search__form,
+body[data-md-color-scheme="default"] .md-search__form {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 251, 249, 0.92)),
+    color-mix(in oklch, var(--md-default-bg-color) 94%, white);
+  border-color: color-mix(in oklch, var(--sumi-accent) 18%, rgba(11, 122, 92, 0.14));
+  box-shadow:
+    0 10px 26px rgba(5, 18, 20, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+[data-md-color-scheme="default"] .md-search__form:hover,
+[data-md-color-scheme="default"] .md-search__form:focus-within,
+body[data-md-color-scheme="default"] .md-search__form:hover,
+body[data-md-color-scheme="default"] .md-search__form:focus-within {
+  border-color: color-mix(in oklch, var(--sumi-accent) 44%, rgba(11, 122, 92, 0.14));
+  box-shadow:
+    0 14px 30px rgba(5, 18, 20, 0.12),
+    0 0 0 3px rgba(114, 232, 196, 0.12);
+}
+
+[data-md-color-scheme="default"] .zen-search-shortcut,
+body[data-md-color-scheme="default"] .zen-search-shortcut {
+  background: rgba(11, 122, 92, 0.08);
+  border-color: rgba(11, 122, 92, 0.14);
+  color: rgba(15, 44, 40, 0.78);
+}
+
+.md-search__output {
+  margin-top: 0.55rem;
+  overflow: hidden;
+  border-radius: 1.2rem;
+  border: 1px solid color-mix(in oklch, var(--sumi-border-subtle) 78%, rgba(255, 255, 255, 0.14));
+  background:
+    radial-gradient(circle at top right, rgba(114, 232, 196, 0.12), transparent 30%),
+    color-mix(in oklch, var(--md-default-bg-color) 96%, rgba(255, 255, 255, 0.02));
+  box-shadow: 0 20px 48px rgba(5, 18, 20, 0.16);
+}
+
+.md-search-result {
+  padding: 0.4rem;
+}
+
+.md-search-result__list {
+  padding: 0.15rem;
+}
+
+/* Search results */
+.md-search-result__meta {
+  font-size: 0.7rem;
+  color: var(--md-default-fg-color--lighter);
+  padding: 0.2rem 0.5rem 0;
+}
+
+.md-search-result__article {
+  border-radius: 0.95rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid transparent;
+  transition:
+    background-color var(--sumi-transition-fast, 150ms ease),
+    border-color var(--sumi-transition-fast, 150ms ease),
+    transform var(--sumi-transition-fast, 150ms ease);
+}
+
+.md-search-result__article:hover {
+  background-color: var(--sumi-accent-glow);
+  border-color: color-mix(in oklch, var(--sumi-accent) 28%, transparent);
+  transform: translateY(-1px);
+}
+
+.md-search-result__title,
+.md-search-result__teaser {
+  line-height: 1.45;
+}
+
+.md-search-result__teaser {
+  color: var(--md-default-fg-color--light);
+}
+
+.md-search-result__more summary {
+  margin: 0.25rem 0.35rem 0.1rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 999px;
+  color: var(--md-default-fg-color--light);
+}
+
+.md-search-result__more summary:hover {
+  background: color-mix(in oklch, var(--sumi-accent) 10%, transparent);
+}
+
+/* Search highlight */
+.md-search-result mark {
+  color: var(--sumi-accent);
+  background: none;
+  font-weight: var(--sumi-fw-semibold, 600);
+}
+
+[data-md-color-scheme="slate"] .md-search-result mark {
+  color: var(--sumi-accent-dark);
+}
+
+[data-md-color-scheme="slate"] .md-search__form {
+  background:
+    linear-gradient(180deg, rgba(228, 223, 212, 0.08), rgba(228, 223, 212, 0.03)),
+    color-mix(in oklch, var(--md-default-bg-color) 88%, transparent);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.26);
+}
+
+[data-md-color-scheme="slate"] .zen-search-shortcut {
+  background: rgba(228, 223, 212, 0.08);
+  color: rgba(237, 244, 238, 0.8);
+}
+
+[data-md-color-scheme="slate"] .md-search__output {
+  background:
+    radial-gradient(circle at top right, rgba(114, 232, 196, 0.12), transparent 30%),
+    color-mix(in oklch, var(--md-default-bg-color) 94%, rgba(4, 12, 14, 0.5));
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.3);
+}
+
+[data-md-color-scheme="slate"] .md-search-result__article:hover {
+  border-color: color-mix(in oklch, var(--sumi-accent-dark) 28%, transparent);
+}
+
+[data-md-color-scheme="slate"] .md-search-result__more summary:hover {
+  background: color-mix(in oklch, var(--sumi-accent-dark) 10%, transparent);
+}
+
+@media screen and (max-width: 60em) {
+  .zen-search-shortcut {
+    display: none;
+  }
+
+  .md-search__output {
+    border-radius: 1rem;
+  }
+}

@@ -1,0 +1,39 @@
+/* Print styles — clean ink-on-paper output */
+@media print {
+  :root {
+    --md-default-fg-color:  var(--sumi-print-fg);
+    --md-default-bg-color:  var(--sumi-print-bg);
+    --md-typeset-a-color:   var(--sumi-print-link);
+    --md-code-bg-color:     #f4f2ec;
+  }
+
+  /* Hide navigation, search, header controls */
+  .md-header,
+  .md-sidebar,
+  .md-tabs,
+  .md-footer,
+  .md-source,
+  .md-typeset .md-button { display: none !important; }
+
+  /* Full-width content */
+  .md-content { max-width: none !important; }
+
+  .md-typeset a[href]::after {
+    content:    " (" attr(href) ")";
+    font-size:  0.75em;
+    color:      var(--sumi-print-muted);
+    word-break: break-all;
+  }
+
+  .md-typeset pre {
+    border:     1px solid var(--sumi-print-border);
+    page-break-inside: avoid;
+  }
+
+  .md-typeset .admonition { page-break-inside: avoid; }
+
+  @page {
+    margin: 2cm;
+    size:   A4;
+  }
+}

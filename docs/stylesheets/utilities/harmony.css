@@ -1,0 +1,47 @@
+/* Harmony — global resets, spacing, smooth defaults */
+
+/* Box sizing reset */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+/* Smooth colour transitions for theme switching */
+:root {
+  transition:
+    background-color var(--sumi-transition-normal),
+    color var(--sumi-transition-fast),
+    border-color var(--sumi-transition-fast);
+}
+
+/* Ensure consistent line heights on inline code in headings */
+.md-typeset h1 code,
+.md-typeset h2 code,
+.md-typeset h3 code { font-size: 0.88em; }
+
+/* Horizontal rules — subtle */
+.md-typeset hr {
+  border: none;
+  border-top: 1px solid var(--sumi-border-subtle);
+  margin: 2rem 0;
+}
+
+/* Strong / emphasis */
+.md-typeset strong { font-weight: var(--sumi-fw-semibold); }
+
+/* Selection highlight */
+::selection {
+  background-color: var(--sumi-accent-glow);
+  color: inherit;
+}
+
+/* Remove outline on non-keyboard focus */
+:focus:not(:focus-visible) { outline: none; }
+
+/* Zen-ready gate — animations disabled until JS fires.
+   zen-ready is set synchronously on DOMContentLoaded (or earlier via
+   the requestAnimationFrame trick in extra.js) so the disable window
+   is imperceptibly short and prevents only the theme-switch flash. */
+body:not(.zen-ready) * {
+  animation-duration: 0.001ms !important;
+  transition-duration: 0.001ms !important;
+}
