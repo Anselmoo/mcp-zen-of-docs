@@ -1,27 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="Quickstart chapter illustration showing a path, milestones, and a sunrise">
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="Quickstart chapter illustration showing a path with milestones leading toward a bright horizon">
+  <title>Quickstart chapter illustration</title>
+  <desc>A rising horizon and milestone path create a quickstart scene that shares the same layered-mist language as the homepage hero.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#eef7f4"/>
-      <stop offset="100%" stop-color="#f9f7f2"/>
+    <linearGradient id="panelSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#edf8f4"/>
+      <stop offset="58%" stop-color="#f7fbf8"/>
+      <stop offset="100%" stop-color="#faf6ee"/>
     </linearGradient>
-    <linearGradient id="ridge" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#bce7d9"/>
-      <stop offset="100%" stop-color="#5bb99b"/>
+    <linearGradient id="ridgeFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d5ebe3"/>
+      <stop offset="100%" stop-color="#bfddd1"/>
     </linearGradient>
+    <linearGradient id="ridgeMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b7dbcd"/>
+      <stop offset="100%" stop-color="#8fc7b5"/>
+    </linearGradient>
+    <linearGradient id="ridgeNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#31584d"/>
+      <stop offset="100%" stop-color="#17332e"/>
+    </linearGradient>
+    <linearGradient id="mistBand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="18%" stop-color="#f5fbf8" stop-opacity="0.68"/>
+      <stop offset="54%" stop-color="#edf8f4" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#17332e" flood-opacity="0.12"/>
+    </filter>
   </defs>
-  <rect width="960" height="320" rx="28" fill="url(#bg)"/>
-  <circle cx="778" cy="86" r="34" fill="#d6f3e7"/>
-  <path d="M0 230 C140 198, 276 204, 392 238 C532 278, 694 276, 960 224 L960 320 L0 320 Z" fill="url(#ridge)" opacity="0.92"/>
-  <path d="M146 266 C238 202, 340 176, 450 182 C568 188, 652 154, 758 92" fill="none" stroke="#0ea27a" stroke-width="14" stroke-linecap="round" opacity="0.2"/>
-  <path d="M146 266 C238 202, 340 176, 450 182 C568 188, 652 154, 758 92" fill="none" stroke="#0b7a5c" stroke-width="4" stroke-linecap="round"/>
-  <g fill="#ffffff" stroke="#0ea27a" stroke-width="4">
-    <circle cx="238" cy="206" r="15"/>
-    <circle cx="450" cy="182" r="15"/>
-    <circle cx="618" cy="164" r="15"/>
-  </g>
-  <g fill="#0b7a5c">
-    <rect x="226" y="200" width="24" height="4" rx="2"/>
-    <rect x="438" y="176" width="24" height="4" rx="2"/>
-    <rect x="606" y="158" width="24" height="4" rx="2"/>
+
+  <rect width="960" height="320" rx="30" fill="url(#panelSky)"/>
+  <circle cx="748" cy="86" r="34" fill="#e4f5ed" opacity="0.96"/>
+  <circle cx="748" cy="86" r="58" fill="#cbe8dc" opacity="0.34"/>
+  <path d="M0 214 C106 190, 218 190, 338 214 C470 240, 602 240, 736 214 C826 196, 902 194, 960 202 L960 320 L0 320 Z" fill="url(#ridgeFar)"/>
+  <path d="M0 238 C132 214, 246 216, 378 242 C510 268, 634 268, 760 238 C844 218, 912 220, 960 226 L960 320 L0 320 Z" fill="url(#ridgeMid)" opacity="0.92"/>
+  <path d="M0 272 C138 252, 274 254, 406 280 C540 306, 680 304, 960 266 L960 320 L0 320 Z" fill="url(#ridgeNear)"/>
+  <path d="M52 226 C192 212, 312 214, 432 236 C552 258, 700 256, 876 222" fill="none" stroke="url(#mistBand)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M82 258 C220 248, 360 252, 496 274 C642 296, 768 294, 896 266" fill="none" stroke="url(#mistBand)" stroke-width="14" stroke-linecap="round" opacity="0.9"/>
+  <g filter="url(#softShadow)">
+    <circle cx="736" cy="114" r="44" fill="#eff8f3" stroke="#b7ddcf" stroke-width="4"/>
+    <path d="M172 208 C262 176, 356 154, 466 152 C584 150, 690 122, 786 84" fill="none" stroke="#0b7a5c" stroke-width="6" stroke-linecap="round"/>
+    <g fill="#ffffff" stroke="#0ea27a" stroke-width="4">
+      <circle cx="260" cy="180" r="15"/>
+      <circle cx="396" cy="156" r="15"/>
+      <circle cx="546" cy="148" r="15"/>
+      <circle cx="690" cy="118" r="15"/>
+    </g>
+    <g fill="#0ea27a">
+      <circle cx="260" cy="180" r="6"/>
+      <circle cx="396" cy="156" r="6"/>
+      <circle cx="546" cy="148" r="6"/>
+      <circle cx="690" cy="118" r="6"/>
+    </g>
+    <path d="M162 214 C264 186, 362 166, 478 164 C602 162, 712 130, 814 92" fill="none" stroke="#3fd9a8" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 10" opacity="0.52"/>
   </g>
 </svg>

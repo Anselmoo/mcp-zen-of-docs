@@ -1,6 +1,6 @@
 ---
 title: Contributing
-description: How to contribute to mcp-zen-of-docs — bug fixes, new frameworks, and new primitives.
+description: How to contribute to mcp-zen-of-docs — from local setup to new framework and primitive support.
 tags:
   - contributing
   - overview
@@ -8,10 +8,7 @@ tags:
 
 # Contributing
 
-Contributions are welcome. This page is the shortest path to shipping a useful change.
-
-Start with the development guide if you're setting up the project locally. If you're extending
-the server, go straight to the framework or primitive guides and follow the existing patterns.
+Contributions are welcome. This page is the shortest route to the right contributor guide for the change you want to make.
 
 <figure class="chapter-banner">
     <img src="../assets/chapters/contributing-workbench.svg" alt="A collaborative workbench illustration for the contributing chapter." />
@@ -21,42 +18,45 @@ the server, go straight to the framework or primitive guides and follow the exis
 
 <div class="grid cards" markdown>
 
--   :material-code-braces: **Development**
+-   :material-code-braces: **Setting up locally**
 
     ---
 
-    Set up the dev environment, run tests, and submit a PR.
+    Install the dev environment, run checks, and understand the local workflow before you change behavior.
 
-    [:octicons-arrow-right-24: Read](development.md)
+    [:octicons-arrow-right-24: Read development](development.md)
 
--   :material-plus-box: **Add a Framework**
-
-    ---
-
-    Implement the `AuthoringProfile` ABC for a new docs framework.
-
-    [:octicons-arrow-right-24: Read](adding-framework.md)
-
--   :material-puzzle-plus: **Add a Primitive**
+-   :material-plus-box: **Adding framework support**
 
     ---
 
-    Extend the 16 primitives with a new universal authoring concept.
+    Implement the `AuthoringProfile` contract and register a new framework profile in the built-in registry.
 
-    [:octicons-arrow-right-24: Read](adding-primitive.md)
+    [:octicons-arrow-right-24: Read add a framework](adding-framework.md)
+
+-   :material-puzzle-plus: **Adding a primitive**
+
+    ---
+
+    Extend the 22 canonical authoring primitives and teach each primary profile how to support or reject it deliberately.
+
+    [:octicons-arrow-right-24: Read add a primitive](adding-primitive.md)
 
 </div>
 
 ---
 
-## Guiding principle
+## Before you edit
 
-A contribution that makes docs generation more reliable for one framework is worth more
-than one that adds a feature nobody asked for. Correctness first. Features second.
+Use the source of truth in the codebase when contributor docs and memory disagree.
+
+- `src/mcp_zen_of_docs/frameworks/base.py` defines the `AuthoringProfile` contract.
+- `src/mcp_zen_of_docs/domain/contracts.py` defines `FrameworkName`, `AuthoringPrimitive`, and `SupportLevel`.
+- `src/mcp_zen_of_docs/frameworks/__init__.py` wires the built-in profiles and registration flow.
 
 ## Recommended contribution flow
 
-1. Read the relevant guide.
-2. Run the local quality checks before you open a PR.
-3. Add or update docs when the behavior changes.
+1. Read the most specific contributor guide for the change.
+2. Make the code and docs changes together.
+3. Run the relevant existing checks before you open a PR.
 4. Keep the Zen of Documentation principles in mind: clarity, structure, and correctness first.

@@ -1,6 +1,6 @@
 ---
 title: Home
-description: A FastMCP v2 MCP server with 10 tools, four primary framework profiles, and supplemental detection for MkDocs Material, Sphinx, and generic Markdown.
+description: A FastMCP v2 MCP server for framework-aware documentation workflows, visual assets, and quality checks.
 template: home.html
 tags:
   - home
@@ -13,8 +13,7 @@ tags:
 
     ---
 
-    Identifies your docs framework from config files in milliseconds. Returns the full
-    primitive support matrix so every generated snippet uses the right syntax.
+    Identify the docs framework that is actually present, then resolve the right primitive syntax before an assistant writes a single line.
 
     [:octicons-arrow-right-24: detect](tools/detect.md) · [:octicons-arrow-right-24: profile](tools/profile.md)
 
@@ -22,8 +21,7 @@ tags:
 
     ---
 
-    Creates pages, diagrams, SVG assets, CSS themes, and VS Code Copilot instruction files —
-    all framework-aware, all correct on the first try.
+    Create pages, diagrams, SVG assets, and theme files that fit the target framework instead of generic Markdown defaults.
 
     [:octicons-arrow-right-24: generate](tools/generate.md) · [:octicons-arrow-right-24: theme](tools/theme.md)
 
@@ -31,8 +29,7 @@ tags:
 
     ---
 
-    Checks links, frontmatter, nav sync, and page length. Returns a numeric quality score
-    you can run in CI or enforce before merging.
+    Check links, frontmatter, navigation sync, and quality signals before a docs change ships.
 
     [:octicons-arrow-right-24: validate](tools/validate.md)
 
@@ -42,41 +39,70 @@ tags:
 
 ## Why this exists
 
-AI assistants know Markdown. They don't know *which* framework's dialect you use. Ask one
-to add a prerequisites note and you get `!!! note "Prerequisites"` — valid MkDocs syntax.
-You're on Docusaurus. It renders as raw text. Fixing one snippet takes seconds; fixing it
-across a 40-page docs site takes an afternoon.
+AI assistants are good at writing Markdown. They are not automatically good at writing the
+*right dialect* of Markdown for the site in front of them.
 
-The root cause is that the four primary authoring profiles in this server — Zensical, Docusaurus,
-VitePress, and Starlight — reinvent many of the same 22 canonical documentation primitives
-(admonitions, tabs, code fences, API blocks, badges, diagrams, cards…) with incompatible syntax.
-An AI trained on mixed sources can't reliably
-pick the right dialect without explicit context.
+Ask for a note on a Docusaurus page and an assistant might return MkDocs syntax. Ask for tabs
+in Starlight and it might answer with a VitePress container. The wording can be excellent while
+the rendered result is still broken.
 
-`mcp-zen-of-docs` provides that context as a live MCP server. It detects your framework,
-loads the matching primitive profile, and passes the correct syntax rules to every tool call.
-It also recognizes MkDocs Material, Sphinx, and generic Markdown projects as supplemental
-detected contexts. Generated content renders correctly the first time. See the full argument in
-[Why Zen Docs](guides/why-zen-docs.md).
+`mcp-zen-of-docs` fixes that problem by turning framework context into a first-class input. It
+detects the docs stack, loads the matching authoring profile, and gives every tool the rules it
+needs to emit native syntax for 22 canonical documentation primitives.
+
+If you want the longer case for why this matters, start with [Why Zen Docs](guides/why-zen-docs.md).
 
 ---
 
-## Tools
+## Advanced features
 
-| Tool | What it does | Primary use case |
-|------|-------------|-----------------|
-| [`detect`](tools/detect.md) | Identifies framework from config files | First call in any session |
-| [`profile`](tools/profile.md) | Returns primitive support matrix for a framework | Check which primitives are native vs plugin |
-| [`scaffold`](tools/scaffold.md) | Creates, enriches, or fully writes doc pages | Generate a new page with correct syntax |
-| [`validate`](tools/validate.md) | Checks links, frontmatter, nav sync; scores quality | CI gate or pre-merge check |
-| [`generate`](tools/generate.md) | Creates diagrams, SVGs, changelogs, reference docs | Visual assets and release notes |
-| [`onboard`](tools/onboard.md) | Full project onboarding in one command | Bootstrap docs for a new project |
-| [`theme`](tools/theme.md) | Generates CSS/JS theme files with brand colours | Custom styling without manual CSS |
-| [`copilot`](tools/copilot.md) | Creates VS Code Copilot instruction/agent files | Persistent docs context in Copilot |
-| [`docstring`](tools/docstring.md) | Audits and generates Python docstrings | Source code documentation coverage |
-| [`story`](tools/story.md) | Composes structured docs from a prose prompt | Long-form content with deterministic structure |
+<section class="zen-advanced-band" id="advanced-features" data-visual="advanced-features">
+  <div class="zen-advanced-grid">
+    <article class="zen-advanced-card zen-advanced-card--wide">
+      <p class="zen-advanced-card__eyebrow">System setup</p>
+      <h3>Onboard inherited docs without reverse-engineering the stack</h3>
+      <p><code>onboard</code> combines context detection, readiness checks, scaffolding, and theme wiring so a new or inherited docs project can become AI-ready in one guided pass.</p>
+      <p><a href="tools/onboard.md">Explore onboard</a> · <a href="quickstart.md">Start with quickstart</a></p>
+    </article>
+    <article class="zen-advanced-card">
+      <p class="zen-advanced-card__eyebrow">Source truth</p>
+      <h3>Translate primitives across frameworks</h3>
+      <p>Use <code>profile</code> to compare support levels, render native snippets, and translate constructs like admonitions, tabs, and card grids between framework dialects.</p>
+      <p><a href="tools/profile.md">Read profile</a> · <a href="frameworks/index.md">Compare frameworks</a></p>
+    </article>
+    <article class="zen-advanced-card">
+      <p class="zen-advanced-card__eyebrow">Visual layer</p>
+      <h3>Generate assets and themes that belong to the docs system</h3>
+      <p>Create SVGs, badges, diagrams, and brand-aware theme files so the docs site feels designed, not assembled from disconnected snippets.</p>
+      <p><a href="tools/generate.md">Read generate</a> · <a href="tools/theme.md">Read theme</a></p>
+    </article>
+    <article class="zen-advanced-card">
+      <p class="zen-advanced-card__eyebrow">Workflow memory</p>
+      <h3>Keep AI output aligned across long-running documentation work</h3>
+      <p>Use <code>copilot</code>, <code>docstring</code>, and <code>story</code> to encode conventions, close code-doc drift, and turn rough prompts into structured long-form docs.</p>
+      <p><a href="tools/copilot.md">Copilot assets</a> · <a href="tools/docstring.md">Docstring coverage</a> · <a href="tools/story.md">Narrative docs</a></p>
+    </article>
+  </div>
+</section>
 
-See [Tools Overview](tools/index.md) for the full reference.
+---
+
+## Tools at a glance
+
+| Tool | What it does | Best starting use |
+|------|--------------|-------------------|
+| [`detect`](tools/detect.md) | Detect framework context and readiness | First call in any new project or session |
+| [`profile`](tools/profile.md) | Query primitive support and render native snippets | Resolve framework-specific syntax before writing |
+| [`scaffold`](tools/scaffold.md) | Create, enrich, or fully write docs pages | Generate a correct page skeleton quickly |
+| [`validate`](tools/validate.md) | Audit quality, frontmatter, links, and nav state | Gate docs changes before merge |
+| [`generate`](tools/generate.md) | Produce diagrams, SVGs, changelogs, and reference assets | Build the visual and reference layer |
+| [`onboard`](tools/onboard.md) | Bootstrap docs structure and configuration | Stand up a new or inherited docs site |
+| [`theme`](tools/theme.md) | Generate CSS/JS theme files and configuration | Apply a coherent visual system |
+| [`copilot`](tools/copilot.md) | Create Copilot instruction, prompt, and agent assets | Preserve docs conventions in AI-assisted work |
+| [`docstring`](tools/docstring.md) | Audit and generate Python docstrings | Improve API reference readiness |
+| [`story`](tools/story.md) | Compose narrative docs from prose intent | Turn rough ideas into structured long-form pages |
+
+See [Tools Overview](tools/index.md) for the full reference and workflow map.
 
 ---
 
@@ -99,8 +125,13 @@ Add it to GitHub Copilot in VS Code:
 }
 ```
 
-Then ask: *"Detect my docs framework."* That's it. See [Quickstart](quickstart.md) for
-Copilot CLI, Cursor, Claude Desktop, Docker, and one-click installers.
+Then ask your assistant to run the standard workflow:
+
+```text
+detect → profile → act
+```
+
+For installation targets, MCP client setup, and the first real workflow, continue to [Quickstart](quickstart.md).
 
 ---
 
@@ -110,14 +141,20 @@ Copilot CLI, Cursor, Claude Desktop, Docker, and one-click installers.
 
 -   :octicons-arrow-right-24: **Quickstart**
 
-    Connect to your AI client and run your first tool call in under two minutes.
+    Connect the server, run the first tool call, and see the workflow end to end.
 
     [:octicons-arrow-right-24: Get started](quickstart.md)
 
--   :octicons-arrow-right-24: **Tools Overview**
+-   :octicons-arrow-right-24: **Frameworks**
 
-    All ten tools with modes, parameters, and return values.
+    Compare the primary profiles and the supplemental detected contexts.
 
-    [:octicons-arrow-right-24: Browse tools](tools/index.md)
+    [:octicons-arrow-right-24: Compare frameworks](frameworks/index.md)
+
+-   :octicons-arrow-right-24: **Guides**
+
+    Learn the concepts behind Detect → Profile → Act and the 22 canonical primitives.
+
+    [:octicons-arrow-right-24: Browse guides](guides/index.md)
 
 </div>

@@ -1,6 +1,6 @@
 ---
 title: Tools
-description: All ten mcp-zen-of-docs tools at a glance — what each one does, when to use it, and how they connect.
+description: All ten mcp-zen-of-docs tools at a glance — what each one does, when to use it, and how they fit together.
 tags:
   - tools
   - overview
@@ -8,15 +8,12 @@ tags:
 
 # Tools
 
-Ten tools. One responsibility each. Together they cover the full documentation lifecycle —
-from detecting a framework on a first run to generating changelogs and enforcing authoring
-standards with Copilot instructions.
+Ten MCP tools. Multiple modes. One framework-aware documentation workflow.
 
-Use this page as the command map for the server. If you're not sure where to begin, start with
-the discovery tools, move into creation, and finish with validation.
+Use this page as the operating map for the server. The dependable baseline is simple:
+detect the project, profile the primitive, then use the creation or quality tools that fit the job.
 
-If you're coming from [Quickstart](../quickstart.md), the same flow applies whether you use GitHub Copilot,
-Copilot CLI, Cursor, Claude Desktop, or another MCP client.
+If you are new to the server, start with [Quickstart](../quickstart.md), then come back here to choose the next tool intentionally.
 
 <figure class="chapter-banner">
     <img src="../assets/chapters/tools-studio.svg" alt="An illustration of modular tool cards connected by a calm workflow line." />
@@ -26,22 +23,21 @@ Copilot CLI, Cursor, Claude Desktop, or another MCP client.
 
 ## All tools at a glance
 
-| Tool | One-line description | When to use it |
-|------|---------------------|----------------|
-| [detect](detect.md) | Identify the docs framework from config files | First step in any workflow; gate for CI pipelines |
-| [profile](profile.md) | Query primitive support and resolve native syntax | Before writing admonitions, tabs, or grids |
-| [scaffold](scaffold.md) | Create or write complete documentation pages | Creating new pages with correct framework syntax |
-| [validate](validate.md) | Check quality — links, frontmatter, nav, score | After scaffolding; pre-deployment quality gate |
-| [generate](generate.md) | Produce diagrams, visual assets, reference docs, changelogs | Artefacts from source material (code, git history) |
-| [onboard](onboard.md) | Full project setup from zero in one command | New project or inherited undocumented codebase |
-| [theme](theme.md) | Generate brand CSS and extension config blocks | Applying custom colours or enabling MkDocs extensions |
-| [copilot](copilot.md) | Create VS Code Copilot instruction/prompt/agent files | Encoding docs conventions for AI-assisted editing |
-| [docstring](docstring.md) | Audit and stub source code docstrings | Closing the gap between code and API reference docs |
-| [story](story.md) | Compose narrative docs from prose intent | Explaining concepts without knowing the final structure |
+| Tool | What it does | When to use it |
+|------|--------------|----------------|
+| [detect](detect.md) | Identify framework context and readiness | First step in any workflow |
+| [profile](profile.md) | Query primitive support and render native snippets | Before writing framework-specific markup |
+| [scaffold](scaffold.md) | Create or enrich docs pages | Generate a new page or fill gaps in an existing one |
+| [validate](validate.md) | Check links, frontmatter, navigation, and quality | Before merge or before publishing |
+| [generate](generate.md) | Produce diagrams, SVGs, changelogs, and reference assets | Build the visual and reference layer |
+| [onboard](onboard.md) | Bootstrap a docs project and wire defaults | Starting from zero or inheriting a docs site |
+| [theme](theme.md) | Generate CSS/JS theme files and config | Apply a visual system without manual CSS archaeology |
+| [copilot](copilot.md) | Create Copilot instruction, prompt, and agent assets | Encode documentation conventions for AI workflows |
+| [docstring](docstring.md) | Audit and generate Python docstrings | Improve source-to-reference coverage |
+| [story](story.md) | Compose narrative docs from prose intent | Turn rough product or technical ideas into structured docs |
 
-!!! tip "Start here"
-    New to the server? Run `detect` first, confirm the framework with `profile`, then use
-    `scaffold` or `story` to generate content that already matches your docs stack.
+!!! tip "Recommended baseline"
+    Use [`detect`](detect.md) first, confirm the relevant primitive with [`profile`](profile.md), then move into `scaffold`, `generate`, `story`, or `validate`.
 
 ---
 
@@ -51,39 +47,39 @@ Copilot CLI, Cursor, Claude Desktop, or another MCP client.
 
 | Tool | Primary use |
 |------|-------------|
-| [detect](detect.md) | Identify the framework from config files |
-| [profile](profile.md) | Query primitive support and resolve native syntax |
+| [detect](detect.md) | Identify the framework and project readiness signals |
+| [profile](profile.md) | Resolve primitive support, caveats, and native syntax |
 
-> Run these first. They identify the framework before any other tool acts.
+> These tools provide the context that makes the rest of the workflow reliable.
 
 ### :hammer: Creation
 
 | Tool | Primary use |
 |------|-------------|
-| [scaffold](scaffold.md) | Create and write complete documentation pages |
-| [generate](generate.md) | Produce diagrams, visual assets, and changelogs |
-| [onboard](onboard.md) | Full project setup from zero in one command |
+| [scaffold](scaffold.md) | Create or enrich docs pages |
+| [generate](generate.md) | Produce diagrams, SVGs, badges, changelogs, and reference assets |
+| [onboard](onboard.md) | Stand up an AI-ready docs project structure |
 
-> Build pages, assets, and full project structures.
+> Use these when you are building pages, assets, or a full docs foundation.
 
 ### :white_check_mark: Quality
 
 | Tool | Primary use |
 |------|-------------|
-| [validate](validate.md) | Check links, frontmatter, nav, and quality score |
-| [docstring](docstring.md) | Audit and stub source code docstrings |
+| [validate](validate.md) | Audit docs quality and structural correctness |
+| [docstring](docstring.md) | Improve code-to-doc parity for Python APIs |
 
-> Audit standards and enforce correctness before publishing.
+> Use these before publishing or when cleaning up an inherited docs set.
 
 ### :paintbrush: Workflow
 
 | Tool | Primary use |
 |------|-------------|
-| [theme](theme.md) | Generate brand CSS and extension config blocks |
-| [copilot](copilot.md) | Create VS Code Copilot instruction and agent files |
-| [story](story.md) | Compose narrative docs from prose intent |
+| [theme](theme.md) | Generate and wire a coherent visual layer |
+| [copilot](copilot.md) | Preserve docs conventions in AI-assisted editing |
+| [story](story.md) | Produce longer narrative documentation from intent |
 
-> Shape the visual identity, AI assistance, and narrative docs.
+> Use these to shape how documentation gets written, maintained, and visually expressed.
 
 ---
 
@@ -92,54 +88,47 @@ Copilot CLI, Cursor, Claude Desktop, or another MCP client.
 ### Starting from scratch
 
 ```text
-onboard → theme → validate → generate (reference)
+detect → onboard → theme → validate
 ```
 
-`onboard` sets up the framework, scaffolds pages, and applies a default theme; `validate` checks the result; `generate reference` produces the API docs.
+Use `detect` to confirm the environment, `onboard` to scaffold the docs surface, `theme` to establish the presentation layer, and `validate` to catch structural issues before publishing.
 
 ### Adding a new page
 
 ```text
-detect → profile → scaffold (write) → validate
+detect → profile → scaffold → validate
 ```
 
-`detect` confirms the framework; `profile` resolves the correct admonition syntax; `scaffold` writes the complete page; `validate` checks links and frontmatter.
+`profile` is the key step here: it resolves the primitive rules that keep the page native to the detected framework.
 
-### Maintaining existing docs
+### Improving an existing docs set
 
 ```text
-validate (score) → docstring (audit) → scaffold (enrich) → validate
+detect → validate → scaffold enrich → docstring → validate
 ```
 
-`validate` surfaces quality gaps; `docstring` finds undocumented symbols; `scaffold enrich` fills TODO sections; `validate` confirms the score improved.
+Start with the gaps you can measure, then use generation and enrichment tools to close them.
 
 ### Migrating between frameworks
 
 ```text
-detect → profile (translate) → story (migration_mode=guide) → validate
+detect → profile translate → story/scaffold → validate
 ```
 
-`detect` identifies the current framework; `profile translate` maps each primitive; `story` writes the migration guide; `validate` checks the output.
-
-### Publishing
-
-```text
-validate (all, fix=true) → generate (changelog) → generate (visual badge)
-```
-
-Final pre-publish sweep: fix nav drift, generate the release changelog, produce the documentation quality badge.
+Translation is strongest when the source and target frameworks are both explicit. Keep [Detect → Profile → Act](../guides/detect-profile-act.md) nearby for the operating model.
 
 ---
 
 ## How they connect
 
-Every tool that accepts a `project_root` parameter calls [detect](detect.md) internally —
-you never need to specify the framework explicitly if your project root is set correctly.
-Tools pass their outputs forward: `detect` feeds `profile`, `profile` feeds `scaffold`,
-and `validate` catches anything that went wrong.
+The tools are designed to cooperate, not to act as isolated commands.
 
-The underlying pattern is **Detect → Profile → Act**. See
-[Detect → Profile → Act](../guides/detect-profile-act.md) for a full explanation.
+- [`detect`](detect.md) establishes source-truth context.
+- [`profile`](profile.md) resolves what the current framework can support.
+- Creation tools use that context to write native output.
+- Quality tools surface what still needs attention.
+
+For the conceptual model behind that flow, read [Detect → Profile → Act](../guides/detect-profile-act.md) and [Authoring Primitives](../guides/primitives.md).
 
 ---
 
@@ -149,14 +138,20 @@ The underlying pattern is **Detect → Profile → Act**. See
 
 -   :octicons-arrow-right-24: **detect**
 
-    Start here. It's the foundation every other tool builds on.
+    Start here when you need framework context or readiness signals.
 
     [:octicons-arrow-right-24: Read detect](detect.md)
 
--   :octicons-arrow-right-24: **Quickstart**
+-   :octicons-arrow-right-24: **profile**
 
-    A 5-minute walkthrough using all ten tools on a real project.
+    Resolve primitives, support levels, and framework-native snippets.
 
-    [:octicons-arrow-right-24: Read quickstart](../quickstart.md)
+    [:octicons-arrow-right-24: Read profile](profile.md)
+
+-   :octicons-arrow-right-24: **Guides**
+
+    Step back from the commands and learn the mental model.
+
+    [:octicons-arrow-right-24: Browse guides](../guides/index.md)
 
 </div>

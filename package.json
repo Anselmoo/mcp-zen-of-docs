@@ -1,0 +1,12 @@
+{
+  "name": "mcp-zen-of-docs-visual-tests",
+  "private": true,
+  "scripts": {
+    "visual:test": "playwright test",
+    "visual:test:update": "playwright test --update-snapshots",
+    "visual:install": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}

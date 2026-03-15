@@ -1,22 +1,62 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="Tools chapter illustration showing modular tool cards connected by a calm workflow line">
-  <rect width="960" height="320" rx="28" fill="#eef7f4"/>
-  <path d="M124 188 H834" fill="none" stroke="#0ea27a" stroke-width="5" stroke-linecap="round" stroke-dasharray="10 14" opacity="0.45"/>
-  <g>
-    <rect x="120" y="112" width="180" height="112" rx="24" fill="#ffffff" stroke="#b9ddd0"/>
-    <rect x="390" y="86" width="180" height="112" rx="24" fill="#ffffff" stroke="#b9ddd0"/>
-    <rect x="660" y="112" width="180" height="112" rx="24" fill="#ffffff" stroke="#b9ddd0"/>
-  </g>
-  <g fill="#0b7a5c">
-    <rect x="152" y="142" width="92" height="10" rx="5"/>
-    <rect x="152" y="168" width="120" height="8" rx="4" opacity="0.6"/>
-    <rect x="422" y="116" width="92" height="10" rx="5"/>
-    <rect x="422" y="142" width="120" height="8" rx="4" opacity="0.6"/>
-    <rect x="692" y="142" width="92" height="10" rx="5"/>
-    <rect x="692" y="168" width="120" height="8" rx="4" opacity="0.6"/>
-  </g>
-  <g fill="#3fd9a8">
-    <circle cx="300" cy="188" r="8"/>
-    <circle cx="570" cy="188" r="8"/>
-    <circle cx="660" cy="188" r="8"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="Tools chapter illustration showing three tool cards connected by a workflow line">
+  <title>Tools chapter illustration</title>
+  <desc>Three modular tool cards float above the ridge bands while a jade workflow line connects them, using the same soft-light palette as the chapter system.</desc>
+  <defs>
+    <linearGradient id="panelSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#edf8f4"/>
+      <stop offset="58%" stop-color="#f7fbf8"/>
+      <stop offset="100%" stop-color="#faf6ee"/>
+    </linearGradient>
+    <linearGradient id="ridgeFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d5ebe3"/>
+      <stop offset="100%" stop-color="#bfddd1"/>
+    </linearGradient>
+    <linearGradient id="ridgeMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b7dbcd"/>
+      <stop offset="100%" stop-color="#8fc7b5"/>
+    </linearGradient>
+    <linearGradient id="ridgeNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#31584d"/>
+      <stop offset="100%" stop-color="#17332e"/>
+    </linearGradient>
+    <linearGradient id="mistBand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="18%" stop-color="#f5fbf8" stop-opacity="0.68"/>
+      <stop offset="54%" stop-color="#edf8f4" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#17332e" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="960" height="320" rx="30" fill="url(#panelSky)"/>
+  <circle cx="748" cy="86" r="34" fill="#e4f5ed" opacity="0.96"/>
+  <circle cx="748" cy="86" r="58" fill="#cbe8dc" opacity="0.34"/>
+  <path d="M0 214 C106 190, 218 190, 338 214 C470 240, 602 240, 736 214 C826 196, 902 194, 960 202 L960 320 L0 320 Z" fill="url(#ridgeFar)"/>
+  <path d="M0 238 C132 214, 246 216, 378 242 C510 268, 634 268, 760 238 C844 218, 912 220, 960 226 L960 320 L0 320 Z" fill="url(#ridgeMid)" opacity="0.92"/>
+  <path d="M0 272 C138 252, 274 254, 406 280 C540 306, 680 304, 960 266 L960 320 L0 320 Z" fill="url(#ridgeNear)"/>
+  <path d="M52 226 C192 212, 312 214, 432 236 C552 258, 700 256, 876 222" fill="none" stroke="url(#mistBand)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M82 258 C220 248, 360 252, 496 274 C642 296, 768 294, 896 266" fill="none" stroke="url(#mistBand)" stroke-width="14" stroke-linecap="round" opacity="0.9"/>
+  <g filter="url(#softShadow)">
+    <path d="M138 192 H822" fill="none" stroke="#0ea27a" stroke-width="5" stroke-linecap="round" stroke-dasharray="10 14" opacity="0.42"/>
+    <g>
+      <rect x="122" y="100" width="184" height="112" rx="26" fill="#ffffff" stroke="#b8ddd0" stroke-width="4"/>
+      <rect x="390" y="82" width="184" height="112" rx="26" fill="#ffffff" stroke="#b8ddd0" stroke-width="4"/>
+      <rect x="656" y="108" width="184" height="112" rx="26" fill="#ffffff" stroke="#b8ddd0" stroke-width="4"/>
+    </g>
+    <g fill="#0b7a5c">
+      <rect x="156" y="132" width="100" height="12" rx="6"/>
+      <rect x="156" y="160" width="126" height="9" rx="4.5" opacity="0.58"/>
+      <rect x="424" y="114" width="100" height="12" rx="6"/>
+      <rect x="424" y="142" width="126" height="9" rx="4.5" opacity="0.58"/>
+      <rect x="690" y="140" width="100" height="12" rx="6"/>
+      <rect x="690" y="168" width="126" height="9" rx="4.5" opacity="0.58"/>
+    </g>
+    <g fill="#3fd9a8">
+      <circle cx="306" cy="192" r="8"/>
+      <circle cx="574" cy="192" r="8"/>
+      <circle cx="656" cy="192" r="8"/>
+    </g>
   </g>
 </svg>

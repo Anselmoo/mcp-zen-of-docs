@@ -19,10 +19,10 @@
   --sumi-light-bg-overlay: #ffffff;  /* pure white — modals */
 
   /* ── Light foreground scale ── */
-  --sumi-light-fg0:     #2a2522;  /* deep sumi ink */
-  --sumi-light-fg1:     #4a433b;  /* secondary ink */
-  --sumi-light-fg-muted: #7c7267; /* brushed ink — muted */
-  --sumi-light-fg-faint: #a89e95; /* faint strokes — placeholder */
+  --sumi-light-fg0:      #2a2522;  /* deep sumi ink */
+  --sumi-light-fg1:      #4a433b;  /* secondary ink */
+  --sumi-light-fg-muted: #7c7267;  /* brushed ink — muted */
+  --sumi-light-fg-faint: #a89e95;  /* faint strokes — placeholder */
 
   /* ── Jade accent scale (primary) ── */
   --sumi-accent:       #0ea27a;  /* jade green */
@@ -34,6 +34,28 @@
   --sumi-accent-dark:       #3fd9a8;  /* luminous jade */
   --sumi-accent-dark-soft:  #72e8c4;  /* lighter hover */
   --sumi-accent-dark-muted: #0ea27a;  /* deeper pressed */
+
+  /* ── Flagship illustration palette ── */
+  --zen-forest-night-950: #0d1318;
+  --zen-forest-night-900: #162026;
+  --zen-forest-night-850: #1a2830;
+  --zen-forest-night-800: #202630;
+  --zen-forest-ridge-700: #304944;
+  --zen-forest-ridge-800: #20322f;
+  --zen-forest-ridge-850: #22332d;
+  --zen-forest-ridge-900: #162621;
+  --zen-forest-ridge-950: #101a18;
+  --zen-mist-100: #eff6f1;
+  --zen-mist-150: #e7f2ed;
+  --zen-mist-200: #dbe8e2;
+  --zen-mist-300: #d4eee2;
+  --zen-moon-100: #eaf5ef;
+  --zen-moon-200: #dff3ea;
+  --zen-mountain-100: #dde6e4;
+  --zen-mountain-300: #9eaba9;
+  --zen-mountain-500: #667678;
+  --zen-cedar-900: #11231e;
+  --zen-cedar-950: #0b1513;
 
   /* ── Syntax colours — warm & hand-crafted feel ── */
   --sumi-syntax-keywords:  #7da7ff;  /* cornflower blue */

@@ -1,0 +1,1 @@
+mcp-zen-of-docs is a Python 3.12 FastMCP server for framework-aware documentation generation and validation, with a themed MkDocs/Zensical documentation site under docs/. The repo includes Python source in src/, pytest-based tests in tests/, and docs-site assets/styles/scripts in docs/stylesheets, docs/javascripts, and overrides/.

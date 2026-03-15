@@ -28,7 +28,8 @@
   --sumi-radius-md: 0.5rem;
   --sumi-radius-lg: 0.75rem;
   --sumi-radius-xl: 1rem;
-  --sumi-radius-control: 999px;
+  --sumi-radius-control: 0.95rem;
+  --sumi-radius-control-compact: 0.75rem;
 
   /* Spacing rhythm (4px base) */
   --sumi-space-1: 0.25rem;
@@ -42,4 +43,35 @@
   --sumi-transition-fast: 150ms ease;
   --sumi-transition-normal: 250ms ease;
   --sumi-transition-slow: 400ms ease;
+
+  /* Visual-system surfaces */
+  --zen-stage-bg:
+    linear-gradient(180deg,
+      var(--zen-forest-night-950) 0%,
+      var(--zen-forest-night-900) 34%,
+      var(--zen-forest-night-850) 72%,
+      var(--zen-forest-night-800) 100%);
+  --zen-stage-glow:
+    radial-gradient(circle at 78% 18%, rgba(223, 243, 234, 0.18), transparent 17%),
+    radial-gradient(circle at 20% 78%, rgba(114, 232, 196, 0.12), transparent 24%),
+    radial-gradient(circle at 52% 56%, rgba(219, 232, 226, 0.1), transparent 32%);
+  --zen-stage-border: color-mix(in oklch, var(--zen-mist-100) 14%, transparent);
+  --zen-stage-border-strong: color-mix(in oklch, var(--zen-mist-100) 26%, transparent);
+  --zen-stage-shadow: 0 24px 54px rgba(8, 24, 28, 0.22);
+  --zen-stage-shadow-dark: 0 28px 64px rgba(0, 0, 0, 0.34);
+  --zen-stage-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --zen-stage-mist-band: rgba(239, 246, 241, 0.08);
+  --zen-stage-mist-strong: rgba(239, 246, 241, 0.16);
+  --zen-stage-card-bg:
+    linear-gradient(180deg,
+      rgba(34, 51, 45, 0.9) 0%,
+      rgba(22, 38, 33, 0.96) 100%);
+  --zen-stage-card-bg-soft:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 100%);
+  --zen-stage-card-border: color-mix(in oklch, var(--zen-mist-100) 18%, transparent);
+  --zen-stage-caption: color-mix(in oklch, var(--zen-mist-100) 76%, transparent);
+  --zen-stage-ink: var(--zen-mist-100);
+  --zen-stage-ink-soft: color-mix(in oklch, var(--zen-mist-100) 78%, transparent);
 }

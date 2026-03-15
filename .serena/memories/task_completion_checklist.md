@@ -1,0 +1,1 @@
+After changes, run the most relevant verification commands. For docs/frontend styling work, at minimum run `uv run zensical build --strict`; use Playwright or browser inspection when layout/theme behavior matters. Keep todo status in the session SQL table updated to in_progress/done/blocked as requested by the task.

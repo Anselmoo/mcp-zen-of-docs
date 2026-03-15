@@ -8,9 +8,15 @@ tags:
 
 # profile
 
-> Queries what a framework supports and returns the exact native syntax for any documentation primitive.
+> Query primitive support across frameworks, or render the native syntax for one specific
+> primitive when you are ready to write.
 
-Once you know the framework, you need to know how it handles your specific primitive. `profile` answers: *"How do I write an admonition — or a tab, or a grid — in this framework?"* It returns the correct syntax, flags what needs a plugin, and marks what is unsupported.
+`profile` is the tool that turns framework detection into actionable writing guidance. Use it
+to answer questions like:
+
+- *Does this framework support `tabs` natively?*
+- *What snippet should I use for an `admonition` here?*
+- *How does `card-grid` differ between two frameworks?*
 
 ---
 
@@ -18,15 +24,16 @@ Once you know the framework, you need to know how it handles your specific primi
 
 | Mode | What it returns |
 |------|----------------|
-| `show` | Full support matrix across all frameworks (default) |
-| `resolve` | Native syntax snippet for a `framework` + `primitive` pair |
-| `translate` | A primitive rewritten in a different framework's syntax |
+| `show` | Primitive catalog, capability matrix, framework advantages, and general references |
+| `resolve` | Support information for one `framework` + `primitive` pair, with optional rendered snippet |
+| `translate` | Source and target support levels, snippets, and migration hints for one primitive |
 
 ---
 
 ## When to use it
 
-Run `profile` after `detect` before writing any framework-specific markup. Use `mode="translate"` when migrating docs from one framework to another and you need before/after syntax for every primitive.
+Run `profile` after [detect](detect.md) and before any framework-specific edit. It is the
+bridge between *knowing the framework* and *writing valid syntax for that framework*.
 
 ---
 
@@ -35,137 +42,167 @@ Run `profile` after `detect` before writing any framework-specific markup. Use `
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `mode` | string | No | Operation mode. Default: `"show"` |
-| `framework` | string | Conditional | Target framework. Required for `resolve` and as source for `translate` |
-| `primitive` | string | Conditional | Primitive name. Required for `resolve` |
-| `source_framework` | string | Conditional | Source framework for `translate` mode |
-| `target_framework` | string | Conditional | Target framework for `translate` mode |
-| `topic` | string | No | Topic hint to make generated snippets more contextual |
-| `resolution_mode` | string | No | Fine-tuned resolution behaviour |
+| `framework` | string | Conditional | Target framework for `resolve` |
+| `primitive` | string | Conditional | Canonical primitive identifier for `resolve` or `translate` |
+| `source_framework` | string | Conditional | Source framework for `translate` |
+| `target_framework` | string | Conditional | Target framework for `translate` |
+| `resolution_mode` | string | No | `"support"` (default) or `"render"` for `resolve` |
+| `topic` | string | No | Optional context that helps make rendered snippets more relevant |
 
 ---
 
-## Support matrix
+## Common primitives at a glance
+
+The full primitive vocabulary contains **22 canonical identifiers**. These are the ones most
+often compared during day-to-day writing.
 
 | Primitive | Zensical | Docusaurus | VitePress | Starlight |
 |-----------|:--------:|:----------:|:---------:|:---------:|
-| `admonitions` | native | native | native | native |
-| `buttons` | native | custom | custom | custom |
-| `code_blocks` | native | native | native | native |
-| `content_tabs` | native | plugin | plugin | native |
-| `data_tables` | native | native | native | native |
-| `diagrams` | native | plugin | plugin | plugin |
-| `footnotes` | native | native | native | native |
-| `formatting` | native | native | native | native |
-| `frontmatter` | native | native | native | native |
-| `grids` | native | custom | unsupported | unsupported |
-| `icons_emojis` | native | plugin | plugin | native |
-| `images` | native | native | native | native |
-| `lists` | native | native | native | native |
-| `math` | native | plugin | native | plugin |
-| `markdown` | native | native | native | native |
-| `tooltips` | native | unsupported | unsupported | unsupported |
+| `admonition` | full | full | full | partial |
+| `tabs` | full | partial | full | partial |
+| `diagram` | full | partial | partial | partial |
+| `footnote` | full | partial | partial | partial |
+| `card-grid` | full | unsupported | unsupported | unsupported |
+| `button` | full | unsupported | unsupported | unsupported |
+| `tooltip` | full | unsupported | unsupported | unsupported |
+| `math` | full | unsupported | unsupported | unsupported |
 
-See [Authoring Primitives](../guides/primitives.md) for per-framework notes and plugin links.
+For the full primitive list, see [Authoring Primitives](../guides/primitives.md).
 
 ---
 
 ## Examples
 
-**Resolve admonition syntax (`mode="resolve"`)**
-
-=== "Zensical"
-
-    ```json
-    {
-      "tool": "profile",
-      "arguments": { "mode": "resolve", "framework": "zensical", "primitive": "admonitions" }
-    }
-    ```
-
-    Returns:
-
-    ```markdown
-    !!! warning "Watch out"
-        This action cannot be undone. Make a backup first.
-    ```
-
-=== "Docusaurus"
-
-    ```json
-    {
-      "tool": "profile",
-      "arguments": { "mode": "resolve", "framework": "docusaurus", "primitive": "admonitions" }
-    }
-    ```
-
-    Returns:
-
-    ```markdown
-    :::warning Watch out
-    This action cannot be undone. Make a backup first.
-    :::
-    ```
-
-VitePress uses the same `:::` fence style as Docusaurus. Starlight uses an `<Aside>` JSX component — call `resolve` with `framework="starlight"` to get the exact import statement.
-
----
-
-**Resolve content tab syntax for Zensical**
+### Show the full profile catalog (`mode="show"`)
 
 ```json
 {
   "tool": "profile",
-  "arguments": { "mode": "resolve", "framework": "zensical", "primitive": "content_tabs" }
+  "arguments": {
+    "mode": "show"
+  }
 }
 ```
 
-Returns:
+The response includes these top-level sections:
 
-```markdown
-=== "Python"
+- `primitive_catalog`
+- `capability_matrix`
+- `framework_advantages`
+- `general_references`
 
-    ```python
-    print('hello')
-    ```
+Use `show` when you want the broad map before narrowing to a single primitive.
 
-=== "JavaScript"
+---
 
-    ```js
-    console.log('hello')
-    ```
+### Resolve support only (`resolution_mode="support"`)
+
+```json
+{
+  "tool": "profile",
+  "arguments": {
+    "mode": "resolve",
+    "framework": "docusaurus",
+    "primitive": "tabs"
+  }
+}
+```
+
+Response shape:
+
+```json
+{
+  "status": "success",
+  "tool": "resolve_primitive",
+  "framework": "docusaurus",
+  "primitive": "tabs",
+  "mode": "support",
+  "support_lookup": {
+    "tool": "lookup_primitive_support",
+    "support_level": "partial"
+  },
+  "render_result": null
+}
 ```
 
 ---
 
-**Translate content tabs from Zensical to Docusaurus**
+### Resolve a rendered snippet (`resolution_mode="render"`)
+
+```json
+{
+  "tool": "profile",
+  "arguments": {
+    "mode": "resolve",
+    "framework": "zensical",
+    "primitive": "admonition",
+    "resolution_mode": "render",
+    "topic": "Prerequisites"
+  }
+}
+```
+
+Response shape:
+
+```json
+{
+  "status": "success",
+  "tool": "resolve_primitive",
+  "framework": "zensical",
+  "primitive": "admonition",
+  "mode": "render",
+  "support_lookup": {
+    "support_level": "full"
+  },
+  "render_result": {
+    "tool": "render_framework_primitive",
+    "support_level": "full",
+    "snippet": "!!! note\n    Keep this page concise and actionable."
+  }
+}
+```
+
+Use `render` when the assistant is about to write or revise content and needs the actual
+framework-native snippet.
+
+---
+
+### Translate one primitive across frameworks
 
 ```json
 {
   "tool": "profile",
   "arguments": {
     "mode": "translate",
-    "primitive": "content_tabs",
     "source_framework": "zensical",
-    "target_framework": "docusaurus"
+    "target_framework": "docusaurus",
+    "primitive": "admonition",
+    "topic": "Prerequisites"
   }
 }
 ```
 
-Returns:
+Response shape:
 
 ```json
 {
-  "source_framework": "zensical",
-  "target_framework": "docusaurus",
-  "primitive": "content_tabs",
-  "target_snippet": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';\n\n<Tabs>\n  <TabItem value=\"python\" label=\"Python\">\n  ```python\n  print('hello')\n  ```\n  </TabItem>\n</Tabs>",
-  "notes": "Docusaurus content tabs require JSX imports. Use .mdx file extensions."
+  "status": "success",
+  "tool": "translate_primitives",
+  "translation": {
+    "primitive": "admonition",
+    "source_support_level": "full",
+    "target_support_level": "full",
+    "source_snippet": "!!! note\n    Keep this page concise and actionable.",
+    "target_snippet": ":::note\nUse MDX directives for callouts.\n:::",
+    "hints": [
+      "Replace source syntax with target syntax shown in the target snippet.",
+      "Convert MkDocs-style admonitions to Docusaurus directives."
+    ]
+  }
 }
 ```
 
-!!! note "MDX required for Docusaurus tabs"
-    Docusaurus content tabs use JSX components and require `.mdx` file extensions.
-    The `translate` response includes a `notes` field for exactly these caveats.
+`translate` is most useful during migrations, framework comparisons, and review work.
 
 ---
 
@@ -175,14 +212,20 @@ Returns:
 
 -   :octicons-arrow-right-24: **scaffold**
 
-    Use the syntax profile resolves to build complete, framework-native pages.
+    Use the support or snippet `profile` returns to create or enrich whole pages.
 
     [:octicons-arrow-right-24: Read scaffold](scaffold.md)
 
 -   :octicons-arrow-right-24: **Authoring Primitives**
 
-    Full notes on all 16 primitives with per-framework caveats and plugin links.
+    Read the canonical 22-primitive vocabulary and framework-specific notes.
 
     [:octicons-arrow-right-24: Read the guide](../guides/primitives.md)
+
+-   :octicons-arrow-right-24: **Frameworks**
+
+    Compare the overall trade-offs between the primary profiles.
+
+    [:octicons-arrow-right-24: Compare frameworks](../frameworks/index.md)
 
 </div>

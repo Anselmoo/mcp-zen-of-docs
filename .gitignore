@@ -240,3 +240,7 @@ Icon[]
 Network Trash Folder
 Temporary Items
 .apdisk
+# Playwright
+node_modules/
+playwright-report/
+test-results/

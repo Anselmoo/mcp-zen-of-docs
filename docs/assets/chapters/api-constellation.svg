@@ -1,28 +1,60 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="API chapter illustration showing a calm constellation of connected nodes">
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="API chapter illustration showing a constellation of connected reference nodes">
+  <title>API chapter illustration</title>
+  <desc>Reference nodes and API lines are arranged like a calm constellation over the same layered mountain and mist system as the rest of the refreshed artwork.</desc>
   <defs>
-    <linearGradient id="api-bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#10282d"/>
-      <stop offset="100%" stop-color="#1b2d37"/>
+    <linearGradient id="panelSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#edf8f4"/>
+      <stop offset="58%" stop-color="#f7fbf8"/>
+      <stop offset="100%" stop-color="#faf6ee"/>
     </linearGradient>
+    <linearGradient id="ridgeFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d5ebe3"/>
+      <stop offset="100%" stop-color="#bfddd1"/>
+    </linearGradient>
+    <linearGradient id="ridgeMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b7dbcd"/>
+      <stop offset="100%" stop-color="#8fc7b5"/>
+    </linearGradient>
+    <linearGradient id="ridgeNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#31584d"/>
+      <stop offset="100%" stop-color="#17332e"/>
+    </linearGradient>
+    <linearGradient id="mistBand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="18%" stop-color="#f5fbf8" stop-opacity="0.68"/>
+      <stop offset="54%" stop-color="#edf8f4" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#17332e" flood-opacity="0.12"/>
+    </filter>
   </defs>
-  <rect width="960" height="320" rx="28" fill="url(#api-bg)"/>
-  <g fill="none" stroke="#72e8c4" stroke-width="3" opacity="0.65">
-    <path d="M182 190 312 120 474 172 628 110 790 174"/>
-    <path d="M312 120 338 212 474 172"/>
-    <path d="M474 172 560 226 790 174"/>
-  </g>
-  <g fill="#edf8f4">
-    <circle cx="182" cy="190" r="10"/>
-    <circle cx="312" cy="120" r="12"/>
-    <circle cx="338" cy="212" r="9"/>
-    <circle cx="474" cy="172" r="12"/>
-    <circle cx="560" cy="226" r="10"/>
-    <circle cx="628" cy="110" r="12"/>
-    <circle cx="790" cy="174" r="10"/>
-  </g>
-  <g fill="#72e8c4" opacity="0.2">
-    <circle cx="312" cy="120" r="28"/>
-    <circle cx="474" cy="172" r="32"/>
-    <circle cx="628" cy="110" r="28"/>
+
+  <rect width="960" height="320" rx="30" fill="url(#panelSky)"/>
+  <circle cx="748" cy="86" r="34" fill="#e4f5ed" opacity="0.96"/>
+  <circle cx="748" cy="86" r="58" fill="#cbe8dc" opacity="0.34"/>
+  <path d="M0 214 C106 190, 218 190, 338 214 C470 240, 602 240, 736 214 C826 196, 902 194, 960 202 L960 320 L0 320 Z" fill="url(#ridgeFar)"/>
+  <path d="M0 238 C132 214, 246 216, 378 242 C510 268, 634 268, 760 238 C844 218, 912 220, 960 226 L960 320 L0 320 Z" fill="url(#ridgeMid)" opacity="0.92"/>
+  <path d="M0 272 C138 252, 274 254, 406 280 C540 306, 680 304, 960 266 L960 320 L0 320 Z" fill="url(#ridgeNear)"/>
+  <path d="M52 226 C192 212, 312 214, 432 236 C552 258, 700 256, 876 222" fill="none" stroke="url(#mistBand)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M82 258 C220 248, 360 252, 496 274 C642 296, 768 294, 896 266" fill="none" stroke="url(#mistBand)" stroke-width="14" stroke-linecap="round" opacity="0.9"/>
+  <g filter="url(#softShadow)">
+    <g fill="#ffffff" stroke="#9fd0bf" stroke-width="4">
+      <circle cx="220" cy="158" r="20"/>
+      <circle cx="360" cy="112" r="18"/>
+      <circle cx="506" cy="172" r="22"/>
+      <circle cx="656" cy="124" r="18"/>
+      <circle cx="790" cy="176" r="20"/>
+    </g>
+    <path d="M220 158 360 112 506 172 656 124 790 176" fill="none" stroke="#0b7a5c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M360 112 506 172" fill="none" stroke="#3fd9a8" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+    <path d="M506 172 790 176" fill="none" stroke="#3fd9a8" stroke-width="3" stroke-linecap="round" opacity="0.48"/>
+    <g fill="#0ea27a">
+      <circle cx="220" cy="158" r="7"/>
+      <circle cx="360" cy="112" r="6"/>
+      <circle cx="506" cy="172" r="8"/>
+      <circle cx="656" cy="124" r="6"/>
+      <circle cx="790" cy="176" r="7"/>
+    </g>
   </g>
 </svg>

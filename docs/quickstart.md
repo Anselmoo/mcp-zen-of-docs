@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: Install mcp-zen-of-docs and connect it to your AI client in under two minutes.
+description: Install mcp-zen-of-docs, connect it to your AI client, and run the first framework-aware workflow.
 tags:
   - quickstart
   - installation
@@ -8,10 +8,9 @@ tags:
 
 # Quickstart
 
-**The problem:** You ask an AI assistant to add a warning to your Docusaurus page. It writes
-`!!! warning` — valid MkDocs syntax. Wrong framework. It renders as raw text.
+**The problem:** a great answer can still fail if it uses the wrong docs syntax for the target framework.
 
-mcp-zen-of-docs fixes this by detecting your framework first and generating native syntax every time.
+`mcp-zen-of-docs` closes that gap by detecting the docs stack first, then resolving the native syntax the page actually needs.
 
 <figure class="chapter-banner">
   <img src="../assets/chapters/quickstart-path.svg" alt="A calm quickstart illustration showing a path with milestones toward a sunrise." />
@@ -68,21 +67,12 @@ Add this to `.vscode/mcp.json`:
 }
 ```
 
-This makes the server available to GitHub Copilot in your workspace.
-
 ### GitHub Copilot CLI
 
-Launch `copilot` in your docs repository, run `/mcp`, and register a server named
-`zen-of-docs` with:
+Launch `copilot` in your docs repository, run `/mcp`, and register a server named `zen-of-docs` with:
 
 - command: `uvx`
 - args: `--from mcp-zen-of-docs mcp-zen-of-docs-server`
-
-Then ask:
-
-```text
-Detect my docs framework.
-```
 
 ### Claude Desktop
 
@@ -99,7 +89,7 @@ Add this to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 }
 ```
 
-Restart Claude Desktop. All 10 tools register automatically.
+Restart Claude Desktop after saving the file.
 
 ### Cursor
 
@@ -118,46 +108,52 @@ Add this to `.cursor/mcp.json`:
 
 ---
 
-## 3. Ask your assistant to write a page
+## 3. Run the first real workflow
 
-Open a conversation in your docs project and type:
+The most reliable pattern is:
+
+```text
+detect → profile → act
+```
+
+Start with a concrete request such as:
 
 ```text
 Add a prerequisites note to the quickstart page.
 ```
 
-**Without this server** — your assistant guesses `!!! note` (MkDocs syntax).
+A framework-aware assistant should then:
 
-**With this server:**
+1. Call [`detect`](tools/detect.md) to identify the docs stack.
+2. Call [`profile`](tools/profile.md) to resolve the primitive you need.
+3. Use that result when it writes or updates the page.
 
-1. Your assistant calls `detect` → reads `docusaurus.config.js` → confirms Docusaurus 3.x
-2. Your assistant calls `profile` → maps "note admonition" to the Docusaurus native form
-3. Your assistant writes:
+If you want the full explanation of that pattern, read [Detect → Profile → Act](guides/detect-profile-act.md).
 
-```markdown
-:::note Prerequisites
+---
 
-Node.js 18+ and npm are required before continuing.
+## 4. What good output looks like
 
-:::
-```
+A correct answer is not just well written. It also renders correctly in the target docs stack.
 
-The right syntax. First try.
+- Zensical should receive Zensical-compatible syntax.
+- Docusaurus should receive Docusaurus-compatible syntax.
+- VitePress and Starlight should receive their own native forms and caveats.
+
+That is what `mcp-zen-of-docs` is designed to provide: source-truth context before content generation.
 
 ---
 
 ## First questions
 
-**Do I need to re-run `detect` each conversation?**
-No. Detection is cached per session. A new conversation auto-detects on the first tool call.
-
-**What if my config file is in a subdirectory?**
-Pass `project_root` explicitly: `detect project_root=./my-docs-subdir`. See [troubleshooting](guides/troubleshooting.md).
+**What if my config file lives in a subdirectory?**
+Pass `project_root` explicitly to [`detect`](tools/detect.md), for example `project_root=./docs-site`.
 
 **Can I use this with GitHub Copilot?**
-Yes. Use `.vscode/mcp.json` for GitHub Copilot in VS Code, or `/mcp` in Copilot CLI to
-register the server. Then use the [`copilot` tool](tools/copilot.md) to generate
-`.instructions.md` files that encode your framework conventions.
+Yes. Use `.vscode/mcp.json` for Copilot in VS Code, or `/mcp` in Copilot CLI, then use the [`copilot`](tools/copilot.md) tool to generate instruction assets.
+
+**What should I read after setup?**
+Start with the tool references for [`detect`](tools/detect.md) and [`profile`](tools/profile.md), then continue to [Troubleshooting](guides/troubleshooting.md) if the target project is unusual.
 
 ---
 
@@ -167,14 +163,20 @@ register the server. Then use the [`copilot` tool](tools/copilot.md) to generate
 
 -   :octicons-arrow-right-24: **Tools overview**
 
-    See all 10 tools and what each one does.
+    See all 10 tools and how they fit together.
 
     [:octicons-arrow-right-24: Browse tools](tools/index.md)
 
 -   :octicons-arrow-right-24: **Detect → Profile → Act**
 
-    Why auto-detection produces correct output every time.
+    Learn the operating model behind the workflow.
 
     [:octicons-arrow-right-24: Read the guide](guides/detect-profile-act.md)
+
+-   :octicons-arrow-right-24: **Troubleshooting**
+
+    Handle unusual layouts, detection misses, and rendering issues.
+
+    [:octicons-arrow-right-24: Read troubleshooting](guides/troubleshooting.md)
 
 </div>

@@ -1,6 +1,6 @@
 ---
 title: Guides
-description: Conceptual guides for getting the most from mcp-zen-of-docs.
+description: Conceptual guides for understanding the authoring model behind mcp-zen-of-docs.
 tags:
   - guides
   - overview
@@ -8,11 +8,9 @@ tags:
 
 # Guides
 
-Deeper reading on the ideas behind mcp-zen-of-docs.
+The guides explain the operating model behind the tools.
 
-These pages are the conceptual layer of the project: why the server exists, how the
-Detect -> Profile -> Act model works, and how to think about authoring primitives as stable
-building blocks across frameworks.
+Use **Tools** when you need a command reference. Use **Guides** when you want to understand why the commands exist, how the 22 canonical primitives fit together, and how to reason about framework-aware authoring as a system.
 
 <figure class="chapter-banner">
     <img src="../assets/chapters/guides-compass.svg" alt="A guide illustration with a compass and route markers." />
@@ -26,8 +24,7 @@ building blocks across frameworks.
 
     ---
 
-    The case for treating documentation as a first-class product — and why AI makes this
-    achievable now.
+    The case for treating documentation as a product surface and making framework context explicit for AI systems.
 
     [:octicons-arrow-right-24: Read](why-zen-docs.md)
 
@@ -35,8 +32,7 @@ building blocks across frameworks.
 
     ---
 
-    The three-step pattern every tool in this server follows. Understanding it makes every
-    tool easier to use.
+    The three-step pattern that keeps generated output tied to project reality instead of mixed-framework guesses.
 
     [:octicons-arrow-right-24: Read](detect-profile-act.md)
 
@@ -44,7 +40,7 @@ building blocks across frameworks.
 
     ---
 
-    What the 16 primitives are, why they're universal, and how they map to framework syntax.
+    The 22 canonical primitives that the profiles map into framework-native syntax.
 
     [:octicons-arrow-right-24: Read](primitives.md)
 
@@ -52,12 +48,17 @@ building blocks across frameworks.
 
     ---
 
-    Common errors, detection failures, and rendering glitches — with fixes.
+    Common detection misses, rendering errors, and setup problems — plus what to do next.
 
     [:octicons-arrow-right-24: Read](troubleshooting.md)
 
 </div>
 
 !!! tip "Recommended reading order"
-    If you're new, read **Why Zen Docs** first, then **Detect -> Profile -> Act**, then
-    **Authoring Primitives**. That sequence explains both the philosophy and the mechanics.
+    Start with **Why Zen Docs**, continue to **Detect → Profile → Act**, then read **Authoring Primitives**. That sequence explains the product case, the operating model, and the syntax layer in order.
+
+---
+
+## Where to go next
+
+If you want a framework comparison, continue to [Frameworks](../frameworks/index.md). If you want the high-level principles behind the project, read [Philosophy](../philosophy.md).

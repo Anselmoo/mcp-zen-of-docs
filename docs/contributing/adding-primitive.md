@@ -1,6 +1,6 @@
 ---
 title: Add a Primitive
-description: How to extend the 16 authoring primitives with a new universal documentation concept.
+description: How to extend the 22 canonical authoring primitives with a new documentation concept.
 tags:
   - contributing
   - primitives
@@ -8,71 +8,82 @@ tags:
 
 # Add a Primitive
 
-The 16 primitives are the vocabulary of `profile`, `scaffold`, and `story`. Adding a new
-one means adding it to the vocabulary and teaching every framework profile how to render it.
+The 22 canonical primitives are the vocabulary that `profile`, `scaffold`, `story`, and related tools reason about. Adding a new primitive means updating the shared contract and then teaching each primary profile how to support or reject it deliberately.
 
 ---
 
-## 1. Add to AuthoringPrimitive
+## 1. Add the primitive to the domain contract
 
-In `src/mcp_zen_of_docs/models.py`:
+Update `AuthoringPrimitive` in `src/mcp_zen_of_docs/domain/contracts.py`.
 
 ```python
 class AuthoringPrimitive(StrEnum):
-    MARKDOWN = "markdown"
-    # ... existing 16 ...
-    MY_PRIMITIVE = "my_primitive"  # add here
+    ...
+    MY_PRIMITIVE = "my-primitive"
 ```
+
+Use the existing naming style: lowercase, hyphenated identifiers that describe the construct rather than a framework-specific syntax.
 
 ---
 
-## 2. Add to every framework profile
+## 2. Update every framework profile
 
-Every profile's `support_matrix()` must map the new primitive to a `SupportLevel`. If the
-framework doesn't support it, use `SupportLevel.UNSUPPORTED` — never omit it.
+Every built-in profile must handle the new primitive in `primitive_support()`.
 
 ```python
-def support_matrix(self) -> dict[AuthoringPrimitive, SupportLevel]:
-    return {
-        # ... existing mappings ...
-        AuthoringPrimitive.MY_PRIMITIVE: SupportLevel.NATIVE,
-    }
+def primitive_support(self, primitive: AuthoringPrimitive) -> SupportLevel:
+    if primitive is AuthoringPrimitive.MY_PRIMITIVE:
+        return SupportLevel.FULL
+    ...
 ```
+
+If the framework can render it, add the corresponding branch or snippet in `render_snippet()`. If it cannot, return `SupportLevel.UNSUPPORTED` intentionally — do not leave the primitive unmapped.
 
 ---
 
-## 3. Add rendering to each profile
+## 3. Decide the support level explicitly
 
-In each profile's `render_primitive()`, add a case:
+Choose one of the existing support levels from `SupportLevel`:
 
-```python
-def render_primitive(self, primitive: AuthoringPrimitive, **kwargs: object) -> str:
-    match primitive:
-        # ... existing cases ...
-        case AuthoringPrimitive.MY_PRIMITIVE:
-            return "<!-- my primitive syntax -->"
-        case _:
-            return super().render_primitive(primitive, **kwargs)
-```
+- `full`
+- `partial`
+- `experimental`
+- `unsupported`
+
+The classification should reflect real authoring behavior, not wishful compatibility.
 
 ---
 
-## 4. Update the guides
+## 4. Update docs and translation surfaces
 
-Add the new primitive to the [Authoring Primitives](../guides/primitives.md) page with:
+A new primitive changes both the runtime model and the public documentation.
 
-- A one-line description
-- The syntax for each framework that supports it natively
+Update at least:
+
+- `docs/guides/primitives.md`
+- `docs/tools/profile.md`
+- any examples or workflow guides that reference the primitive set
+
+If the new primitive affects translation guidance, update the relevant framework notes and migration examples too.
 
 ---
 
 ## 5. Write tests
 
-Test that:
+Add or update tests so the new primitive is covered end to end.
 
-- All four profiles map `MY_PRIMITIVE` in `support_matrix()`
-- `render_primitive(AuthoringPrimitive.MY_PRIMITIVE)` returns valid syntax for native profiles
-- `profile show` includes the new primitive in its output
+Recommended checks:
+
+- every primary profile handles the primitive in `primitive_support()`
+- supported frameworks render a valid snippet in `render_snippet()`
+- `profile` output reflects the new primitive correctly
+- any generation or validation workflows touched by the primitive still behave as expected
+
+---
+
+## 6. Review the contributor-facing language
+
+Primitive names appear in guides, tool references, tests, and contributor docs. Make sure the wording stays consistent everywhere — especially around the total primitive count and the support-level terminology.
 
 ---
 
@@ -82,14 +93,14 @@ Test that:
 
 -   :octicons-arrow-right-24: **Authoring Primitives**
 
-    How the 16 primitives are used across scaffold, story, and profile.
+    See how the current primitive vocabulary is described publicly.
 
     [:octicons-arrow-right-24: Read the guide](../guides/primitives.md)
 
 -   :octicons-arrow-right-24: **Add a Framework**
 
-    Add an entirely new docs framework to the support matrix.
+    Extend the framework layer if the primitive requires new profile work.
 
-    [:octicons-arrow-right-24: Read the guide](adding-framework.md)
+    [:octicons-arrow-right-24: Read more](adding-framework.md)
 
 </div>

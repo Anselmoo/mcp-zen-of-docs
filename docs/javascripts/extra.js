@@ -45,6 +45,15 @@ function getRotatingQuote() {
   return FOOTER_QUOTES[day % FOOTER_QUOTES.length];
 }
 
+function getStableHeroQuote() {
+  const seed = window.location.pathname || "/";
+  const hash = Array.from(seed).reduce(
+    (acc, char) => (acc * 31 + char.charCodeAt(0)) % HERO_QUOTES.length,
+    0,
+  );
+  return HERO_QUOTES[hash];
+}
+
 function getSiteRoot() {
   const logoLink = document.querySelector(".md-logo")?.getAttribute("href");
   if (logoLink) return logoLink;
@@ -203,10 +212,9 @@ function initThemeController() {
 function injectHeroQuote() {
   const hero = document.querySelector(".hero-container, .hero-section, .hero-cta, .zen-hero__content");
   if (!hero || hero.querySelector(".hero-zen-quote")) return;
-  const quote = HERO_QUOTES[Math.floor(Math.random() * HERO_QUOTES.length)];
   const el = document.createElement("p");
   el.className = "hero-zen-quote";
-  el.textContent = `"${quote}"`;
+  el.textContent = `"${getStableHeroQuote()}"`;
   hero.appendChild(el);
 }
 

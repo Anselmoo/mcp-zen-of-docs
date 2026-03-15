@@ -1,0 +1,1 @@
+Development commands: `uv run pytest`, `uv run pytest --cov=mcp_zen_of_docs --cov-report=term-missing`, `uv run ruff check src tests`, `uv run ruff format src tests`, `uv run ty check src`, `uv run zensical serve`, `uv run zensical build --strict`, `uv run python scripts/contrast_check.py`. Visual checks also use `npm run visual:test` from package.json with Playwright.

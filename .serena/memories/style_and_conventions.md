@@ -1,0 +1,1 @@
+Python style uses Ruff with line length 100, Google-style pydocstyle, single-line import grouping via isort settings, and Ty type checking. Docs/frontend work should preserve the existing sumi/forest visual language, prefer scoped CSS component edits in docs/stylesheets/components, and avoid unnecessary hero redesigns when adjusting header or homepage presentation.

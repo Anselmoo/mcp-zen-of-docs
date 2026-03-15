@@ -1,6 +1,6 @@
 /* Buttons — jade green primary, accessible */
 .md-typeset .md-button {
-  border-radius: var(--sumi-radius-control, 999px);
+  border-radius: var(--sumi-radius-control, 0.95rem);
   font-weight: var(--sumi-fw-medium, 500);
   font-size: 0.82rem;
   letter-spacing: 0.01em;

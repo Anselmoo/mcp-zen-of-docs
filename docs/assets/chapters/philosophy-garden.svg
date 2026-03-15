@@ -1,19 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="Philosophy chapter illustration showing zen stones in a raked garden">
-  <rect width="960" height="320" rx="28" fill="#f7f3ed"/>
-  <g fill="none" stroke="#d9d1c3" stroke-width="4" stroke-linecap="round">
-    <path d="M80 120 C260 102, 444 102, 624 120 C760 134, 836 134, 900 124"/>
-    <path d="M64 158 C232 142, 432 142, 628 160 C760 172, 840 174, 912 164"/>
-    <path d="M56 198 C260 182, 466 186, 668 204 C790 214, 858 214, 914 206"/>
-    <path d="M70 238 C262 224, 464 228, 662 246 C788 258, 856 258, 906 248"/>
-  </g>
-  <g>
-    <ellipse cx="264" cy="174" rx="72" ry="52" fill="#68776e"/>
-    <ellipse cx="512" cy="152" rx="92" ry="62" fill="#4e5d63"/>
-    <ellipse cx="730" cy="196" rx="64" ry="46" fill="#7c8b84"/>
-  </g>
-  <g fill="#d8e4de" opacity="0.7">
-    <ellipse cx="264" cy="162" rx="42" ry="16"/>
-    <ellipse cx="512" cy="136" rx="56" ry="18"/>
-    <ellipse cx="730" cy="186" rx="34" ry="14"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="Philosophy chapter illustration showing a zen garden with stones and raked arcs">
+  <title>Philosophy chapter illustration</title>
+  <desc>A stylized zen garden with concentric rake lines and balanced stones sits within the same jade, parchment, and mist palette as the hero scene.</desc>
+  <defs>
+    <linearGradient id="panelSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#edf8f4"/>
+      <stop offset="58%" stop-color="#f7fbf8"/>
+      <stop offset="100%" stop-color="#faf6ee"/>
+    </linearGradient>
+    <linearGradient id="ridgeFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d5ebe3"/>
+      <stop offset="100%" stop-color="#bfddd1"/>
+    </linearGradient>
+    <linearGradient id="ridgeMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b7dbcd"/>
+      <stop offset="100%" stop-color="#8fc7b5"/>
+    </linearGradient>
+    <linearGradient id="ridgeNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#31584d"/>
+      <stop offset="100%" stop-color="#17332e"/>
+    </linearGradient>
+    <linearGradient id="mistBand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="18%" stop-color="#f5fbf8" stop-opacity="0.68"/>
+      <stop offset="54%" stop-color="#edf8f4" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#17332e" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="960" height="320" rx="30" fill="url(#panelSky)"/>
+  <circle cx="748" cy="86" r="34" fill="#e4f5ed" opacity="0.96"/>
+  <circle cx="748" cy="86" r="58" fill="#cbe8dc" opacity="0.34"/>
+  <path d="M0 214 C106 190, 218 190, 338 214 C470 240, 602 240, 736 214 C826 196, 902 194, 960 202 L960 320 L0 320 Z" fill="url(#ridgeFar)"/>
+  <path d="M0 238 C132 214, 246 216, 378 242 C510 268, 634 268, 760 238 C844 218, 912 220, 960 226 L960 320 L0 320 Z" fill="url(#ridgeMid)" opacity="0.92"/>
+  <path d="M0 272 C138 252, 274 254, 406 280 C540 306, 680 304, 960 266 L960 320 L0 320 Z" fill="url(#ridgeNear)"/>
+  <path d="M52 226 C192 212, 312 214, 432 236 C552 258, 700 256, 876 222" fill="none" stroke="url(#mistBand)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M82 258 C220 248, 360 252, 496 274 C642 296, 768 294, 896 266" fill="none" stroke="url(#mistBand)" stroke-width="14" stroke-linecap="round" opacity="0.9"/>
+  <g filter="url(#softShadow)">
+    <rect x="120" y="84" width="720" height="134" rx="32" fill="#ffffff" stroke="#b8ddd0" stroke-width="4"/>
+    <path d="M182 182 C256 122, 388 120, 468 182" fill="none" stroke="#d4e6de" stroke-width="6" stroke-linecap="round"/>
+    <path d="M182 164 C268 104, 398 102, 500 164" fill="none" stroke="#d4e6de" stroke-width="6" stroke-linecap="round"/>
+    <path d="M214 198 C308 142, 436 142, 544 198" fill="none" stroke="#d4e6de" stroke-width="6" stroke-linecap="round"/>
+    <g>
+      <ellipse cx="604" cy="150" rx="54" ry="32" fill="#234239"/>
+      <ellipse cx="698" cy="178" rx="38" ry="24" fill="#31584d"/>
+      <ellipse cx="512" cy="188" rx="28" ry="18" fill="#0ea27a" opacity="0.76"/>
+    </g>
+    <path d="M616 112 C644 94, 686 92, 724 106" fill="none" stroke="#3fd9a8" stroke-width="5" stroke-linecap="round" opacity="0.56"/>
   </g>
 </svg>

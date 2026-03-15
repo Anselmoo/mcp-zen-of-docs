@@ -1,11 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="Contributing chapter illustration showing a collaborative workbench with notes and parts">
-  <rect width="960" height="320" rx="28" fill="#eef6f3"/>
-  <rect x="118" y="86" width="724" height="168" rx="24" fill="#ffffff" stroke="#cbe4db"/>
-  <rect x="160" y="120" width="168" height="96" rx="18" fill="#f8fbfa" stroke="#d8ebe4"/>
-  <rect x="394" y="120" width="180" height="44" rx="14" fill="#0ea27a" opacity="0.12"/>
-  <rect x="394" y="180" width="220" height="14" rx="7" fill="#d7e9e2"/>
-  <rect x="394" y="206" width="184" height="14" rx="7" fill="#d7e9e2"/>
-  <circle cx="706" cy="152" r="34" fill="#d6f3e7"/>
-  <path d="M706 130v44M684 152h44" stroke="#0b7a5c" stroke-width="6" stroke-linecap="round"/>
-  <path d="M188 192 218 160 242 178 276 138" fill="none" stroke="#0ea27a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="Contributing chapter illustration showing a workbench with tools and collaboration nodes">
+  <title>Contributing chapter illustration</title>
+  <desc>A collaborative workbench sits above the shared landscape backdrop, mixing interface geometry with the same jade-led visual system.</desc>
+  <defs>
+    <linearGradient id="panelSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#edf8f4"/>
+      <stop offset="58%" stop-color="#f7fbf8"/>
+      <stop offset="100%" stop-color="#faf6ee"/>
+    </linearGradient>
+    <linearGradient id="ridgeFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d5ebe3"/>
+      <stop offset="100%" stop-color="#bfddd1"/>
+    </linearGradient>
+    <linearGradient id="ridgeMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b7dbcd"/>
+      <stop offset="100%" stop-color="#8fc7b5"/>
+    </linearGradient>
+    <linearGradient id="ridgeNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#31584d"/>
+      <stop offset="100%" stop-color="#17332e"/>
+    </linearGradient>
+    <linearGradient id="mistBand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="18%" stop-color="#f5fbf8" stop-opacity="0.68"/>
+      <stop offset="54%" stop-color="#edf8f4" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#17332e" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="960" height="320" rx="30" fill="url(#panelSky)"/>
+  <circle cx="748" cy="86" r="34" fill="#e4f5ed" opacity="0.96"/>
+  <circle cx="748" cy="86" r="58" fill="#cbe8dc" opacity="0.34"/>
+  <path d="M0 214 C106 190, 218 190, 338 214 C470 240, 602 240, 736 214 C826 196, 902 194, 960 202 L960 320 L0 320 Z" fill="url(#ridgeFar)"/>
+  <path d="M0 238 C132 214, 246 216, 378 242 C510 268, 634 268, 760 238 C844 218, 912 220, 960 226 L960 320 L0 320 Z" fill="url(#ridgeMid)" opacity="0.92"/>
+  <path d="M0 272 C138 252, 274 254, 406 280 C540 306, 680 304, 960 266 L960 320 L0 320 Z" fill="url(#ridgeNear)"/>
+  <path d="M52 226 C192 212, 312 214, 432 236 C552 258, 700 256, 876 222" fill="none" stroke="url(#mistBand)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M82 258 C220 248, 360 252, 496 274 C642 296, 768 294, 896 266" fill="none" stroke="url(#mistBand)" stroke-width="14" stroke-linecap="round" opacity="0.9"/>
+  <g filter="url(#softShadow)">
+    <rect x="150" y="110" width="660" height="96" rx="28" fill="#ffffff" stroke="#b8ddd0" stroke-width="4"/>
+    <rect x="218" y="134" width="136" height="12" rx="6" fill="#0b7a5c"/>
+    <rect x="218" y="162" width="110" height="10" rx="5" fill="#0ea27a" opacity="0.64"/>
+    <path d="M444 176 492 128" stroke="#0b7a5c" stroke-width="10" stroke-linecap="round"/>
+    <path d="M478 126 514 162" stroke="#3fd9a8" stroke-width="10" stroke-linecap="round"/>
+    <path d="M616 132h64a18 18 0 0 1 18 18v0a18 18 0 0 1-18 18h-64z" fill="#0ea27a" opacity="0.9"/>
+    <g fill="#ffffff" stroke="#0ea27a" stroke-width="4">
+      <circle cx="180" cy="206" r="12"/>
+      <circle cx="780" cy="206" r="12"/>
+      <circle cx="480" cy="84" r="12"/>
+    </g>
+    <path d="M180 206 C246 232, 356 236, 480 84" fill="none" stroke="#0ea27a" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 10" opacity="0.5"/>
+    <path d="M480 84 C592 238, 694 236, 780 206" fill="none" stroke="#0ea27a" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 10" opacity="0.5"/>
+  </g>
 </svg>

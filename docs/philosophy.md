@@ -1,6 +1,6 @@
 ---
 title: Philosophy
-description: The ten principles that guide every decision in the Zen of Documentation.
+description: The ten principles that shape the defaults, tooling, and documentation model of mcp-zen-of-docs.
 tags:
   - philosophy
   - principles
@@ -19,54 +19,60 @@ Ten principles guide every tool, every default, and every generated page.
 ## The Zen of Documentation
 
 **1. Clarity over cleverness.**
-Understand the point on first read. Clever structure that requires decoding is failed structure.
+If a reader has to decode the structure, the structure is already failing.
 
 **2. Structure reveals intent.**
-Nav order is an argument about priority. [`onboard`](tools/onboard.md) places overview pages first and reference last.
+Navigation order is an argument about importance, not just a menu.
 
 **3. Primitives are universal — frameworks are dialects.**
-An admonition exists in every framework; only the syntax differs. [`profile`](tools/profile.md) maps all 16 primitives to their native form.
+The same 22 canonical primitives recur across stacks; the syntax is what changes.
 
 **4. Beauty is functional.**
-Good formatting aids comprehension. [`validate`](tools/validate.md) scores formatting quality, not just broken links.
+Good presentation reduces friction and makes the page easier to trust.
 
 **5. One page, one idea.**
-A page that covers three topics covers none well. [`validate`](tools/validate.md) flags pages that exceed the length budget.
+Focused pages are easier to maintain, translate, and validate.
 
 **6. Navigation is a contract with the reader.**
-Every nav entry must lead somewhere. [`scaffold`](tools/scaffold.md) adds the nav entry and the page atomically.
+If a page appears in navigation, it should reward the click.
 
 **7. Frontmatter is metadata, not decoration.**
-`title`, `description`, and `tags` feed search, social previews, and navigation. [`validate --mode frontmatter`](tools/validate.md) flags missing keys.
+Titles, descriptions, and tags power search, previews, and maintainability.
 
 **8. Code examples must run.**
-A code example that errors is worse than no example. [`generate mode=reference`](tools/generate.md) produces examples from live source.
+A broken example erodes trust faster than no example at all.
 
 **9. Every admonition earns its place.**
-An admonition is an interrupt — use it only when the content demands stopping. [`scaffold`](tools/scaffold.md) emits at most one per section.
+Callouts are interrupts. Use them when the content truly needs a change in attention.
 
 **10. Documentation is a product, not an afterthought.**
-Shipping without docs is shipping half a product. [`onboard`](tools/onboard.md) runs the full detect → scaffold → deploy pipeline in one command.
+Shipping the feature without the explanation ships only part of the value.
 
-!!! tip "Start with one tool"
-    You don't have to adopt every principle at once. Run [`detect`](tools/detect.md) on your project today. The rest follows naturally.
+!!! tip "From principle to practice"
+    Read [Detect → Profile → Act](guides/detect-profile-act.md) to see how these principles become tool behavior, then jump to [Tools](tools/index.md) or [Quickstart](quickstart.md) to put them into practice.
 
 ---
 
-## What's Next
+## What's next
 
 <div class="grid cards" markdown>
 
 -   :octicons-arrow-right-24: **Why Zen Docs**
 
-    The case for treating documentation as a first-class product.
+    The product and workflow argument behind the philosophy.
 
     [:octicons-arrow-right-24: Read the case](guides/why-zen-docs.md)
 
--   :octicons-arrow-right-24: **Detect → Profile → Act**
+-   :octicons-arrow-right-24: **Tools**
 
-    How these principles are embodied in the tool pipeline.
+    See how the principles map onto the command surface.
 
-    [:octicons-arrow-right-24: Read the guide](guides/detect-profile-act.md)
+    [:octicons-arrow-right-24: Browse tools](tools/index.md)
+
+-   :octicons-arrow-right-24: **Quickstart**
+
+    Go from principles to a working setup in a few minutes.
+
+    [:octicons-arrow-right-24: Get started](quickstart.md)
 
 </div>

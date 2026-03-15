@@ -1,4 +1,4 @@
-/* Hero section — landing page */
+/* Hero section — flagship presentation aligned to hero-fuji-forest.svg */
 .md-typeset .hero {
   text-align: center;
   padding: 3rem 1rem;
@@ -6,67 +6,83 @@
 }
 
 .md-typeset .hero__headline {
-  font-size: 2.4rem;
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
+  font-size: clamp(2.3rem, 4.8vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
   margin-bottom: 1rem;
 }
 
 .md-typeset .hero__tagline {
-  font-size: 1.1rem;
+  font-size: 1.08rem;
   color: var(--md-default-fg-color--light);
-  max-width: 52ch;
-  margin: 0 auto 2rem;
-  line-height: 1.6;
+  max-width: 56ch;
+  margin: 0 auto 1.75rem;
+  line-height: 1.7;
 }
 
-/* Jade gradient accent on the tagline keyword */
 .md-typeset .hero__accent {
   color: var(--sumi-accent);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 [data-md-color-scheme="slate"] .md-typeset .hero__accent {
   color: var(--sumi-accent-dark);
 }
 
-/* Hero CTA buttons */
-.md-typeset .hero__actions {
+.md-typeset .hero__actions,
+.md-typeset .hero-actions {
   display: flex;
   gap: 0.75rem;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 1.5rem;
+  margin-top: 1.25rem;
 }
 
-/* Hero badge strip */
 .md-typeset .hero__badges {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.55rem;
   justify-content: center;
   flex-wrap: wrap;
   margin-top: 1.5rem;
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   color: var(--md-default-fg-color--lighter);
 }
 
-/* ── .hero-container / .hero-section — primary hero block for index.md ─── */
 .md-typeset .hero-container,
-.md-typeset .hero-section {
-  text-align: center;
-  padding: 3.5rem 1.5rem 3rem;
-  margin: -0.4rem -0.8rem 2.5rem;
-  border-radius: var(--sumi-radius-xl);
-  background: linear-gradient(135deg, #0b8f6c 0%, #0ea27a 50%, #12b085 100%);
-  border: none;
+.md-typeset .hero-section,
+.hero-cta {
+  position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(14, 162, 122, 0.25);
+  isolation: isolate;
+  text-align: center;
+  padding: 3.25rem 1.5rem 3rem;
+  margin: -0.35rem -0.6rem 2.5rem;
+  border: 1px solid var(--zen-stage-border);
+  border-radius: 1.5rem;
+  background: var(--zen-stage-glow), var(--zen-stage-bg);
+  box-shadow: var(--zen-stage-highlight), var(--zen-stage-shadow);
+}
+
+.md-typeset .hero-container::before,
+.md-typeset .hero-section::before,
+.hero-cta::before {
+  content: "";
+  position: absolute;
+  inset: auto 8% -14% 8%;
+  height: 44%;
+  border-radius: 999px;
+  background: radial-gradient(circle, var(--zen-stage-mist-strong) 0%, transparent 68%);
+  filter: blur(18px);
+  opacity: 0.9;
+  pointer-events: none;
 }
 
 .md-typeset .hero-content,
 .md-typeset .hero-inner {
-  max-width: 52rem;
+  position: relative;
+  z-index: 1;
+  max-width: 54rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -74,194 +90,162 @@
   gap: 1rem;
 }
 
-/* Logo */
 .md-typeset .hero-logo {
   width: 96px;
   height: 96px;
   display: block;
   margin: 0 auto 0.25rem;
-  filter: drop-shadow(0 0 0 transparent);
-  transition: filter var(--sumi-transition-normal);
+  filter: drop-shadow(0 16px 30px rgba(0, 0, 0, 0.25));
 }
 
-[data-md-color-scheme="slate"] .md-typeset .hero-logo {
-  filter: drop-shadow(0 0 18px rgba(14, 162, 122, 0.40)) drop-shadow(0 0 5px rgba(63, 217, 168, 0.25));
-}
-
-/* Title — suppress the MkDocs Material h1 underline / margin */
-.md-typeset .hero-title {
+.md-typeset .hero-title,
+.hero-cta .hero-title {
   font-size: clamp(2rem, 5vw, 3.2rem);
   font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.04em;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
   color: #ffffff !important;
   margin: 0 !important;
   padding: 0 !important;
   border-bottom: none !important;
 }
 
-/* Tagline */
 .md-typeset .hero-tagline,
 .md-typeset .hero-container .hero-tagline,
-.md-typeset .hero-section .hero-tagline {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.88) !important;
+.md-typeset .hero-section .hero-tagline,
+.hero-cta .hero-tagline {
+  font-size: 1.08rem;
+  color: rgba(255, 255, 255, 0.84) !important;
   max-width: 50ch;
   margin: 0;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
-/* CTA buttons */
-.md-typeset .hero-actions {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 0.5rem;
-}
-
-.md-typeset .hero-actions .md-button {
+.md-typeset .hero-actions .md-button,
+.hero-cta .hero-actions .md-button {
   min-width: 7rem;
-  border-radius: var(--sumi-radius-control, 999px);
+  border-radius: var(--sumi-radius-control, 0.95rem);
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.15) !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
-  color: #ffffff !important;
 }
 
-.md-typeset .hero-actions .md-button--primary {
-  background: #ffffff !important;
-  border-color: #ffffff !important;
-  color: #0b8f6c !important;
-}
-
-/* Dark-mode hero — deeper jade gradient */
-[data-md-color-scheme="slate"] .md-typeset .hero-container,
-[data-md-color-scheme="slate"] .md-typeset .hero-section {
-  background: linear-gradient(135deg, #0a7a5c 0%, #0c8a6a 50%, #0ea27a 100%);
-  box-shadow: 0 4px 24px rgba(14, 162, 122, 0.35);
-}
-
-/* ── .hero-cta — full-bleed gradient hero for prominent landing sections ─── */
-/* Uses the accent/primary fg colors as gradient stops so both light and
-   dark mode get a vivid jade-toned band with legible white-on-jade text.   */
-.hero-cta {
-  background: linear-gradient(135deg, var(--md-primary-fg-color), var(--md-accent-fg-color));
-  padding: 4rem 2rem;
-  text-align: center;
-  border-radius: 0.5rem;
-  margin-bottom: 2rem;
-}
-
-.hero-cta .hero-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: white !important;
-  margin-bottom: 1rem;
-}
-
-.hero-cta .hero-tagline {
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.85) !important;
-  max-width: 600px;
-  margin: 0 auto 2rem;
-}
-
-.hero-cta .hero-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
-/* ── Zen quote — injected by extra.js into .hero-container or .hero-cta ─── */
 .hero-zen-quote {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-style: italic;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.72);
   margin-top: 1.5rem;
   letter-spacing: 0.01em;
-}
-
-/* Light-mode hero: quote uses ink color since background is ivory */
-[data-md-color-scheme="default"] .md-typeset .hero-container .hero-zen-quote,
-[data-md-color-scheme="default"] .md-typeset .hero-section .hero-zen-quote {
-  color: var(--sumi-light-fg-muted);
-}
-
-/* Dark-mode hero: quote uses parchment-muted color */
-[data-md-color-scheme="slate"] .md-typeset .hero-container .hero-zen-quote,
-[data-md-color-scheme="slate"] .md-typeset .hero-section .hero-zen-quote {
-  color: var(--sumi-fg-muted);
 }
 
 /* ============================================================
    TWO-COLUMN HERO (home.html template)
    ============================================================ */
 .zen-hero {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 3rem;
-  padding: 2.5rem 1.5rem 3rem;
-  background:
-    radial-gradient(circle at 18% 20%, rgba(114, 232, 196, 0.18), transparent 24%),
-    radial-gradient(circle at 82% 18%, rgba(14, 162, 122, 0.12), transparent 26%),
-    linear-gradient(180deg, #eef7f4 0%, #f6fbf9 46%, #faf8f5 100%);
-  border-radius: 0;
-  margin: -0.6rem -0.8rem 2rem;
-  min-height: 340px;
-  border-bottom: 1px solid rgba(11, 122, 92, 0.12);
+  gap: clamp(2rem, 4vw, 4rem);
+  padding: clamp(2rem, 4vw, 3.25rem);
+  margin: -0.35rem -0.6rem 2.6rem;
+  min-height: 25rem;
+  border: 1px solid var(--zen-hero-stage-border);
+  border-radius: clamp(1.4rem, 2vw, 1.85rem);
+  background: var(--zen-hero-stage-glow), var(--zen-hero-stage-bg);
+  box-shadow: var(--zen-hero-stage-highlight), var(--zen-hero-stage-shadow);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.zen-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--zen-hero-stage-overlay);
+  pointer-events: none;
+}
+
+.zen-hero::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -16%;
+  height: 46%;
+  border-radius: 999px;
+  background: radial-gradient(circle, var(--zen-hero-stage-mist) 0%, transparent 70%);
+  filter: blur(22px);
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+.zen-hero__content,
+.zen-hero__media {
+  position: relative;
+  z-index: 1;
 }
 
 .zen-hero__content {
-  flex: 1 1 55%;
-  min-width: 0;
+  flex: 1 1 26rem;
+  max-width: 34rem;
 }
 
 .zen-hero__eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  margin: 0 0 0.85rem;
-  padding: 0.4rem 0.75rem 0.4rem 0.5rem;
-  border: 1px solid rgba(11, 122, 92, 0.12);
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+  padding: 0.45rem 0.8rem 0.45rem 0.58rem;
+  border: 1px solid var(--zen-hero-eyebrow-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.62);
-  color: var(--sumi-light-fg1);
+  background: var(--zen-hero-eyebrow-bg);
+  color: var(--zen-hero-eyebrow-text);
   font-size: 0.76rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  font-weight: 700;
+  letter-spacing: 0.045em;
   text-transform: uppercase;
-  box-shadow: 0 10px 26px rgba(8, 24, 28, 0.08);
+  box-shadow: var(--zen-hero-eyebrow-shadow);
+  backdrop-filter: blur(8px);
 }
 
 .zen-hero__seal {
-  width: 1.7rem;
-  height: 1.7rem;
+  width: 1.72rem;
+  height: 1.72rem;
   flex: 0 0 auto;
 }
 
 .zen-hero__content h1 {
-  color: var(--sumi-light-fg0) !important;
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  line-height: 1.2;
-  margin-bottom: 1rem;
-  max-width: 13ch;
+  color: var(--zen-hero-heading) !important;
+  font-size: clamp(2.35rem, 5.2vw, 4.3rem);
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+  margin: 0 0 1rem;
+  max-width: 10ch;
+  text-wrap: balance;
+  text-shadow: var(--zen-hero-heading-shadow);
 }
 
 .zen-hero__motto {
-  color: var(--sumi-light-fg-muted);
-  font-style: italic;
-  margin-bottom: 0.85rem;
+  color: var(--zen-hero-motto);
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  margin: 0 0 0.85rem;
 }
 
-.zen-hero__content>p:not(.zen-hero__motto) {
-  color: var(--sumi-light-fg1);
-  max-width: 56ch;
+.zen-hero__motto em {
+  font-style: normal;
+}
+
+.zen-hero__body,
+.zen-hero__content > p:not(.zen-hero__motto):not(.zen-hero__lead):not(.zen-hero__actions) {
+  color: var(--zen-hero-body);
+  max-width: 58ch;
+  margin: 0 0 0.9rem;
 }
 
 .zen-hero__lead {
-  color: var(--sumi-light-fg1);
-  max-width: 52ch;
+  color: var(--zen-hero-lead);
+  font-size: 1.02rem;
+  max-width: 56ch;
+  margin: 0;
 }
 
 .zen-hero__motto-icon {
@@ -269,101 +253,251 @@
   width: 1.2em;
   height: 1.2em;
   vertical-align: middle;
-  margin-right: 0.3em;
+  margin-right: 0.28em;
+  color: var(--zen-hero-accent);
 }
 
-/* Buttons inside zen-hero — white primary, transparent outline secondary */
+.zen-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.4rem;
+}
+
 .zen-hero .md-button {
-  margin-top: 0.5rem;
-  margin-right: 0.5rem;
-  min-height: 2.6rem;
-  border-radius: var(--sumi-radius-control, 999px);
-  padding-inline: 1rem;
-  border: 1px solid rgba(11, 122, 92, 0.16);
-  color: var(--sumi-light-fg0) !important;
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 8px 18px rgba(8, 24, 28, 0.08);
-}
-
-.zen-hero .md-button:not(.md-button--primary) {
-  color: var(--sumi-light-fg0) !important;
+  margin: 0;
+  min-height: 2.8rem;
+  padding-inline: 1.1rem;
+  border-radius: var(--sumi-radius-control, 0.95rem);
+  border: 1px solid var(--zen-hero-button-border);
+  color: var(--zen-hero-button-text) !important;
+  background: var(--zen-hero-button-bg);
+  box-shadow: var(--zen-hero-button-shadow);
+  backdrop-filter: blur(8px);
+  transition:
+    transform var(--sumi-transition-fast),
+    border-color var(--sumi-transition-fast),
+    background-color var(--sumi-transition-fast),
+    box-shadow var(--sumi-transition-fast);
 }
 
 .zen-hero .md-button--primary {
-  background: var(--sumi-accent) !important;
-  border-color: var(--sumi-accent) !important;
-  color: #ffffff !important;
-  font-weight: 600;
+  background: var(--zen-hero-primary-bg) !important;
+  border-color: transparent !important;
+  color: var(--zen-hero-primary-text) !important;
+  font-weight: 700;
 }
 
 .zen-hero .md-button:hover {
-  background: #ffffff !important;
-  border-color: rgba(11, 122, 92, 0.28) !important;
-  color: var(--sumi-light-fg0) !important;
-  box-shadow: 0 12px 24px rgba(8, 24, 28, 0.12);
+  transform: translateY(-1px);
+  border-color: var(--zen-hero-button-hover-border) !important;
+  background: var(--zen-hero-button-hover-bg) !important;
+  box-shadow: var(--zen-hero-button-hover-shadow);
+}
+
+.zen-hero .md-button--primary:hover {
+  background: var(--zen-hero-primary-hover-bg) !important;
 }
 
 .zen-hero__media {
-  flex: 0 0 40%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  flex: 1 1 22rem;
+  max-width: 31rem;
+  padding: clamp(0.75rem, 1.6vw, 1rem);
+  border: 1px solid var(--zen-hero-media-border);
+  border-radius: 1.35rem;
+  background: var(--zen-hero-media-bg);
+  box-shadow: var(--zen-hero-media-shadow);
+}
+
+.zen-hero__media::before {
+  content: "";
+  position: absolute;
+  inset: 8% 10% auto;
+  height: 40%;
+  border-radius: 999px;
+  background: var(--zen-hero-media-glow);
+  filter: blur(18px);
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .zen-hero__svg {
+  position: relative;
+  display: block;
   width: 100%;
-  max-width: 460px;
   height: auto;
-  filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.24));
-  opacity: 0.98;
+  border-radius: 1rem;
+  border: 1px solid var(--zen-hero-svg-border);
+  box-shadow: var(--zen-hero-svg-shadow);
 }
 
-/* Dark mode adjustments */
+:is(html, body)[data-md-color-scheme="default"] .zen-hero {
+  --zen-hero-stage-bg:
+    linear-gradient(148deg,
+      color-mix(in oklch, var(--sumi-light-bg0) 90%, var(--zen-moon-100) 10%) 0%,
+      color-mix(in oklch, var(--sumi-light-bg0) 78%, var(--zen-mist-100) 22%) 46%,
+      color-mix(in oklch, var(--sumi-light-bg1) 84%, var(--zen-mountain-100) 16%) 100%);
+  --zen-hero-stage-glow:
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.78) 0%, transparent 24%),
+    radial-gradient(circle at 82% 14%, color-mix(in oklch, var(--zen-moon-100) 68%, transparent) 0%, transparent 22%),
+    radial-gradient(circle at 72% 74%, color-mix(in oklch, var(--zen-mist-150) 42%, transparent) 0%, transparent 30%);
+  --zen-hero-stage-overlay:
+    linear-gradient(112deg, rgba(255, 255, 255, 0.58) 0%, rgba(255, 255, 255, 0.12) 38%, transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 42%),
+    radial-gradient(circle at 32% 104%, color-mix(in oklch, var(--zen-mist-200) 48%, transparent) 0%, transparent 34%);
+  --zen-hero-stage-border: color-mix(in oklch, var(--sumi-light-fg0) 10%, transparent);
+  --zen-hero-stage-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  --zen-hero-stage-shadow: 0 26px 58px rgba(92, 106, 107, 0.12);
+  --zen-hero-stage-mist: color-mix(in oklch, var(--zen-mist-150) 62%, transparent);
+  --zen-hero-eyebrow-bg:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.82) 0%,
+      color-mix(in oklch, var(--sumi-light-bg1) 90%, var(--zen-mist-100) 10%) 100%);
+  --zen-hero-eyebrow-border: color-mix(in oklch, var(--sumi-light-fg0) 11%, transparent);
+  --zen-hero-eyebrow-text: color-mix(in oklch, var(--sumi-light-fg1) 80%, var(--sumi-accent-muted) 20%);
+  --zen-hero-eyebrow-shadow: 0 12px 30px rgba(103, 112, 111, 0.12);
+  --zen-hero-heading: var(--sumi-light-fg0);
+  --zen-hero-heading-shadow: 0 10px 24px rgba(255, 255, 255, 0.42);
+  --zen-hero-motto: color-mix(in oklch, var(--sumi-light-fg1) 78%, var(--zen-forest-ridge-700) 22%);
+  --zen-hero-body: color-mix(in oklch, var(--sumi-light-fg1) 86%, var(--zen-forest-ridge-700) 14%);
+  --zen-hero-lead: color-mix(in oklch, var(--sumi-light-fg0) 90%, var(--zen-forest-ridge-700) 10%);
+  --zen-hero-accent: var(--sumi-accent);
+  --zen-hero-button-border: color-mix(in oklch, var(--sumi-light-fg0) 10%, transparent);
+  --zen-hero-button-text: var(--sumi-light-fg0);
+  --zen-hero-button-bg: rgba(255, 255, 255, 0.5);
+  --zen-hero-button-shadow: 0 14px 28px rgba(120, 128, 127, 0.14);
+  --zen-hero-button-hover-border: color-mix(in oklch, var(--sumi-accent) 26%, var(--sumi-light-fg0) 10%);
+  --zen-hero-button-hover-bg: rgba(255, 255, 255, 0.76);
+  --zen-hero-button-hover-shadow: 0 18px 32px rgba(112, 121, 120, 0.18);
+  --zen-hero-primary-bg: linear-gradient(135deg, var(--sumi-accent-muted) 0%, var(--sumi-accent) 100%);
+  --zen-hero-primary-hover-bg: linear-gradient(135deg, color-mix(in oklch, var(--sumi-accent-muted) 84%, black) 0%, var(--sumi-accent-soft) 100%);
+  --zen-hero-primary-text: var(--zen-mist-100);
+  --zen-hero-media-border: color-mix(in oklch, var(--sumi-light-fg0) 9%, transparent);
+  --zen-hero-media-bg:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.74) 0%,
+      color-mix(in oklch, var(--sumi-light-bg1) 88%, var(--zen-mist-100) 12%) 100%);
+  --zen-hero-media-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.84),
+    0 24px 48px rgba(110, 119, 119, 0.16);
+  --zen-hero-media-glow: radial-gradient(circle, color-mix(in oklch, var(--zen-moon-100) 56%, transparent) 0%, transparent 72%);
+  --zen-hero-svg-border: color-mix(in oklch, var(--sumi-light-fg0) 9%, transparent);
+  --zen-hero-svg-shadow: 0 18px 34px rgba(93, 104, 104, 0.16);
+}
+
 :is(html, body)[data-md-color-scheme="slate"] .zen-hero {
-  background:
-    radial-gradient(circle at 18% 24%, rgba(63, 217, 168, 0.16), transparent 24%),
-    radial-gradient(circle at 82% 20%, rgba(114, 232, 196, 0.10), transparent 22%),
-    linear-gradient(180deg, #153036 0%, #193842 42%, #1b2c37 100%);
-  border-bottom-color: rgba(114, 232, 196, 0.18);
+  --zen-hero-stage-bg:
+    linear-gradient(152deg,
+      color-mix(in oklch, var(--zen-forest-night-950) 88%, black) 0%,
+      color-mix(in oklch, var(--zen-forest-night-900) 82%, var(--zen-cedar-900) 18%) 48%,
+      color-mix(in oklch, var(--zen-forest-ridge-900) 80%, var(--zen-forest-night-850) 20%) 100%);
+  --zen-hero-stage-glow:
+    radial-gradient(circle at 76% 18%, rgba(223, 243, 234, 0.16) 0%, transparent 18%),
+    radial-gradient(circle at 16% 82%, rgba(63, 217, 168, 0.12) 0%, transparent 24%),
+    radial-gradient(circle at 52% 58%, rgba(219, 232, 226, 0.07) 0%, transparent 34%);
+  --zen-hero-stage-overlay:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.03) 0%, transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 40%),
+    radial-gradient(circle at 54% 112%, rgba(42, 76, 70, 0.32) 0%, transparent 38%);
+  --zen-hero-stage-border: color-mix(in oklch, var(--zen-mist-100) 12%, transparent);
+  --zen-hero-stage-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --zen-hero-stage-shadow: 0 28px 64px rgba(0, 0, 0, 0.28);
+  --zen-hero-stage-mist: rgba(239, 246, 241, 0.13);
+  --zen-hero-eyebrow-bg:
+    linear-gradient(180deg,
+      rgba(15, 26, 29, 0.56) 0%,
+      rgba(20, 36, 33, 0.82) 100%);
+  --zen-hero-eyebrow-border: color-mix(in oklch, var(--zen-mist-100) 16%, transparent);
+  --zen-hero-eyebrow-text: rgba(239, 246, 241, 0.86);
+  --zen-hero-eyebrow-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+  --zen-hero-heading: #ffffff;
+  --zen-hero-heading-shadow: 0 18px 34px rgba(0, 0, 0, 0.3);
+  --zen-hero-motto: rgba(228, 223, 212, 0.8);
+  --zen-hero-body: rgba(239, 246, 241, 0.82);
+  --zen-hero-lead: rgba(239, 246, 241, 0.94);
+  --zen-hero-accent: var(--zen-mist-100);
+  --zen-hero-button-border: color-mix(in oklch, var(--zen-mist-100) 20%, transparent);
+  --zen-hero-button-text: var(--zen-mist-100);
+  --zen-hero-button-bg: rgba(255, 255, 255, 0.04);
+  --zen-hero-button-shadow: 0 14px 28px rgba(8, 16, 18, 0.22);
+  --zen-hero-button-hover-border: color-mix(in oklch, var(--zen-mist-100) 30%, transparent);
+  --zen-hero-button-hover-bg: rgba(255, 255, 255, 0.08);
+  --zen-hero-button-hover-shadow: 0 18px 32px rgba(8, 16, 18, 0.28);
+  --zen-hero-primary-bg: linear-gradient(135deg, var(--sumi-accent-dark) 0%, var(--sumi-accent) 100%);
+  --zen-hero-primary-hover-bg: linear-gradient(135deg, var(--sumi-accent-dark-soft) 0%, var(--sumi-accent-soft) 100%);
+  --zen-hero-primary-text: #102227;
+  --zen-hero-media-border: color-mix(in oklch, var(--zen-mist-100) 14%, transparent);
+  --zen-hero-media-bg:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.02) 100%);
+  --zen-hero-media-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 24px 48px rgba(6, 14, 16, 0.28);
+  --zen-hero-media-glow: radial-gradient(circle, rgba(223, 243, 234, 0.16) 0%, transparent 70%);
+  --zen-hero-svg-border: color-mix(in oklch, var(--zen-mist-100) 12%, transparent);
+  --zen-hero-svg-shadow: 0 22px 42px rgba(0, 0, 0, 0.3);
 }
 
-:is(html, body)[data-md-color-scheme="slate"] .zen-hero__content>p:not(.zen-hero__motto) {
-  color: rgba(237, 244, 238, 0.92);
-}
-
-:is(html, body)[data-md-color-scheme="slate"] .zen-hero__motto {
-  color: rgba(228, 223, 212, 0.8);
-}
-
-:is(html, body)[data-md-color-scheme="slate"] .zen-hero__eyebrow {
-  border-color: rgba(114, 232, 196, 0.18);
-  background: rgba(16, 34, 36, 0.52);
-  color: rgba(237, 244, 238, 0.86);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
-}
-
-:is(html, body)[data-md-color-scheme="slate"] .zen-hero__lead {
-  color: rgba(237, 244, 238, 0.92);
-}
-
-:is(html, body)[data-md-color-scheme="slate"] .zen-hero .md-button:not(.md-button--primary) {
-  color: #18222b !important;
-  border-color: rgba(228, 223, 212, 0.28) !important;
-}
-
-/* Responsive */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 980px) {
   .zen-hero {
-    flex-direction: column;
-    text-align: center;
-    min-height: unset;
+    gap: 1.75rem;
+    padding: 1.75rem;
   }
 
-  .zen-hero__eyebrow {
+  .zen-hero__content h1 {
+    max-width: 12ch;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  .md-typeset .hero-container,
+  .md-typeset .hero-section,
+  .hero-cta,
+  .zen-hero {
+    margin-inline: 0;
+  }
+
+  .zen-hero {
+    flex-direction: column;
+    align-items: stretch;
+    min-height: auto;
+  }
+
+  .zen-hero__content {
+    max-width: none;
+  }
+
+  .zen-hero__content h1 {
+    max-width: none;
+  }
+
+  .zen-hero__actions {
+    justify-content: flex-start;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .zen-hero {
+    padding: 1.35rem;
+    border-radius: 1.2rem;
+  }
+
+  .zen-hero__eyebrow,
+  .zen-hero__actions {
     justify-content: center;
   }
 
-  .zen-hero__media {
-    display: none;
+  .zen-hero__content {
+    text-align: center;
+  }
+
+  .zen-hero__actions {
+    gap: 0.6rem;
+  }
+
+  .zen-hero .md-button {
+    width: 100%;
+    justify-content: center;
   }
 }

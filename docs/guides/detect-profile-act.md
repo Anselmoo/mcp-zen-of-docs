@@ -9,17 +9,17 @@ tags:
 
 # Detect → Profile → Act
 
-Every tool in mcp-zen-of-docs follows the same three-step pattern. Understanding it
-explains why the tools work without configuration — and why the output is correct on the
-first try.
+Every high-quality docs change starts the same way: identify the framework, resolve the
+primitive behavior, then write or validate with that context. This is the core workflow that
+keeps mcp-zen-of-docs predictable.
 
 ---
 
 ## The problem
 
-- `!!! note`, `:::note`, `::: info`, `<Aside>` — all four mean "note admonition". Three of four will render as raw text in any given project.
-- AI models train on all frameworks at once. Without context, output is a statistical blend.
-- The fix isn't prompt engineering — it's reading the facts from the project before acting.
+- `!!! note`, `:::note`, and framework-specific component syntax can all mean the same thing.
+- AI models train on all of those forms at once, so generic output is often a blend.
+- Prompting harder does not solve that. Reading the project first does.
 
 ---
 
@@ -27,91 +27,122 @@ first try.
 
 ```mermaid
 flowchart LR
-    D["① Detect\n\nScan project_root for config files.\nReturn: framework · docs_root · version."]
-    P["② Profile\n\nLoad the framework's AuthoringProfile.\nReturn: 16 primitives → native syntax."]
-    A["③ Act\n\nScaffold · validate · generate · onboard.\nNative output only — no guessing."]
-    D -->|"framework name"| P
-    P -->|"primitive syntax"| A
+    D["① Detect\n\nInspect project signals.\nReturn framework, confidence, support level, and detected primitives."]
+    P["② Profile\n\nResolve one of 22 canonical primitives.\nReturn support data or a rendered snippet."]
+    A["③ Act\n\nScaffold, generate, validate, or onboard using the detected context."]
+    D -->|framework + signals| P
+    P -->|support or snippet| A
 ```
-
-Three steps. Each feeds the next. The AI never guesses.
 
 ---
 
 ## Step 1 — Detect
 
-**What it does:** Scans `project_root` for framework config files and identifies which
-framework is present.
+**What it does:** scans `project_root` and returns the most likely documentation framework,
+plus supporting evidence.
 
-**Config files scanned:**
+**What matters most in the response:**
 
-| Framework | File |
-|-----------|------|
-| Zensical | `zensical.toml` or `mkdocs.yml` |
-| Docusaurus | `docusaurus.config.js` / `.ts` |
-| VitePress | `.vitepress/config.*` |
-| Starlight | `astro.config.mjs` / `.ts` |
+- `framework`
+- `support_level`
+- `confidence`
+- `matched_signals`
+- `authoring_primitives`
 
-**What it returns:** A `FrameworkDetectionResult` with `framework`, `version`, `docs_root`,
-`config_file`, and `support_matrix`.
+Example shape from `detect(mode="context")`:
 
-```python
-detect(mode="full", project_root=".")
-# → {
-#     "framework": "zensical",
-#     "version": "1.x",
-#     "docs_root": "docs",
-#     "config_file": "zensical.toml",
-#     "support_matrix": {"admonitions": "native", "diagrams": "native", ...}
-#   }
+```json
+{
+  "status": "success",
+  "tool": "detect_docs_context",
+  "project_root": ".",
+  "framework_detection": {
+    "best_match": {
+      "framework": "zensical",
+      "support_level": "full",
+      "confidence": 1.0,
+      "matched_signals": ["zensical.toml", "pyproject:zensical"],
+      "authoring_primitives": ["frontmatter", "heading-h1", "admonition", "code-fence", "..."]
+    }
+  }
+}
 ```
-
-**What the next step uses:** The `framework` name to load the correct profile.
 
 ---
 
 ## Step 2 — Profile
 
-**What it does:** Loads the `AuthoringProfile` for the detected framework. This object
-maps all 16 universal authoring primitives to the framework's native syntax.
+**What it does:** resolves how a specific primitive behaves in a specific framework.
 
-**What it returns:** A profile with a `render_primitive(name, **kwargs)` method and a
-`support_matrix()` dict.
+The `profile` tool has three useful modes:
 
-```python
-profile(mode="resolve", framework="zensical", primitive="admonitions")
-# → '!!! note "Title"\n    Content indented 4 spaces.'
+- `show` — see the catalog of primitives and framework capability information
+- `resolve` — inspect one primitive in one framework
+- `translate` — compare a primitive across two frameworks
 
-profile(mode="resolve", framework="docusaurus", primitive="admonitions")
-# → ':::note[Title]\nContent here.\n:::'
+If you want support data only:
+
+```json
+{
+  "tool": "profile",
+  "arguments": {
+    "mode": "resolve",
+    "framework": "docusaurus",
+    "primitive": "tabs"
+  }
+}
 ```
 
-**What the next step uses:** The profile's `render_primitive` to emit correct syntax in
-every generated page.
+Example response shape:
+
+```json
+{
+  "status": "success",
+  "tool": "resolve_primitive",
+  "framework": "docusaurus",
+  "primitive": "tabs",
+  "mode": "support",
+  "support_lookup": {
+    "support_level": "partial"
+  },
+  "render_result": null
+}
+```
+
+If you want a framework-native snippet, switch to `resolution_mode="render"`:
+
+```json
+{
+  "tool": "profile",
+  "arguments": {
+    "mode": "resolve",
+    "framework": "zensical",
+    "primitive": "admonition",
+    "resolution_mode": "render",
+    "topic": "Prerequisites"
+  }
+}
+```
 
 ---
 
 ## Step 3 — Act
 
-**What it does:** Executes the requested operation — scaffold, validate, generate — using
-only the primitives the detected framework supports natively.
+**What it does:** applies the resolved context to a real job.
 
-No generic Markdown. No guessing. The act step produces output that renders correctly in
-the browser without any post-processing.
+Typical next actions:
 
-```python
-scaffold(doc_path="guides/auth.md", topic="OAuth authentication")
-# detect() → "zensical"
-# profile() → renders !!! note, === "Tab", ```mermaid
-# writes docs/guides/auth.md with correct Zensical syntax
-# adds entry to zensical.toml nav
-```
+- `scaffold` to create or enrich a page
+- `generate` to produce diagrams, changelogs, or reference material
+- `validate` to check structure and quality
+- `onboard` to initialize a full docs workflow in one pass
+
+Once a primitive is resolved, the assistant no longer needs to guess whether tabs are native,
+partial, or unsupported in that framework.
 
 ---
 
-## Composition
-
-A full MCP-assisted conversation — from user prompt to written page:
+## End-to-end example
 
 ```mermaid
 sequenceDiagram
@@ -121,35 +152,42 @@ sequenceDiagram
     participant P as profile
     participant S as scaffold
 
-    U->>A: "Write a page about OAuth"
+    U->>A: "Improve the quickstart page"
     A->>D: detect(project_root=".")
-    D-->>A: {framework: "zensical", docs_root: "docs"}
-    A->>P: profile(mode="resolve", framework="zensical", primitive="admonitions")
-    P-->>A: '!!! note "Title"\n    Content.'
-    A->>S: scaffold(doc_path="guides/oauth.md", topic="OAuth")
-    S-->>A: page written, nav updated
-    A-->>U: "Done — docs/guides/oauth.md created with correct Zensical syntax."
+    D-->>A: {framework: "zensical", matched_signals: ["zensical.toml", ...]}
+    A->>P: profile(mode="resolve", framework="zensical", primitive="admonition", resolution_mode="render")
+    P-->>A: {support_level: "full", snippet: "!!! note ..."}
+    A->>S: scaffold(mode="enrich", doc_path="docs/quickstart.md", ...)
+    S-->>A: page updated
+    A-->>U: "Done — the page now uses the native syntax for this framework."
 ```
 
-!!! note "Why not just let the model guess?"
-    Without tools, an assistant guesses syntax from training data — a blend of all four frameworks. The D→P→A chain anchors every decision to the facts in your config file. Reproducible and correct, not lucky.
+!!! note "Why this beats generic prompting"
+    The important gain is not eloquence. It is *constraint*. The workflow anchors every docs
+    edit to the repository's actual framework signals before content is generated.
 
 ---
 
-## What's Next
+## What to read next
 
 <div class="grid cards" markdown>
 
 -   :octicons-arrow-right-24: **Authoring Primitives**
 
-    The 16 primitives the profile maps — what they are and how they differ across frameworks.
+    See the full 22-primitive vocabulary the toolchain works with.
 
     [:octicons-arrow-right-24: Read more](primitives.md)
 
--   :octicons-arrow-right-24: **detect tool reference**
+-   :octicons-arrow-right-24: **profile tool reference**
 
-    Full parameter reference for the `detect` tool.
+    Learn the exact mode and parameter shapes for support lookups and rendered snippets.
 
-    [:octicons-arrow-right-24: Go there](../tools/detect.md)
+    [:octicons-arrow-right-24: Go there](../tools/profile.md)
+
+-   :octicons-arrow-right-24: **Quickstart**
+
+    Follow the same pattern in a practical setup flow.
+
+    [:octicons-arrow-right-24: Read quickstart](../quickstart.md)
 
 </div>
