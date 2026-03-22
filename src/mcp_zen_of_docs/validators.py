@@ -22,7 +22,6 @@ from .models import CheckDocsLinksRequest
 from .models import CheckDocsLinksResponse
 from .models import CheckLanguageStructureRequest
 from .models import CheckLanguageStructureResponse
-from .models import CheckOrphanDocsRequest
 from .models import CheckOrphanDocsResponse
 from .models import FrameworkName
 from .models import FrontmatterAuditRequest
@@ -78,6 +77,33 @@ def _load_docs_config(
                 return candidate, tomllib.load(fh)
         with candidate.open() as fh:
             return candidate, yaml.safe_load(fh) or {}
+    return None, None
+
+def _find_and_load_docs_config(
+    docs_root: Path,
+) -> tuple[Path, dict[str, object]] | tuple[None, None]:
+    """Find and parse the framework config file, checking docs_root and its parent.
+
+    Extends ``_load_docs_config`` by also searching the parent directory of
+    *docs_root* (i.e. the project root), which is where ``zensical.toml`` and
+    ``mkdocs.yml`` normally live.
+
+    Search order: docs_root → docs_root.parent, and within each directory:
+    ``zensical.toml`` → ``mkdocs.yml`` → ``mkdocs.yaml``.
+
+    Returns:
+        A ``(config_path, config_dict)`` pair, or ``(None, None)`` if none found.
+    """
+    for search_dir in (docs_root, docs_root.parent):
+        for name in _CONFIG_CANDIDATES:
+            candidate = search_dir / name
+            if not candidate.exists():
+                continue
+            if candidate.suffix == ".toml":
+                with candidate.open("rb") as fh:
+                    return candidate, tomllib.load(fh)
+            with candidate.open() as fh:
+                return candidate, yaml.safe_load(fh) or {}
     return None, None
 
 
@@ -317,43 +343,84 @@ def check_docs_links(
 
 
 def check_orphan_docs(
-    docs_root: Path | str = "docs", mkdocs_file: Path | str = "mkdocs.yml"
+    docs_root: Path | str = "docs", mkdocs_file: Path | str | None = None
 ) -> CheckOrphanDocsResponse:
-    """Find docs files that are not referenced in mkdocs nav.
+    """Find docs files that are not referenced in the docs nav configuration.
 
     Compares the set of Markdown files on disk under *docs_root* against
-    the paths declared in the MkDocs ``nav`` configuration and returns any
-    files that are not referenced.
+    the paths declared in the nav configuration and returns any files that
+    are not referenced.
+
+    Supports both MkDocs YAML (``mkdocs.yml`` / ``mkdocs.yaml``) and Zensical
+    TOML (``zensical.toml``) nav formats.  When *mkdocs_file* is ``None`` the
+    function auto-detects the config by searching *docs_root* first, then the
+    project root (``docs_root.parent``).
 
     Args:
         docs_root: Root directory containing Markdown documentation files.
             Defaults to ``"docs"``.
-        mkdocs_file: Path to the MkDocs configuration file that defines
-            the ``nav`` structure. Defaults to ``"mkdocs.yml"``.
+        mkdocs_file: Explicit path to the docs config file.  When ``None``
+            (default), auto-detection is attempted.
 
     Returns:
         Response with status, sorted list of orphan file paths relative to
-        *docs_root*, and an error message when either path does not exist.
+        *docs_root*, an optional ``detected_config`` path when auto-detection
+        was used, and an error message when resolution fails.
     """
-    request = CheckOrphanDocsRequest(docs_root=Path(docs_root), mkdocs_file=Path(mkdocs_file))
-    docs_path = request.docs_root
-    mkdocs_path = request.mkdocs_file
-    if not docs_path.exists() or not mkdocs_path.exists():
+    docs_path = Path(docs_root)
+    explicit_path = Path(mkdocs_file) if mkdocs_file is not None else None
+
+    if not docs_path.exists():
         return CheckOrphanDocsResponse(
             status="error",
-            docs_root=request.docs_root,
-            mkdocs_file=request.mkdocs_file,
+            docs_root=docs_path,
+            mkdocs_file=explicit_path or Path("mkdocs.yml"),
             message="docs_root or mkdocs_file does not exist.",
         )
 
-    mkdocs_data = yaml.safe_load(mkdocs_path.read_text(encoding="utf-8")) or {}
-    referenced = _flatten_nav(mkdocs_data.get("nav"))
+    # Resolve the config path: use explicit if given and exists, else auto-detect.
+    detected_config: Path | None = None
+    if explicit_path is not None and explicit_path.exists():
+        config_path: Path | None = explicit_path
+        config_data: dict[str, object] | None = None  # loaded below
+    elif explicit_path is not None:
+        # Caller gave a specific path that doesn't exist → error.
+        return CheckOrphanDocsResponse(
+            status="error",
+            docs_root=docs_path,
+            mkdocs_file=explicit_path,
+            message="docs_root or mkdocs_file does not exist.",
+        )
+    else:
+        found_path, found_data = _find_and_load_docs_config(docs_path)
+        if found_path is None:
+            return CheckOrphanDocsResponse(
+                status="error",
+                docs_root=docs_path,
+                mkdocs_file=Path("mkdocs.yml"),
+                message="No docs config found (tried zensical.toml, mkdocs.yml, mkdocs.yaml).",
+            )
+        config_path = found_path
+        config_data = found_data
+        detected_config = found_path
+
+    # Load config data when an explicit path was resolved above without loading.
+    if config_data is None and config_path is not None:
+        if config_path.suffix == ".toml":
+            with config_path.open("rb") as fh:
+                config_data = tomllib.load(fh)
+        else:
+            config_data = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+
+    nav_raw = (config_data or {}).get("nav")
+    referenced = _flatten_nav(nav_raw)
     docs_files = {path.relative_to(docs_path).as_posix() for path in _markdown_files(docs_path)}
     orphans = sorted(docs_files - referenced)
     return CheckOrphanDocsResponse(
         status="success" if not orphans else "warning",
-        docs_root=request.docs_root,
-        mkdocs_file=request.mkdocs_file,
+        docs_root=docs_path,
+        mkdocs_file=config_path or Path("mkdocs.yml"),
+        detected_config=detected_config,
         orphans=orphans,
     )
 

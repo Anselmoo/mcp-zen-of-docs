@@ -59,6 +59,7 @@ class BoilerplateGenerationErrorCode(StrEnum):
     GATE_NOT_CONFIRMED = "gate-not-confirmed"
     INIT_NOT_COMPLETE = "init-not-complete"
     PROJECT_ROOT_INVALID = "project-root-invalid"
+    WRITE_FAILED = "write-failed"
 
 
 class ReadinessLevel(StrEnum):
@@ -227,8 +228,12 @@ class CheckOrphanDocsRequest(ModelBase):
     docs_root: Path = Field(
         default=Path("docs"), description="Root directory containing Markdown documentation."
     )
-    mkdocs_file: Path = Field(
-        default=Path("mkdocs.yml"), description="MkDocs configuration file path."
+    mkdocs_file: Path | None = Field(
+        default=None,
+        description=(
+            "Docs config file path (mkdocs.yml or zensical.toml). "
+            "When None, auto-detection searches docs_root and its parent directory."
+        ),
     )
 
 
@@ -238,7 +243,11 @@ class CheckOrphanDocsResponse(ModelBase):
     status: ToolStatus = Field(description="Tool execution status.")
     tool: str = Field(default="check_orphan_docs", description="Tool identifier.")
     docs_root: Path = Field(description="Validated documentation root directory.")
-    mkdocs_file: Path = Field(description="MkDocs configuration file path used for nav analysis.")
+    mkdocs_file: Path = Field(description="Docs config file path used for nav analysis.")
+    detected_config: Path | None = Field(
+        default=None,
+        description="Auto-detected config path when no explicit mkdocs_file was provided.",
+    )
     orphans: list[str] = Field(
         default_factory=list, description="Markdown paths not referenced in nav."
     )
@@ -1336,6 +1345,25 @@ class DocsDeployPipelineArtifactMetadata(ModelBase):
     )
 
 
+class FileWriteRecord(BaseModel):
+    """Tracks a single file write for atomic rollback; excluded from JSON serialization.
+
+    Captures whether the file was newly created or pre-existing so that
+    rollback can restore original content rather than deleting the file.
+    """
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=False, frozen=True)
+
+    path: Path = Field(description="Path to the file that was written.")
+    was_preexisting: bool = Field(
+        description="True when the file existed before writing; False when newly created."
+    )
+    original_content: str | None = Field(
+        default=None,
+        description="Original UTF-8 content before overwrite; None for newly created files.",
+    )
+
+
 class InitProjectRequest(ModelBase):
     """Input contract for project initialization workflows."""
 
@@ -1380,6 +1408,14 @@ class InitProjectResponse(ModelBase):
         description="Generated docs deploy pipeline artifacts and their metadata.",
     )
     message: str | None = Field(default=None, description="Error or warning details when present.")
+    write_records: list[FileWriteRecord] = Field(
+        default_factory=list,
+        exclude=True,
+        description=(
+            "Internal rollback records tracking pre-existing vs new files; "
+            "excluded from JSON serialization."
+        ),
+    )
 
 
 class CheckInitStatusRequest(ModelBase):
@@ -2411,8 +2447,12 @@ class ValidateDocsRequest(ModelBase):
     docs_root: Path = Field(
         default=Path("docs"), description="Root directory containing Markdown documentation."
     )
-    mkdocs_file: Path = Field(
-        default=Path("mkdocs.yml"), description="MkDocs configuration file path."
+    mkdocs_file: Path | None = Field(
+        default=None,
+        description=(
+            "Docs config file path (mkdocs.yml or zensical.toml). "
+            "When None, auto-detection searches docs_root and its parent directory."
+        ),
     )
     external_mode: Literal["report", "ignore"] = Field(
         default="report",
@@ -2444,7 +2484,14 @@ class ValidateDocsResponse(ModelBase):
     status: ToolStatus = Field(description="Tool execution status.")
     tool: str = Field(default="validate_docs", description="Tool identifier.")
     docs_root: Path = Field(description="Validated documentation root directory.")
-    mkdocs_file: Path = Field(description="MkDocs configuration file path used for nav analysis.")
+    mkdocs_file: Path = Field(description="Docs config file path used for nav analysis.")
+    detected_config: Path | None = Field(
+        default=None,
+        description=(
+            "Auto-detected config path (zensical.toml or mkdocs.yml) used when no explicit "
+            "mkdocs_file was provided. None when the caller supplied an explicit path."
+        ),
+    )
     checks: list[DocsValidationCheck] = Field(
         default_factory=list,
         description="Validation dimensions executed for this run.",
@@ -2486,7 +2533,7 @@ class OnboardProjectRequest(ModelBase):
         default=None, description="Optional output Markdown file path for onboarding skeleton."
     )
     mode: OnboardProjectMode = Field(
-        default=OnboardProjectMode.SKELETON,
+        default=OnboardProjectMode.FULL,
         description="Onboarding workflow mode to execute.",
     )
     include_checklist: bool = Field(
@@ -3819,6 +3866,7 @@ __all__ = [
     "EphemeralInstallResponse",
     "ExploreStageContract",
     "ExploreStoryStage",
+    "FileWriteRecord",
     "FrameworkAdvantage",
     "FrameworkAdvantageReference",
     "FrameworkDetectionResult",

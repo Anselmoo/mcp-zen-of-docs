@@ -87,15 +87,23 @@ uvx --from mcp-zen-of-docs mcp-zen-of-docs --help
 # Or install globally
 pip install mcp-zen-of-docs
 
-# Scaffold a documentation page
-mcp-zen-of-docs scaffold doc --doc-path docs/new-page.md --title "My Page"
+# Human-friendly validation summary
+mcp-zen-of-docs --human validate --docs-root docs --check orphans
 
-# Validate your docs
-mcp-zen-of-docs validate all --docs-root docs
+# Human-friendly setup flow
+mcp-zen-of-docs --human setup --project-root . --mode skeleton
 
-# Score documentation quality
-mcp-zen-of-docs validate score --docs-root docs
+# Create a new page scaffold
+mcp-zen-of-docs --human page new docs/getting-started.md --title "Getting started"
+
+# Check framework-native syntax for a primitive
+mcp-zen-of-docs --human syntax check admonitions --framework zensical
+
+# Raw JSON for scripts and CI
+mcp-zen-of-docs --json validate --docs-root docs --check orphans
 ```
+
+TTY sessions default to human-readable summaries. Use `--json` for machine-readable output. The public CLI surface is now task-shaped around commands such as `status`, `setup`, `validate`, `page`, `diagram`, `asset`, `integrations`, and `code-doc`, while legacy MCP-shaped names remain available as hidden compatibility aliases.
 
 ## MCP Tools at a Glance
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 
 from contextlib import asynccontextmanager
+from contextlib import suppress as ctx_suppress
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as package_version
 from pathlib import Path
@@ -96,6 +97,7 @@ from .models import EnrichDocRequest
 from .models import EnrichDocResponse
 from .models import EphemeralInstallRequest
 from .models import EphemeralInstallResponse
+from .models import FileWriteRecord
 from .models import FrameworkName
 from .models import FrontmatterAuditRequest
 from .models import FrontmatterAuditResponse
@@ -149,6 +151,7 @@ from .models import VisualAssetOperation
 from .models import WriteDocRequest
 from .models import WriteDocResponse
 from .models import ZensicalExtension
+from .validators import _find_and_load_docs_config
 from .validators import audit_frontmatter_impl
 from .validators import batch_scaffold_docs as batch_scaffold_docs_impl
 from .validators import check_docs_links as check_docs_links_impl
@@ -616,16 +619,21 @@ def enrich_doc(
 
 def validate_docs(  # noqa: PLR0913
     docs_root: str = "docs",
-    mkdocs_file: str = "mkdocs.yml",
+    mkdocs_file: str | None = None,
     external_mode: str = "report",
     required_headers: list[str] | None = None,
     required_frontmatter: list[str] | None = None,
     checks: list[DocsValidationCheck] | None = None,
 ) -> ValidateDocsResponse:
-    """Run consolidated docs validations across links, orphan docs, and structure."""
+    """Run consolidated docs validations across links, orphan docs, and structure.
+
+    When *mkdocs_file* is ``None`` (default), the docs config is auto-detected
+    by searching *docs_root* then *docs_root*.parent for ``zensical.toml``,
+    ``mkdocs.yml``, and ``mkdocs.yaml`` in that order.
+    """
     request = ValidateDocsRequest(
         docs_root=Path(docs_root),
-        mkdocs_file=Path(mkdocs_file),
+        mkdocs_file=Path(mkdocs_file) if mkdocs_file is not None else None,
         external_mode=_normalize_external_mode(external_mode),
         required_headers=required_headers,
         required_frontmatter=required_frontmatter,
@@ -642,6 +650,14 @@ def validate_docs(  # noqa: PLR0913
     structure: CheckLanguageStructureResponse | None = None
     issue_count = 0
 
+    # Auto-detect docs config when not explicitly provided.
+    detected_config: Path | None = None
+    if request.mkdocs_file is None:
+        found_path, _ = _find_and_load_docs_config(request.docs_root)
+        if found_path is not None:
+            detected_config = found_path
+    resolved_mkdocs = detected_config or request.mkdocs_file or Path("mkdocs.yml")
+
     if DocsValidationCheck.LINKS in request.checks:
         links = check_docs_links_impl(
             docs_root=request.docs_root,
@@ -653,7 +669,7 @@ def validate_docs(  # noqa: PLR0913
     if DocsValidationCheck.ORPHANS in request.checks:
         orphans = check_orphan_docs_impl(
             docs_root=request.docs_root,
-            mkdocs_file=request.mkdocs_file,
+            mkdocs_file=resolved_mkdocs,
         )
         component_statuses.append(orphans.status)
         issue_count += len(orphans.orphans)
@@ -671,7 +687,8 @@ def validate_docs(  # noqa: PLR0913
     return ValidateDocsResponse(
         status=status,
         docs_root=request.docs_root,
-        mkdocs_file=request.mkdocs_file,
+        mkdocs_file=resolved_mkdocs,
+        detected_config=detected_config,
         checks=request.checks,
         links=links,
         orphans=orphans,
@@ -699,6 +716,28 @@ def score_docs_quality(docs_root: str = "docs") -> ScoreDocsQualityResponse:
     )
 
 
+def _rollback_onboard_files(
+    *,
+    init_files: list[FileWriteRecord],
+    skeleton_output: Path | None,
+) -> None:
+    """Best-effort cleanup/restore of files written during a failed FULL onboard run.
+
+    Pre-existing files are restored to their original content; newly created
+    files are deleted.  The skeleton output file is always deleted when present
+    because it is never pre-existing in the onboarding flow.
+    """
+    for record in init_files:
+        with ctx_suppress(OSError):
+            if record.was_preexisting and record.original_content is not None:
+                record.path.write_text(record.original_content, encoding="utf-8")
+            else:
+                record.path.unlink(missing_ok=True)
+    if skeleton_output is not None and skeleton_output.exists():
+        with ctx_suppress(OSError):
+            skeleton_output.unlink(missing_ok=True)
+
+
 async def onboard_project(  # noqa: PLR0913
     project_root: str = ".",
     project_path: str | None = None,
@@ -709,7 +748,7 @@ async def onboard_project(  # noqa: PLR0913
     includeMemories: bool | None = None,  # noqa: N803
     includeReferences: bool | None = None,  # noqa: N803
     output_file: str | None = None,
-    mode: OnboardProjectMode = OnboardProjectMode.SKELETON,
+    mode: OnboardProjectMode = OnboardProjectMode.FULL,
     include_checklist: bool = True,
     overwrite: bool = False,
     include_shell_scripts: bool = True,
@@ -826,13 +865,41 @@ async def onboard_project(  # noqa: PLR0913
         statuses.append(framework_init_result.status)
 
     if request.mode in {OnboardProjectMode.BOILERPLATE, OnboardProjectMode.FULL}:
+        # In FULL mode the caller has explicitly requested the comprehensive flow,
+        # so the boilerplate gate is treated as implicitly confirmed rather than
+        # requiring a separate gate_confirmed=True flag.
+        effective_gate = request.gate_confirmed or (request.mode is OnboardProjectMode.FULL)
         boilerplate_result = generate_doc_boilerplate_impl(
             project_root=request.project_root,
-            gate_confirmed=request.gate_confirmed,
+            gate_confirmed=effective_gate,
             overwrite=request.overwrite,
             shell_targets=request.shell_targets,
         )
         statuses.append(boilerplate_result.status)
+        # Cross-step atomicity: if boilerplate fails after init already wrote files,
+        # roll back init artifacts to avoid a partially-onboarded repo.
+        if (
+            boilerplate_result.status == "error"
+            and init_result is not None
+            and init_result.write_records
+        ):
+            _rollback_onboard_files(
+                init_files=init_result.write_records,
+                skeleton_output=request.output_file,
+            )
+            rollback_message = "Rolled back init artifacts after boilerplate failure."
+            combined_message = (
+                rollback_message
+                if not init_result.message
+                else f"{init_result.message} {rollback_message}"
+            )
+            init_result = init_result.model_copy(
+                update={
+                    "created_files": [],
+                    "initialized": False,
+                    "message": combined_message,
+                }
+            )
     if warning_metadata is not None:
         statuses.append("warning")
 
@@ -1481,7 +1548,7 @@ async def scaffold(  # noqa: D417, PLR0913
 def validate(  # noqa: D417, PLR0913
     mode: str = "all",
     docs_root: str = "docs",
-    mkdocs_file: str = "mkdocs.yml",
+    mkdocs_file: str | None = None,
     checks: list[str] | None = None,
     external_mode: str = "report",
     required_frontmatter: list[str] | None = None,
@@ -1641,7 +1708,7 @@ async def onboard(  # noqa: PLR0913
     dev_url: str | None = None,
     staging_url: str | None = None,
     production_url: str | None = None,
-    onboard_mode: str = "skeleton",
+    onboard_mode: str = "full",
     include_checklist: bool = True,
     include_shell_scripts: bool = True,
     shell_targets: list[str] | None = None,  # noqa: ARG001

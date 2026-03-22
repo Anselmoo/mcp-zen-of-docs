@@ -11,13 +11,31 @@ tags:
 This page brings together two different reference surfaces:
 
 1. **Python model reference** generated from the codebase.
-2. **Tool parameter reference** for the public MCP commands.
+2. **CLI + tool parameter reference** for the public commands.
 
 Use this page when you need precise signatures. If you want the narrative workflow, start with [Tools](../tools/index.md) or [Quickstart](../quickstart.md) first.
 
 <figure class="chapter-banner">
     <img src="../../assets/chapters/api-constellation.svg" alt="An API illustration showing a calm constellation of connected reference nodes." />
 </figure>
+
+---
+
+## CLI contract summary
+
+The redesigned CLI exposes one top-level binary:
+
+```text
+mcp-zen-of-docs [--human|--json] COMMAND [ARGS]...
+```
+
+Key behavior to remember:
+
+- **TTY / `--human`** prints concise terminal summaries.
+- **`--json`** preserves the raw payload for automation.
+- **`setup`** is the public CLI entrypoint for onboarding work.
+- **`validate`** without a subcommand runs the standard read-only validation checks.
+- **`story`** human mode returns warning/success summaries, while `--json` preserves orchestration details such as `question_items`, `answer_slots`, and `pipeline_context`.
 
 ---
 
@@ -41,6 +59,62 @@ Use this page when you need precise signatures. If you want the narrative workfl
         - StructureIssue
         - QualityIssue
       show_source: false
+
+---
+
+## Command reference shortcuts
+
+### status
+
+```text
+mcp-zen-of-docs status [--project-root PATH]
+```
+
+### setup
+
+```text
+mcp-zen-of-docs setup [--mode skeleton|init|boilerplate|full] ...
+mcp-zen-of-docs setup init <framework> [--project-root PATH]
+```
+
+### validate
+
+```text
+mcp-zen-of-docs validate [--docs-root PATH] [--mkdocs-file PATH] [--check links|orphans|structure] ...
+mcp-zen-of-docs validate score [--docs-root PATH]
+mcp-zen-of-docs validate frontmatter [--docs-root PATH] [--required-key TEXT] [--fix]
+mcp-zen-of-docs validate nav [--project-root PATH] [--mode audit|sync]
+```
+
+### page
+
+```text
+mcp-zen-of-docs page new <path> [--title TEXT] ...
+mcp-zen-of-docs page fill <path> [--content TEXT] ...
+mcp-zen-of-docs page write <path> [--topic TEXT] ...
+mcp-zen-of-docs page batch-new [--pages-json PATH|--plan-response-json PATH] ...
+```
+
+### syntax
+
+```text
+mcp-zen-of-docs syntax check <primitive> --framework <framework>
+mcp-zen-of-docs syntax convert <primitive> --from <framework> --to <framework>
+```
+
+### diagram / asset / integrations / code-doc / changelog
+
+```text
+mcp-zen-of-docs diagram create <description> [--type flowchart|sequence|...]
+mcp-zen-of-docs diagram render <mermaid-source> [--output-format svg|png]
+mcp-zen-of-docs asset create <kind> [--title TEXT]
+mcp-zen-of-docs asset write-svg <output-path> [--svg-markup TEXT|--svg-file PATH]
+mcp-zen-of-docs integrations init [--project-root PATH]
+mcp-zen-of-docs integrations artifact <instruction|prompt|agent> <file-stem> ...
+mcp-zen-of-docs code-doc coverage <path> [--language python|javascript|typescript|go|java|rust]
+mcp-zen-of-docs code-doc stubs <path> [--language ...]
+mcp-zen-of-docs changelog <version> [--since-tag TAG] [--format keep-a-changelog|github-release]
+```
 
 ---
 

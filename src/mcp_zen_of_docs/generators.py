@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import contextlib
 import datetime
 import hashlib
 import os
@@ -26,6 +27,7 @@ from .infrastructure import capture_framework_detection_snapshot
 from .infrastructure.filesystem_adapter import discover_copilot_assets
 from .infrastructure.filesystem_adapter import discover_docs_deploy_pipelines
 from .infrastructure.filesystem_adapter import discover_shell_scripts
+from .infrastructure.filesystem_adapter import init_state_file
 from .infrastructure.filesystem_adapter import persist_init_state
 from .infrastructure.filesystem_adapter import required_init_artifacts
 from .infrastructure.filesystem_adapter import resolve_project_root
@@ -70,6 +72,7 @@ from .models import EnrichDocRequest
 from .models import EnrichDocResponse
 from .models import EphemeralInstallRequest
 from .models import EphemeralInstallResponse
+from .models import FileWriteRecord
 from .models import FrameworkInitSpec  # noqa: F401  (re-exported for server convenience)
 from .models import FrameworkName
 from .models import GatedBoilerplateGenerationRequest
@@ -214,12 +217,26 @@ def _resolve_project_root(project_root: Path | str) -> Path:
     return resolve_project_root(project_root)
 
 
+def _rollback_files(records: list[FileWriteRecord]) -> None:
+    """Restore pre-existing files to their original content; delete newly created files.
+
+    Best-effort: individual OSError failures are suppressed so that the rollback
+    continues to process the remaining records.
+    """
+    for record in records:
+        with contextlib.suppress(OSError):
+            if record.was_preexisting and record.original_content is not None:
+                record.path.write_text(record.original_content, encoding="utf-8")
+            else:
+                record.path.unlink(missing_ok=True)
+
+
 def _write_shell_script(
     project_root: Path,
     *,
     shell: ShellScriptType,
     overwrite: bool,
-) -> tuple[ShellScriptArtifactMetadata, Path | None]:
+) -> tuple[ShellScriptArtifactMetadata, FileWriteRecord | None]:
     return write_shell_script(project_root, shell=shell, overwrite=overwrite)
 
 
@@ -266,7 +283,7 @@ def _write_copilot_assets(
     project_root: Path,
     *,
     overwrite: bool,
-) -> tuple[list[CopilotInitArtifactMetadata], list[Path]]:
+) -> tuple[list[CopilotInitArtifactMetadata], list[FileWriteRecord]]:
     return write_copilot_assets(project_root, overwrite=overwrite)
 
 
@@ -279,7 +296,7 @@ def _write_docs_deploy_pipeline(
     *,
     provider: DocsDeployProvider,
     overwrite: bool,
-) -> tuple[DocsDeployPipelineArtifactMetadata, Path | None]:
+) -> tuple[DocsDeployPipelineArtifactMetadata, FileWriteRecord | None]:
     return write_docs_deploy_pipeline(
         project_root,
         provider=provider,
@@ -1338,44 +1355,69 @@ def init_project(
         )
 
     shell_scripts: list[ShellScriptArtifactMetadata] = []
-    created_files: list[Path] = []
-    for shell in ShellScriptType:
-        artifact, created_file = _write_shell_script(
+    write_records: list[FileWriteRecord] = []
+    copilot_assets: list[CopilotInitArtifactMetadata] = []
+    deploy_pipelines: list[DocsDeployPipelineArtifactMetadata] = []
+    try:
+        for shell in ShellScriptType:
+            artifact, write_record = _write_shell_script(
+                resolved_root,
+                shell=shell,
+                overwrite=request.overwrite,
+            )
+            shell_scripts.append(artifact)
+            if write_record is not None:
+                write_records.append(write_record)
+
+        copilot_assets, copilot_write_records = _write_copilot_assets(
             resolved_root,
-            shell=shell,
             overwrite=request.overwrite,
         )
-        shell_scripts.append(artifact)
-        if created_file is not None:
-            created_files.append(created_file)
+        write_records.extend(copilot_write_records)
+        deploy_pipeline, deploy_pipeline_record = _write_docs_deploy_pipeline(
+            resolved_root,
+            provider=request.deploy_provider,
+            overwrite=request.overwrite,
+        )
+        deploy_pipelines = [deploy_pipeline]
+        if deploy_pipeline_record is not None:
+            write_records.append(deploy_pipeline_record)
+        state_file_path = init_state_file(resolved_root)
+        state_preexisting = state_file_path.exists()
+        state_original = state_file_path.read_text(encoding="utf-8") if state_preexisting else None
+        state_file = _write_init_state(
+            resolved_root,
+            shell_scripts=shell_scripts,
+            copilot_assets=copilot_assets,
+            deploy_pipelines=deploy_pipelines,
+        )
+        write_records.append(
+            FileWriteRecord(
+                path=state_file,
+                was_preexisting=state_preexisting,
+                original_content=state_original,
+            )
+        )
+    except OSError as exc:
+        _rollback_files(write_records)
+        return InitProjectResponse(
+            status="error",
+            project_root=resolved_root,
+            initialized=False,
+            message=(
+                f"Initialization failed mid-write; "
+                f"{len(write_records)} file(s) rolled back. Cause: {exc}"
+            ),
+        )
 
-    copilot_assets, copilot_created_files = _write_copilot_assets(
-        resolved_root,
-        overwrite=request.overwrite,
-    )
-    created_files.extend(copilot_created_files)
-    deploy_pipeline, deploy_pipeline_created = _write_docs_deploy_pipeline(
-        resolved_root,
-        provider=request.deploy_provider,
-        overwrite=request.overwrite,
-    )
-    deploy_pipelines = [deploy_pipeline]
-    if deploy_pipeline_created is not None:
-        created_files.append(deploy_pipeline_created)
-    state_file = _write_init_state(
-        resolved_root,
-        shell_scripts=shell_scripts,
-        copilot_assets=copilot_assets,
-        deploy_pipelines=deploy_pipelines,
-    )
-    if request.overwrite or state_file not in created_files:
-        created_files.append(state_file)
-
+    created_files = [r.path for r in write_records]
     execution_error = _execute_default_script(
         project_root=resolved_root,
         shell_scripts=shell_scripts,
     )
     if execution_error is not None:
+        # Script execution failure is a warning - files were written successfully.
+        # Do NOT rollback; leave files on disk so the user can inspect/re-run manually.
         return InitProjectResponse(
             status="warning",
             project_root=resolved_root,
@@ -1395,6 +1437,7 @@ def init_project(
         shell_scripts=shell_scripts,
         copilot_assets=copilot_assets,
         deploy_pipelines=deploy_pipelines,
+        write_records=write_records,
     )
 
 
@@ -1582,22 +1625,46 @@ def generate_doc_boilerplate(
             ),
         )
 
-    generated_files: list[Path] = []
-    for template in sorted(
-        iter_doc_boilerplate_templates(),
-        key=lambda item: item.relative_path.as_posix(),
-    ):
-        file_path = resolved_root / template.relative_path
-        if file_path.exists() and not request.overwrite:
-            continue
-        generated_files.append(write_text_file(file_path, content=template.content))
+    write_records: list[FileWriteRecord] = []
+    try:
+        for template in sorted(
+            iter_doc_boilerplate_templates(),
+            key=lambda item: item.relative_path.as_posix(),
+        ):
+            file_path = resolved_root / template.relative_path
+            if file_path.exists() and not request.overwrite:
+                continue
+            was_preexisting = file_path.exists()
+            original_content = file_path.read_text(encoding="utf-8") if was_preexisting else None
+            written_path = write_text_file(file_path, content=template.content)
+            write_records.append(
+                FileWriteRecord(
+                    path=written_path,
+                    was_preexisting=was_preexisting,
+                    original_content=original_content,
+                )
+            )
+    except OSError as exc:
+        _rollback_files(write_records)
+        return GatedBoilerplateGenerationResponse(
+            status="error",
+            project_root=resolved_root,
+            gate_confirmed=True,
+            boilerplate_generated=False,
+            shell_scripts=shell_scripts,
+            error_code=BoilerplateGenerationErrorCode.WRITE_FAILED,
+            message=(
+                f"Boilerplate generation failed mid-write; "
+                f"{len(write_records)} file(s) rolled back. Cause: {exc}"
+            ),
+        )
 
     return GatedBoilerplateGenerationResponse(
         status="success",
         project_root=resolved_root,
         gate_confirmed=True,
         boilerplate_generated=True,
-        generated_files=generated_files,
+        generated_files=[r.path for r in write_records],
         shell_scripts=shell_scripts,
     )
 

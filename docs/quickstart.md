@@ -8,9 +8,18 @@ tags:
 
 # Quickstart
 
-**The problem:** a great answer can still fail if it uses the wrong docs syntax for the target framework.
+`mcp-zen-of-docs` has two public surfaces:
 
-`mcp-zen-of-docs` closes that gap by detecting the docs stack first, then resolving the native syntax the page actually needs.
+- **MCP server** for editors and AI agents.
+- **Human CLI** for terminal-first docs work, with `--json` available for automation.
+
+The core workflow is unchanged:
+
+```text
+detect → profile → act
+```
+
+What changed is the terminal experience: a real TTY now gets concise human output, while scripts and pipes can opt into the raw JSON contract with `--json`.
 
 <figure class="chapter-banner">
   <img src="../assets/chapters/quickstart-path.svg" alt="A calm quickstart illustration showing a path with milestones toward a sunrise." />
@@ -46,6 +55,7 @@ uvx --from mcp-zen-of-docs mcp-zen-of-docs --help
 - **Package name**: `mcp-zen-of-docs`
 - **CLI command**: `mcp-zen-of-docs`
 - **MCP server command**: `mcp-zen-of-docs-server`
+- **CLI alias for onboarding**: `setup`
 - **MCP client server key**: `zen-of-docs`
 
 ---
@@ -108,9 +118,63 @@ Add this to `.cursor/mcp.json`:
 
 ---
 
-## 3. Run the first real workflow
+## 3. Run the human CLI
 
-The most reliable pattern is:
+A TTY defaults to human-readable summaries. Use `--human` to force that mode, or `--json` when you need raw machine-readable output.
+
+### Validate the current docs set
+
+```bash
+mcp-zen-of-docs --human validate \
+  --docs-root docs \
+  --check orphans
+```
+
+If you omit `--mkdocs-file`, `validate` tries to auto-detect the config file and calls that out in human mode as:
+
+```text
+Config: /path/to/mkdocs.yml (auto-detected)
+```
+
+### Generate onboarding guidance
+
+```bash
+mcp-zen-of-docs --human setup \
+  --project-root . \
+  --project-name "My Docs" \
+  --mode skeleton
+```
+
+`setup` is the public human-first entrypoint for bootstrapping docs work. The older `onboard` name still exists as a hidden compatibility alias for automation and migration.
+
+### Create a page scaffold
+
+```bash
+mcp-zen-of-docs --human page new docs/getting-started.md \
+  --title "Getting started"
+```
+
+Use `page fill` to enrich an existing scaffold, or `page write` when you want a fuller first draft for a topic.
+
+---
+
+## 4. Use JSON for automation
+
+The raw contract still exists for CI, scripts, and editor tooling:
+
+```bash
+mcp-zen-of-docs --json validate \
+  --docs-root docs \
+  --check orphans
+```
+
+Use JSON mode when you want fields such as `detected_config`, `total_issue_count`, or other response fields exactly as emitted by the CLI.
+
+---
+
+## 5. Run the first AI workflow
+
+The most reliable AI-assisted pattern is still:
 
 ```text
 detect → profile → act
@@ -132,18 +196,6 @@ If you want the full explanation of that pattern, read [Detect → Profile → A
 
 ---
 
-## 4. What good output looks like
-
-A correct answer is not just well written. It also renders correctly in the target docs stack.
-
-- Zensical should receive Zensical-compatible syntax.
-- Docusaurus should receive Docusaurus-compatible syntax.
-- VitePress and Starlight should receive their own native forms and caveats.
-
-That is what `mcp-zen-of-docs` is designed to provide: source-truth context before content generation.
-
----
-
 ## First questions
 
 **What if my config file lives in a subdirectory?**
@@ -152,8 +204,8 @@ Pass `project_root` explicitly to [`detect`](tools/detect.md), for example `proj
 **Can I use this with GitHub Copilot?**
 Yes. Use `.vscode/mcp.json` for Copilot in VS Code, or `/mcp` in Copilot CLI, then use the [`copilot`](tools/copilot.md) tool to generate instruction assets.
 
-**What should I read after setup?**
-Start with the tool references for [`detect`](tools/detect.md) and [`profile`](tools/profile.md), then continue to [Troubleshooting](guides/troubleshooting.md) if the target project is unusual.
+**When should I prefer `--json`?**
+Use it in CI, scripts, shell pipelines, or whenever another tool will parse the output.
 
 ---
 

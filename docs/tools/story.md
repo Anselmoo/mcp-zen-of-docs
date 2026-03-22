@@ -8,126 +8,139 @@ tags:
 
 # story
 
-> Composes structured documentation from a prose prompt using a deterministic module pipeline.
+> Turn prose intent into a documentation narrative, with a human warning/success flow for terminals and a raw JSON contract for automation.
 
-`story` takes a description of what you want to explain and returns structured Markdown. Unlike [scaffold](scaffold.md), which requires explicit paths and section headings, `story` works from intent — you describe the narrative and it determines the structure. The same prompt always produces the same structural shape, making `story` safe in automated pipelines.
+`story` has two intentional surfaces:
+
+- **Human mode** (`--human`, or a real TTY) returns either a focused **warning** that asks for missing context or a **success** view that prints the final narrative.
+- **`--json` mode** preserves the raw orchestration payload, including `question_items`, `answer_slots`, `turn_plan`, and `pipeline_context`.
+
+That split is the whole point of the redesign: people read summaries, tools parse contracts.
 
 ---
 
 ## When to use it
 
-Use `story` when you know what concept to explain but aren't sure how to structure it. Use `scaffold` instead when you know the exact path, title, and sections. Use `story` with `migration_mode` when porting docs from one framework to another.
+Use `story` when you know what concept to explain but are not sure how to structure it. Use [scaffold](scaffold.md) instead when you already know the exact path, title, and sections. Use migration mode when you want the story pipeline to rewrite docs toward a target framework.
 
 ---
 
-## Parameters
+## Human mode behavior
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `prompt` | string | **Yes** | The documentation story to compose |
-| `modules` | string[] | No | Doc modules to include: `"overview"`, `"examples"`, `"reference"`, `"guide"`, `"faq"` |
-| `audience` | string | No | Target reader — shapes tone and assumed knowledge |
-| `context` | object | No | Extra key-value context passed to the orchestrator |
-| `migration_mode` | string | No | Migration processing: `"guide"` or `"reference"` |
-| `migration_source_framework` | string | No | Source framework for migration stories |
-| `migration_target_framework` | string | No | Target framework for migration stories |
-| `migration_improve_clarity` | bool | No | Rewrite unclear passages. Default: `true` |
-| `migration_strengthen_structure` | bool | No | Enforce heading hierarchy. Default: `true` |
-| `migration_enrich_examples` | bool | No | Add framework-specific code examples. Default: `false` |
-| `auto_advance` | bool | No | Automatically advance through all modules |
-| `enable_runtime_loop` | bool | No | Enable iterative refinement loop |
-| `runtime_max_turns` | int | No | Max refinement turns when `enable_runtime_loop=true` |
-| `include_onboarding_guidance` | bool | No | Append onboarding next-steps section. Default: `false` |
+In human mode, `story` expects enough context to answer four questions:
+
+1. Who is this for?
+2. What should the reader achieve?
+3. What is in or out of scope?
+4. What constraints must the story respect?
+
+If those are missing, the command returns a **warning** with:
+
+- a `Required info` section listing the missing questions
+- a `How to continue` section showing the exact flags to add next
+
+Once the context is sufficient, the command returns **success** and prints the final narrative instead of the orchestration internals.
+
+!!! note "Raw JSON still exists"
+    Nothing about the MCP or automation contract was removed. Use `--json` when you need the full response structure for scripts, tests, or editor integrations.
 
 ---
 
-## Module pipeline
+## Public CLI flags
 
-Each module maps to a content strategy:
-
-| Module | Content strategy |
-|--------|----------------|
-| `overview` | Lead paragraph + context — what and why |
-| `examples` | Concrete code or config examples with realistic output |
-| `reference` | Parameter or API table with type/default/description |
-| `guide` | Step-by-step walkthrough with numbered steps |
-| `faq` | Question-and-answer pairs for common edge cases |
-
-If `modules` is not specified, `story` infers the best set from the prompt.
+| Flag | Type | Required | Description |
+|------|------|----------|-------------|
+| `--prompt` | string | **Yes** | The story request to compose |
+| `--audience` | string | No | Target reader |
+| `--module` | string | No | Repeat to request specific modules |
+| `--context key=value` | string | No | Add flat story context without constructing JSON |
+| `--context-json` | object | No | Pass structured story context as JSON |
+| `--interactive` | bool | No | Prompt for missing required context in human mode |
+| `--include-onboarding-guidance` | bool | No | Append onboarding guidance when available |
+| `--migration-mode` | string | No | Migration strategy: `same-target` or `cross-target` |
+| `--migration-source-framework` | string | No | Source framework for migration flows |
+| `--migration-target-framework` | string | No | Target framework for migration flows |
+| `--migration-improve-clarity` | bool | No | Improve clarity during migration. Default: `true` |
+| `--migration-strengthen-structure` | bool | No | Strengthen structure during migration. Default: `true` |
+| `--migration-enrich-examples` | bool | No | Add richer examples during migration. Default: `false` |
+| `--output-dir` | path | No | Write the final story to a Markdown file |
 
 ---
 
 ## Examples
 
-**Explain a technical concept**
+### Human success path
 
-```json
-{
-  "tool": "story",
-  "arguments": {
-    "prompt": "Explain how mcp-zen-of-docs handles framework detection across Zensical, Docusaurus, VitePress, and Starlight — what config files it looks for and how it resolves conflicts in monorepos.",
-    "audience": "new contributors",
-    "modules": ["overview", "examples"]
-  }
-}
+```bash
+mcp-zen-of-docs --human story \
+  --prompt "Ship deterministic docs stories" \
+  --audience "platform engineers" \
+  --context goal="typed contracts" \
+  --context scope="story generation" \
+  --context constraints="deterministic output"
 ```
 
-Returns a complete Markdown page opening with:
+Representative output:
 
-```markdown
----
-title: Framework Detection
-description: How mcp-zen-of-docs identifies your documentation framework from config files.
----
+```text
+Success: Compose docs story
+Title: Ship deterministic docs stories
 
-# Framework Detection
-
-Framework detection is the foundation of every tool in mcp-zen-of-docs. Before
-scaffolding a page or validating links, the server needs to know which framework
-owns the docs directory — and that means finding the right config file.
-
-Detection scans `project_root` in priority order. The first config file found wins.
-Priority matters in monorepos where a project may have both a `mkdocs.yml` (for a
-library's own docs) and a nested `docusaurus.config.js` (for a separate website).
-...
+Narrative
+  Target audience: platform engineers.
+  ...
 ```
 
----
+### Human warning path
 
-**Write a migration guide**
-
-```json
-{
-  "tool": "story",
-  "arguments": {
-    "prompt": "Write a migration guide for moving docs from MkDocs to Docusaurus.",
-    "migration_mode": "guide",
-    "migration_source_framework": "zensical",
-    "migration_target_framework": "docusaurus",
-    "migration_enrich_examples": true
-  }
-}
+```bash
+mcp-zen-of-docs --human story \
+  --prompt "A simple story"
 ```
 
-Migration mode activates three additional passes: a clarity pass (rewrites passive voice), a structure pass (normalises heading levels), and an examples pass (adds before/after code blocks for each primitive). Returns a multi-section guide covering file structure comparison, admonition syntax, content tab migration, nav config migration, and CI/CD workflow updates.
+Representative output:
 
----
+```text
+Warning: Compose docs story
+Additional context is required to complete the story.
 
-**FAQ page from domain context**
+Required info
+  - Who is the target audience for this story?
+  - What is the primary goal this story should help the reader achieve?
+  ...
 
-```json
-{
-  "tool": "story",
-  "arguments": {
-    "prompt": "Write an FAQ page about common docstring errors in Python projects.",
-    "modules": ["faq"],
-    "audience": "junior Python developers",
-    "context": { "style": "google", "tool": "mkdocstrings" }
-  }
-}
+How to continue
+  - Re-run with the missing values as flags, or use a TTY terminal to answer prompts interactively.
+  - Add --audience "<target audience>".
+  - Add --context-json '{"goal":"...", "scope":"...", "constraints":"..."}'.
 ```
 
-Returns a page with 6–8 Q&A pairs covering missing `__init__.py`, empty vs missing docstrings, how to document `*args` and `**kwargs` in Google style, and type annotation conflicts.
+### Raw JSON for automation
+
+```bash
+mcp-zen-of-docs --json story \
+  --prompt "A simple story"
+```
+
+Use this mode when you need the underlying fields directly, such as:
+
+- `story.question_items`
+- `story.answer_slots`
+- `story.turn_plan`
+- `pipeline_context`
+
+### Migration flow
+
+```bash
+mcp-zen-of-docs --json story \
+  --prompt "Migrate the contributor guide to Docusaurus" \
+  --migration-mode cross-target \
+  --migration-source-framework zensical \
+  --migration-target-framework docusaurus \
+  --migration-enrich-examples
+```
+
+Use migration mode when the narrative needs to reflect framework differences, not just explain a concept.
 
 ---
 

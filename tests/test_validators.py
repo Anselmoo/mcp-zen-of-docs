@@ -383,3 +383,93 @@ def test_scaffold_doc_without_framework_defaults_to_none(tmp_path: Path) -> None
     payload = ScaffoldDocResponse.model_validate(result)
     assert payload.status == "success"
     assert payload.framework is None
+
+
+# ---------------------------------------------------------------------------
+# Auto-detection and zensical.toml support for check_orphan_docs
+# ---------------------------------------------------------------------------
+
+
+def test_check_orphan_docs_auto_detects_mkdocs_yml_in_parent_dir(tmp_path: Path) -> None:
+    """Orphan detection works when mkdocs.yml lives at project root (docs_root.parent)."""
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "index.md").write_text("# Home\n", encoding="utf-8")
+    (docs / "orphan.md").write_text("# Orphan\n", encoding="utf-8")
+    mkdocs = tmp_path / "mkdocs.yml"
+    mkdocs.write_text("site_name: test\nnav:\n  - Home: index.md\n", encoding="utf-8")
+
+    payload = CheckOrphanDocsResponse.model_validate(check_orphan_docs(docs_root=str(docs)))
+
+    assert payload.status == "warning"
+    assert "orphan.md" in payload.orphans
+    assert "index.md" not in payload.orphans
+    assert payload.detected_config is not None
+    assert payload.detected_config.name == "mkdocs.yml"
+
+
+def test_check_orphan_docs_detects_zensical_toml_in_parent_dir(tmp_path: Path) -> None:
+    """Orphan detection works when zensical.toml lives at project root."""
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "index.md").write_text("# Home\n", encoding="utf-8")
+    (docs / "orphan.md").write_text("# Orphan\n", encoding="utf-8")
+    toml_cfg = tmp_path / "zensical.toml"
+    toml_cfg.write_text(
+        'nav = [{"Home" = "index.md"}]\n',
+        encoding="utf-8",
+    )
+
+    payload = CheckOrphanDocsResponse.model_validate(check_orphan_docs(docs_root=str(docs)))
+
+    assert payload.status == "warning"
+    assert "orphan.md" in payload.orphans
+    assert "index.md" not in payload.orphans
+    assert payload.detected_config is not None
+    assert payload.detected_config.name == "zensical.toml"
+
+
+def test_check_orphan_docs_returns_error_when_no_config_found(tmp_path: Path) -> None:
+    """Returns error with helpful message when no config file exists anywhere."""
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "index.md").write_text("# Home\n", encoding="utf-8")
+
+    payload = CheckOrphanDocsResponse.model_validate(check_orphan_docs(docs_root=str(docs)))
+
+    assert payload.status == "error"
+    assert "No docs config found" in payload.message
+
+
+def test_check_orphan_docs_detected_config_none_when_explicit_path_given(tmp_path: Path) -> None:
+    """detected_config is None when caller supplies an explicit mkdocs_file."""
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "index.md").write_text("# Home\n", encoding="utf-8")
+    mkdocs = tmp_path / "mkdocs.yml"
+    mkdocs.write_text("site_name: test\nnav:\n  - Home: index.md\n", encoding="utf-8")
+
+    payload = CheckOrphanDocsResponse.model_validate(
+        check_orphan_docs(docs_root=str(docs), mkdocs_file=str(mkdocs))
+    )
+
+    assert payload.status == "success"
+    assert payload.detected_config is None
+
+
+def test_check_orphan_docs_zensical_toml_all_files_referenced(tmp_path: Path) -> None:
+    """Returns success when all files are referenced in zensical.toml nav."""
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "index.md").write_text("# Home\n", encoding="utf-8")
+    toml_cfg = tmp_path / "zensical.toml"
+    toml_cfg.write_text(
+        'nav = [{"Home" = "index.md"}]\n',
+        encoding="utf-8",
+    )
+
+    payload = CheckOrphanDocsResponse.model_validate(check_orphan_docs(docs_root=str(docs)))
+
+    assert payload.status == "success"
+    assert payload.orphans == []
+    assert payload.detected_config is not None

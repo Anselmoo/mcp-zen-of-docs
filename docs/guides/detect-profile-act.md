@@ -9,9 +9,12 @@ tags:
 
 # Detect → Profile → Act
 
-Every high-quality docs change starts the same way: identify the framework, resolve the
-primitive behavior, then write or validate with that context. This is the core workflow that
-keeps mcp-zen-of-docs predictable.
+Every high-quality docs change starts the same way: identify the framework, resolve the primitive behavior, then write or validate with that context. This is the core workflow that keeps `mcp-zen-of-docs` predictable.
+
+The redesigned CLI did **not** change the pattern. It changed how the results are presented:
+
+- **Human mode** explains the result briefly.
+- **`--json` mode** preserves the raw payload for automation.
 
 ---
 
@@ -38,8 +41,7 @@ flowchart LR
 
 ## Step 1 — Detect
 
-**What it does:** scans `project_root` and returns the most likely documentation framework,
-plus supporting evidence.
+**What it does:** scans `project_root` and returns the most likely documentation framework, plus supporting evidence.
 
 **What matters most in the response:**
 
@@ -49,7 +51,7 @@ plus supporting evidence.
 - `matched_signals`
 - `authoring_primitives`
 
-Example shape from `detect(mode="context")`:
+### MCP / raw JSON shape
 
 ```json
 {
@@ -68,6 +70,14 @@ Example shape from `detect(mode="context")`:
 }
 ```
 
+### Human CLI equivalent
+
+```bash
+mcp-zen-of-docs --human detect context --project-root .
+```
+
+Use `--json` if another program needs to read the raw contract directly.
+
 ---
 
 ## Step 2 — Profile
@@ -80,17 +90,12 @@ The `profile` tool has three useful modes:
 - `resolve` — inspect one primitive in one framework
 - `translate` — compare a primitive across two frameworks
 
-If you want support data only:
+### Support lookup
 
-```json
-{
-  "tool": "profile",
-  "arguments": {
-    "mode": "resolve",
-    "framework": "docusaurus",
-    "primitive": "tabs"
-  }
-}
+```bash
+mcp-zen-of-docs --json profile resolve \
+  --framework docusaurus \
+  --primitive tabs
 ```
 
 Example response shape:
@@ -109,19 +114,14 @@ Example response shape:
 }
 ```
 
-If you want a framework-native snippet, switch to `resolution_mode="render"`:
+### Render a framework-native snippet
 
-```json
-{
-  "tool": "profile",
-  "arguments": {
-    "mode": "resolve",
-    "framework": "zensical",
-    "primitive": "admonition",
-    "resolution_mode": "render",
-    "topic": "Prerequisites"
-  }
-}
+```bash
+mcp-zen-of-docs --json profile resolve \
+  --framework zensical \
+  --primitive admonition \
+  --mode render \
+  --topic "Prerequisites"
 ```
 
 ---
@@ -135,10 +135,19 @@ Typical next actions:
 - `scaffold` to create or enrich a page
 - `generate` to produce diagrams, changelogs, or reference material
 - `validate` to check structure and quality
-- `onboard` to initialize a full docs workflow in one pass
+- `onboard` / `setup` to initialize docs work in a task-shaped flow
 
-Once a primitive is resolved, the assistant no longer needs to guess whether tabs are native,
-partial, or unsupported in that framework.
+Once a primitive is resolved, the assistant no longer needs to guess whether tabs are native, partial, or unsupported in that framework.
+
+### CLI examples
+
+```bash
+# Human-oriented validation summary
+mcp-zen-of-docs --human validate all --docs-root docs --check structure
+
+# Human-oriented onboarding summary via the alias
+mcp-zen-of-docs --human setup full --project-root . --mode skeleton
+```
 
 ---
 
@@ -163,8 +172,7 @@ sequenceDiagram
 ```
 
 !!! note "Why this beats generic prompting"
-    The important gain is not eloquence. It is *constraint*. The workflow anchors every docs
-    edit to the repository's actual framework signals before content is generated.
+    The important gain is not eloquence. It is *constraint*. The workflow anchors every docs edit to the repository's actual framework signals before content is generated.
 
 ---
 

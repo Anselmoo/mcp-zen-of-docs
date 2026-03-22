@@ -8,12 +8,11 @@ tags:
 
 # Tools
 
-Ten MCP tools. Multiple modes. One framework-aware documentation workflow.
+Ten MCP tools. One human CLI. One framework-aware documentation workflow.
 
-Use this page as the operating map for the server. The dependable baseline is simple:
-detect the project, profile the primitive, then use the creation or quality tools that fit the job.
+Use this page as the operating map for the server and the terminal surface. The dependable baseline is still simple: detect the project, profile the primitive, then use the creation or quality tool that fits the job.
 
-If you are new to the server, start with [Quickstart](../quickstart.md), then come back here to choose the next tool intentionally.
+If you are new to the project, start with [Quickstart](../quickstart.md), then come back here to choose the next tool intentionally.
 
 <figure class="chapter-banner">
     <img src="../assets/chapters/tools-studio.svg" alt="An illustration of modular tool cards connected by a calm workflow line." />
@@ -21,14 +20,55 @@ If you are new to the server, start with [Quickstart](../quickstart.md), then co
 
 ---
 
-## All tools at a glance
+## CLI surfaces that matter
+
+The redesigned CLI deliberately separates **human mode** from **automation mode**:
+
+- **TTY / `--human`** — concise summaries for people.
+- **`--json`** — raw response payloads for scripts, CI, and editor tooling.
+- **Task-shaped top-level commands** — `status`, `setup`, `validate`, `page`, `diagram`, `asset`, `integrations`, and `code-doc`.
+- **Hidden compatibility aliases** — older MCP-shaped names still work for migration and automation.
+
+A few concrete examples:
+
+```bash
+# Human-oriented summary
+mcp-zen-of-docs --human validate --docs-root docs --check orphans
+
+# Same command, raw JSON contract
+mcp-zen-of-docs --json validate --docs-root docs --check orphans
+
+# Human setup flow
+mcp-zen-of-docs --human setup --project-root . --mode skeleton
+```
+
+---
+
+## Public CLI commands
+
+| Command | What it does | Underlying tool family |
+|---------|---------------|------------------------|
+| [status](status.md) | Summarize detected framework and readiness | [detect](detect.md) |
+| [setup](setup.md) | Bootstrap docs work with a guide or init flow | [onboard](onboard.md) |
+| [validate](validate.md) | Audit links, structure, nav, and quality | [validate](validate.md) |
+| [page](page.md) | Scaffold, fill, batch-create, or draft pages | [scaffold](scaffold.md) |
+| [diagram](diagram.md) | Create Mermaid and render diagrams | [generate](generate.md) |
+| [asset](asset.md) | Generate badges, headers, icons, or save SVG | [generate](generate.md) |
+| [syntax](syntax.md) | Check primitive support or translate syntax | [profile](profile.md) |
+| [integrations](integrations.md) | Generate AI/editor integration templates | [copilot](copilot.md) |
+| [code-doc](code-doc.md) | Audit coverage or generate docstring stubs | [docstring](docstring.md) |
+| [changelog](changelog.md) | Generate release notes from git history | [generate](generate.md) |
+
+---
+
+## MCP tools at a glance
 
 | Tool | What it does | When to use it |
 |------|--------------|----------------|
 | [detect](detect.md) | Identify framework context and readiness | First step in any workflow |
 | [profile](profile.md) | Query primitive support and render native snippets | Before writing framework-specific markup |
 | [scaffold](scaffold.md) | Create or enrich docs pages | Generate a new page or fill gaps in an existing one |
-| [validate](validate.md) | Check links, frontmatter, navigation, and quality | Before merge or before publishing |
+| [validate](validate.md) | Check links, orphaned pages, structure, frontmatter, nav state, and scoring surfaces | Before merge or before publishing |
 | [generate](generate.md) | Produce diagrams, SVGs, changelogs, and reference assets | Build the visual and reference layer |
 | [onboard](onboard.md) | Bootstrap a docs project and wire defaults | Starting from zero or inheriting a docs site |
 | [theme](theme.md) | Generate CSS/JS theme files and config | Apply a visual system without manual CSS archaeology |
@@ -59,6 +99,7 @@ If you are new to the server, start with [Quickstart](../quickstart.md), then co
 | [scaffold](scaffold.md) | Create or enrich docs pages |
 | [generate](generate.md) | Produce diagrams, SVGs, badges, changelogs, and reference assets |
 | [onboard](onboard.md) | Stand up an AI-ready docs project structure |
+| [story](story.md) | Turn prose intent into a structured narrative |
 
 > Use these when you are building pages, assets, or a full docs foundation.
 
@@ -77,7 +118,6 @@ If you are new to the server, start with [Quickstart](../quickstart.md), then co
 |------|-------------|
 | [theme](theme.md) | Generate and wire a coherent visual layer |
 | [copilot](copilot.md) | Preserve docs conventions in AI-assisted editing |
-| [story](story.md) | Produce longer narrative documentation from intent |
 
 > Use these to shape how documentation gets written, maintained, and visually expressed.
 
@@ -88,10 +128,10 @@ If you are new to the server, start with [Quickstart](../quickstart.md), then co
 ### Starting from scratch
 
 ```text
-detect → onboard → theme → validate
+detect → setup/onboard → theme → validate
 ```
 
-Use `detect` to confirm the environment, `onboard` to scaffold the docs surface, `theme` to establish the presentation layer, and `validate` to catch structural issues before publishing.
+Use `detect` to confirm the environment, `setup`/`onboard` to scaffold the docs surface, `theme` to establish the presentation layer, and `validate` to catch structural issues before publishing.
 
 ### Adding a new page
 
@@ -127,6 +167,7 @@ The tools are designed to cooperate, not to act as isolated commands.
 - [`profile`](profile.md) resolves what the current framework can support.
 - Creation tools use that context to write native output.
 - Quality tools surface what still needs attention.
+- Human CLI mode summarizes the same underlying contracts that `--json` exposes directly.
 
 For the conceptual model behind that flow, read [Detect → Profile → Act](../guides/detect-profile-act.md) and [Authoring Primitives](../guides/primitives.md).
 
