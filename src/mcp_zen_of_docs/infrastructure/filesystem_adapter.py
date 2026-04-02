@@ -15,6 +15,7 @@ from mcp_zen_of_docs.domain.copilot_artifact_spec import iter_copilot_assets
 from mcp_zen_of_docs.models import CopilotInitArtifactMetadata
 from mcp_zen_of_docs.models import DocsDeployPipelineArtifactMetadata
 from mcp_zen_of_docs.models import DocsDeployProvider
+from mcp_zen_of_docs.models import FileWriteRecord
 from mcp_zen_of_docs.models import ShellScriptArtifactMetadata
 from mcp_zen_of_docs.models import ShellScriptType
 from mcp_zen_of_docs.templates.copilot_assets import render_copilot_asset_content
@@ -169,10 +170,10 @@ def write_docs_deploy_pipeline(
     *,
     provider: DocsDeployProvider,
     overwrite: bool,
-) -> tuple[DocsDeployPipelineArtifactMetadata, Path | None]:
+) -> tuple[DocsDeployPipelineArtifactMetadata, FileWriteRecord | None]:
     """Write deterministic docs deploy workflow artifact for a provider."""
     workflow_path = docs_deploy_workflow_path(project_root, provider=provider)
-    created_file: Path | None = None
+    write_record: FileWriteRecord | None = None
     if workflow_path.exists() and not overwrite:
         return (
             DocsDeployPipelineArtifactMetadata(
@@ -181,12 +182,18 @@ def write_docs_deploy_pipeline(
                 required=True,
                 generated=False,
             ),
-            created_file,
+            write_record,
         )
 
+    was_preexisting = workflow_path.exists()
+    original_content = workflow_path.read_text(encoding="utf-8") if was_preexisting else None
     workflow_path.parent.mkdir(parents=True, exist_ok=True)
     workflow_path.write_text(docs_deploy_workflow_content(provider), encoding="utf-8")
-    created_file = workflow_path
+    write_record = FileWriteRecord(
+        path=workflow_path,
+        was_preexisting=was_preexisting,
+        original_content=original_content,
+    )
     return (
         DocsDeployPipelineArtifactMetadata(
             provider=provider,
@@ -194,7 +201,7 @@ def write_docs_deploy_pipeline(
             required=True,
             generated=True,
         ),
-        created_file,
+        write_record,
     )
 
 
@@ -234,10 +241,10 @@ def write_shell_script(
     *,
     shell: ShellScriptType,
     overwrite: bool,
-) -> tuple[ShellScriptArtifactMetadata, Path | None]:
+) -> tuple[ShellScriptArtifactMetadata, FileWriteRecord | None]:
     """Write one deterministic shell script artifact to the init directory."""
     script_path = shell_script_path(project_root, shell)
-    created_file: Path | None = None
+    write_record: FileWriteRecord | None = None
     if script_path.exists() and not overwrite:
         return (
             ShellScriptArtifactMetadata(
@@ -246,14 +253,20 @@ def write_shell_script(
                 executable=script_is_executable(shell),
                 generated=False,
             ),
-            created_file,
+            write_record,
         )
 
+    was_preexisting = script_path.exists()
+    original_content = script_path.read_text(encoding="utf-8") if was_preexisting else None
     script_path.parent.mkdir(parents=True, exist_ok=True)
     script_path.write_text(shell_script_body(shell), encoding="utf-8")
     if script_is_executable(shell):
         script_path.chmod(0o755)
-    created_file = script_path
+    write_record = FileWriteRecord(
+        path=script_path,
+        was_preexisting=was_preexisting,
+        original_content=original_content,
+    )
     return (
         ShellScriptArtifactMetadata(
             shell=shell,
@@ -261,7 +274,7 @@ def write_shell_script(
             executable=script_is_executable(shell),
             generated=True,
         ),
-        created_file,
+        write_record,
     )
 
 
@@ -286,10 +299,10 @@ def write_copilot_artifact(
     *,
     asset: CopilotArtifactContract,
     overwrite: bool,
-) -> tuple[CopilotInitArtifactMetadata, Path | None]:
+) -> tuple[CopilotInitArtifactMetadata, FileWriteRecord | None]:
     """Write one deterministic Copilot artifact derived from the domain contract."""
     file_path = project_root / asset.relative_path
-    created_file: Path | None = None
+    write_record: FileWriteRecord | None = None
     if file_path.exists() and not overwrite:
         return (
             CopilotInitArtifactMetadata(
@@ -301,11 +314,17 @@ def write_copilot_artifact(
                 hook_target=asset.hook_target,
                 generated=False,
             ),
-            created_file,
+            write_record,
         )
+    was_preexisting = file_path.exists()
+    original_content = file_path.read_text(encoding="utf-8") if was_preexisting else None
     file_path.parent.mkdir(parents=True, exist_ok=True)
     file_path.write_text(_copilot_asset_content(asset), encoding="utf-8")
-    created_file = file_path
+    write_record = FileWriteRecord(
+        path=file_path,
+        was_preexisting=was_preexisting,
+        original_content=original_content,
+    )
     return (
         CopilotInitArtifactMetadata(
             artifact_id=asset.artifact_id,
@@ -316,7 +335,7 @@ def write_copilot_artifact(
             hook_target=asset.hook_target,
             generated=True,
         ),
-        created_file,
+        write_record,
     )
 
 
@@ -325,21 +344,21 @@ def write_copilot_assets(
     *,
     overwrite: bool,
     spec: CopilotArtifactSpecContract | None = None,
-) -> tuple[list[CopilotInitArtifactMetadata], list[Path]]:
+) -> tuple[list[CopilotInitArtifactMetadata], list[FileWriteRecord]]:
     """Write deterministic Copilot assets from the domain spec."""
     active_spec = spec or get_copilot_artifact_spec()
     metadata: list[CopilotInitArtifactMetadata] = []
-    created_files: list[Path] = []
+    write_records: list[FileWriteRecord] = []
     for asset in iter_copilot_assets(active_spec):
-        artifact, created_file = write_copilot_artifact(
+        artifact, write_record = write_copilot_artifact(
             project_root,
             asset=asset,
             overwrite=overwrite,
         )
         metadata.append(artifact)
-        if created_file is not None:
-            created_files.append(created_file)
-    return metadata, created_files
+        if write_record is not None:
+            write_records.append(write_record)
+    return metadata, write_records
 
 
 def discover_copilot_assets(
@@ -384,9 +403,11 @@ def required_init_artifacts(
     project_root: Path,
     *,
     deploy_provider: DocsDeployProvider = DocsDeployProvider.GITHUB_PAGES,
+    shell_targets: list[ShellScriptType] | None = None,
 ) -> list[Path]:
     """Return required shell scripts and state file paths for init completion."""
-    scripts = [shell_script_path(project_root, shell) for shell in ShellScriptType]
+    selected_shells = shell_targets or list(ShellScriptType)
+    scripts = [shell_script_path(project_root, shell) for shell in selected_shells]
     return [
         *scripts,
         *required_copilot_artifacts(project_root),
@@ -464,6 +485,7 @@ __all__ = [
     "CopilotInitArtifactMetadata",
     "DocsDeployPipelineArtifactMetadata",
     "DocsDeployProvider",
+    "FileWriteRecord",
     "InitOperationRecord",
     "InitStatePayload",
     "discover_copilot_assets",

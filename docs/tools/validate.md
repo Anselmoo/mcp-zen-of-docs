@@ -1,6 +1,6 @@
 ---
 title: validate
-description: Run documentation quality checks — links, frontmatter, nav sync, and quality scoring.
+description: Run documentation quality checks — links, orphaned files, structure, frontmatter, nav sync, and quality scoring.
 tags:
   - tools
   - validate
@@ -8,160 +8,116 @@ tags:
 
 # validate
 
-> Audits documentation quality across links, frontmatter, nav, and structure — and auto-fixes what it can.
+> Validate the docs surface with short human summaries in the terminal and raw contracts in `--json` mode.
 
-Before you commit, validate that links work, frontmatter is complete, and the nav matches the file structure. `validate` audits across four dimensions and returns specific, actionable issues. Pass `fix=true` to repair nav drift and missing frontmatter keys automatically.
+`validate` is now best understood as a **command group**, not one catch-all mode.
 
----
+- `validate all` checks **links**, **orphans**, and **structure**.
+- `validate score` returns the quality score.
+- `validate frontmatter` audits frontmatter keys and can fix them.
+- `validate nav` audits or syncs navigation.
 
-## Modes
-
-| Mode | What it checks |
-|------|---------------|
-| `all` | Runs every validator in sequence (default) |
-| `score` | Returns a 0.0–1.0 quality score with per-dimension breakdown |
-| `frontmatter` | Audits frontmatter keys across all pages in `docs_root` |
-| `nav` | Audits or syncs the navigation config against actual files on disk |
+That distinction matters because the redesigned CLI no longer pretends `validate all` is also the auto-fix entry point for every docs concern.
 
 ---
 
-## When to use it
+## Human mode vs automation mode
 
-Run `validate` after every batch of scaffolded pages and before any deployment. Use `mode="score"` in CI to fail the build when quality drops below a threshold. Use `fix=true` after adding or removing pages to keep the nav in sync.
+- **TTY / `--human`** — prints a concise summary such as `Config: /path/to/mkdocs.yml (auto-detected)` and only expands sections that need attention.
+- **`--json`** — emits the full payload, including `detected_config`, `checks`, `total_issue_count`, and the nested check responses.
 
----
-
-## Parameters
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `mode` | string | No | Which checks to run. Default: `"all"` |
-| `docs_root` | path | No | Root of the docs directory. Default: `"docs"` |
-| `fix` | bool | No | Automatically repair issues where possible. Default: `false` |
-| `required_frontmatter` | string[] | No | Keys every page must declare, e.g. `["title","description","tags"]` |
-| `required_headers` | string[] | No | H2 headings every page must include, e.g. `["Examples"]` |
-| `nav_mode` | string | No | For `nav` mode: `"audit"` (report) or `"sync"` (fix). Default: `"audit"` |
-| `external_mode` | string | No | Whether to check external links: `"report"` or `"ignore"`. Default: `"report"` |
-| `checks` | string[] | No | Subset of checks: `"links"`, `"structure"`, `"frontmatter"`, `"nav"` |
-| `mkdocs_file` | path | No | Nav config to validate against. Default: `"mkdocs.yml"` |
+If you omit `--mkdocs-file`, `validate all` tries to auto-detect the config file near the docs root.
 
 ---
 
-## Quality score bands
+## Commands
 
-| Score | Status | Typical cause |
-|-------|:------:|--------------|
-| 0.90–1.00 | ✅ Excellent | Production-ready |
-| 0.75–0.89 | 🟡 Good | Minor gaps — missing descriptions on a few pages |
-| 0.60–0.74 | 🟠 Fair | Significant frontmatter gaps or nav drift |
-| 0.40–0.59 | 🔴 Poor | Many broken links or pages without headings |
-| 0.00–0.39 | ❌ Failing | Docs not usable — run `onboard` first |
+| Command | Purpose |
+|---------|---------|
+| `validate all` | Run links/orphans/structure checks |
+| `validate score` | Compute the docs quality score |
+| `validate frontmatter` | Audit required frontmatter keys and optionally fix them |
+| `validate nav` | Audit or sync navigation config |
+
+---
+
+## `validate all` flags
+
+| Flag | Type | Required | Description |
+|------|------|----------|-------------|
+| `--docs-root` | path | No | Root of the docs directory. Default: `docs` |
+| `--mkdocs-file` | path | No | Explicit config file. If omitted, the CLI attempts auto-detection |
+| `--external-mode` | string | No | External link handling. Default: `report` |
+| `--required-header` | string | No | Repeat to require specific headers |
+| `--required-frontmatter` | string | No | Repeat to require specific frontmatter keys during structure validation |
+| `--check` | string | No | Repeat to limit checks to `links`, `orphans`, or `structure` |
 
 ---
 
 ## Examples
 
-**Full audit with specific errors**
+### Human validation summary
 
-```json
-{
-  "tool": "validate",
-  "arguments": { "mode": "all", "docs_root": "./docs" }
-}
+```bash
+mcp-zen-of-docs --human validate all \
+  --docs-root docs \
+  --check orphans
 ```
 
-Returns:
+Representative output:
 
-```json
-{
-  "status": "failed",
-  "score": 0.71,
-  "issues": [
-    {
-      "check": "frontmatter",
-      "severity": "error",
-      "file": "docs/guides/authentication.md",
-      "message": "Missing required frontmatter key: 'description'"
-    },
-    {
-      "check": "nav",
-      "severity": "warning",
-      "message": "Nav entry 'guides/old-setup.md' points to a file that does not exist"
-    },
-    {
-      "check": "links",
-      "severity": "error",
-      "file": "docs/tools/validate.md",
-      "message": "Broken internal link: '../guides/quickstart.md' (file not found)"
-    }
-  ],
-  "passed": ["structure", "external_links"]
-}
+```text
+Success: Validate docs
+Docs root: /path/to/docs
+Config: /path/to/mkdocs.yml (auto-detected)
+Checks: orphans
+✓ No issues found
 ```
+
+### Raw JSON for automation
+
+```bash
+mcp-zen-of-docs --json validate all \
+  --docs-root docs \
+  --check links
+```
+
+Use JSON mode when a script needs fields such as `detected_config` or `total_issue_count`.
+
+### Score the docs set
+
+```bash
+mcp-zen-of-docs --json validate score --docs-root docs
+```
+
+### Audit and fix frontmatter keys
+
+```bash
+mcp-zen-of-docs validate frontmatter \
+  --docs-root docs \
+  --required-key title \
+  --required-key description \
+  --fix
+```
+
+### Sync navigation
+
+```bash
+mcp-zen-of-docs validate nav \
+  --project-root . \
+  --mode sync
+```
+
+!!! warning "Commands that can modify files"
+    `validate frontmatter --fix` and `validate nav --mode sync` can rewrite files. `validate all` is report-oriented.
 
 ---
 
-**Auto-fix nav drift (`fix=true`)**
+## What changed in the redesigned CLI
 
-```json
-{
-  "tool": "validate",
-  "arguments": { "mode": "nav", "nav_mode": "sync", "fix": true }
-}
-```
-
-Returns:
-
-```json
-{
-  "status": "fixed",
-  "changes": [
-    {
-      "action": "removed",
-      "nav_entry": "guides/old-setup.md",
-      "reason": "File no longer exists on disk"
-    },
-    {
-      "action": "added",
-      "nav_entry": "guides/authentication.md",
-      "reason": "File exists on disk but was missing from nav"
-    }
-  ],
-  "nav_file_updated": "zensical.toml"
-}
-```
-
-!!! warning "`fix=true` modifies files"
-    `fix=true` rewrites `zensical.toml` (or `mkdocs.yml`) and may add frontmatter to source files. Commit your work before running it.
-
----
-
-**Quality score for CI**
-
-```json
-{
-  "tool": "validate",
-  "arguments": {
-    "mode": "score",
-    "required_frontmatter": ["title", "description", "tags"]
-  }
-}
-```
-
-Returns:
-
-```json
-{
-  "score": 0.87,
-  "dimensions": {
-    "completeness": 0.92,
-    "clarity": 0.85,
-    "navigation": 1.00,
-    "links": 0.72
-  },
-  "recommendation": "3 external links returned 404. Run with external_mode='report' to see details."
-}
-```
+- `validate all` now clearly communicates **auto-detected config** behavior.
+- Human mode suppresses clean sections so you see the signal first.
+- `--json` keeps the raw payload intact for tests and CI.
 
 ---
 
@@ -177,7 +133,7 @@ Returns:
 
 -   :octicons-arrow-right-24: **scaffold**
 
-    Fix missing pages that validate flagged as orphaned or unlinked.
+    Fix missing pages that validate flagged as orphaned or structurally incomplete.
 
     [:octicons-arrow-right-24: Read scaffold](scaffold.md)
 

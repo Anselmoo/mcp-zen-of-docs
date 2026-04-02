@@ -1,6 +1,6 @@
 [project]
 name = "mcp-zen-of-docs"
-version = "0.1.0"
+version = "0.2.0"
 description = "FastMCP server for documentation generation and validation."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -52,7 +52,7 @@ combine-as-imports = false
 
 
 [tool.ruff.lint.per-file-ignores]
-"src/mcp_zen_of_docs/server.py" = [
+"src/mcp_zen_of_docs/server/app.py" = [
     # FastMCP wrapper signatures expose booleans intentionally for tool-call compatibility.
     "FBT001",
     "FBT002",

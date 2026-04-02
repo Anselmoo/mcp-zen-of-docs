@@ -12,6 +12,8 @@ from unittest.mock import patch
 
 import pytest
 
+from pydantic import ValidationError
+
 from mcp_zen_of_docs.domain.contracts import FrameworkName
 from mcp_zen_of_docs.models import EphemeralInstallRequest
 from mcp_zen_of_docs.models import FrameworkInitSpec
@@ -98,6 +100,58 @@ class TestEphemeralInstallRequestExtensions:
             stdin_input="\n\n\n\n",
         )
         assert req.stdin_input == "\n\n\n\n"
+
+    def test_copy_artifacts_rejects_parent_traversal(self) -> None:
+        with pytest.raises(ValidationError, match="safe copy_artifacts pattern"):
+            EphemeralInstallRequest(
+                installer="uvx",
+                package="zensical",
+                command="zensical",
+                copy_artifacts=["../outside.txt"],
+            )
+
+    def test_copy_artifacts_rejects_absolute_path(self) -> None:
+        with pytest.raises(ValidationError, match="safe copy_artifacts pattern"):
+            EphemeralInstallRequest(
+                installer="uvx",
+                package="zensical",
+                command="zensical",
+                copy_artifacts=["/etc/hosts"],
+            )
+
+
+class TestEphemeralArtifactCopySecurity:
+    """Verify artifact copying stays contained to the approved roots."""
+
+    def test_copy_rejects_source_escape(self, tmp_path: Path) -> None:
+        from mcp_zen_of_docs.generators import _copy_ephemeral_artifacts
+
+        tmp_dir = tmp_path / "ephemeral"
+        project_root = tmp_path / "project"
+        tmp_dir.mkdir()
+        project_root.mkdir()
+        outside_file = tmp_path / "outside.txt"
+        outside_file.write_text("secret", encoding="utf-8")
+
+        with pytest.raises(ValueError, match="Artifact source escapes the allowed root"):
+            _copy_ephemeral_artifacts(tmp_dir, project_root, ["../outside.txt"])
+
+    def test_copy_rejects_destination_escape_via_symlink(self, tmp_path: Path) -> None:
+        from mcp_zen_of_docs.generators import _copy_ephemeral_artifacts
+
+        tmp_dir = tmp_path / "ephemeral"
+        project_root = tmp_path / "project"
+        external_root = tmp_path / "external"
+        tmp_dir.mkdir()
+        project_root.mkdir()
+        external_root.mkdir()
+
+        (tmp_dir / "docs").mkdir()
+        (tmp_dir / "docs" / "generated.md").write_text("# generated", encoding="utf-8")
+        (project_root / "docs").symlink_to(external_root, target_is_directory=True)
+
+        with pytest.raises(ValueError, match="Artifact destination escapes the allowed root"):
+            _copy_ephemeral_artifacts(tmp_dir, project_root, ["docs/generated.md"])
 
 
 class TestInitFrameworkStructureImpl:

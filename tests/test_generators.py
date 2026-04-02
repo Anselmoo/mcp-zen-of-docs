@@ -162,6 +162,33 @@ def test_init_project_writes_hardened_shell_script_content(tmp_path, monkeypatch
     assert "$ErrorActionPreference = 'Stop'" in powershell_body
 
 
+def test_init_project_honors_shell_targets(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr("mcp_zen_of_docs.generators._execute_default_script", lambda **_: None)
+    payload = InitProjectResponse.model_validate(
+        init_project(
+            project_root=tmp_path,
+            shell_targets=[generators_module.ShellScriptType.BASH],
+        )
+    )
+
+    assert payload.status == "success"
+    assert [metadata.shell for metadata in payload.shell_scripts] == [
+        generators_module.ShellScriptType.BASH
+    ]
+    assert (tmp_path / ".mcp-zen-of-docs" / "init" / "init.bash.sh").exists()
+    assert not (tmp_path / ".mcp-zen-of-docs" / "init" / "init.zsh.sh").exists()
+    assert not (tmp_path / ".mcp-zen-of-docs" / "init" / "init.powershell.ps1").exists()
+
+    status = CheckInitStatusResponse.model_validate(
+        check_init_status(
+            project_root=tmp_path,
+            shell_targets=[generators_module.ShellScriptType.BASH],
+        )
+    )
+    assert status.status == "success"
+    assert status.missing_artifacts == []
+
+
 def test_check_init_status_reports_missing_artifacts(tmp_path) -> None:
     payload = CheckInitStatusResponse.model_validate(check_init_status(project_root=tmp_path))
     assert payload.status == "warning"
@@ -538,6 +565,27 @@ def test_generate_doc_boilerplate_renders_template_contents(tmp_path, monkeypatc
         assert (tmp_path / template.relative_path).read_text(encoding="utf-8") == template.content
 
 
+def test_generate_doc_boilerplate_renders_deployment_urls(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr("mcp_zen_of_docs.generators._execute_default_script", lambda **_: None)
+    InitProjectResponse.model_validate(init_project(project_root=tmp_path))
+
+    payload = GatedBoilerplateGenerationResponse.model_validate(
+        generate_doc_boilerplate(
+            project_root=tmp_path,
+            gate_confirmed=True,
+            dev_url="https://dev.example.test",
+            staging_url="https://staging.example.test",
+            production_url="https://example.test",
+        )
+    )
+
+    assert payload.status == "success"
+    deployment_doc = (tmp_path / "docs" / "deployment.md").read_text(encoding="utf-8")
+    assert "https://dev.example.test" in deployment_doc
+    assert "https://staging.example.test" in deployment_doc
+    assert "https://example.test" in deployment_doc
+
+
 def test_iter_doc_boilerplate_templates_returns_typed_registry() -> None:
     templates = iter_doc_boilerplate_templates()
     assert len(templates) == 10
@@ -554,6 +602,20 @@ def test_iter_doc_boilerplate_templates_returns_typed_registry() -> None:
         BoilerplateTemplateId.DOCS_DEPLOYMENT,
     }
     assert len({template.relative_path for template in templates}) == len(templates)
+
+    customized_templates = iter_doc_boilerplate_templates(
+        dev_url="https://dev.example.test",
+        staging_url="https://staging.example.test",
+        production_url="https://example.test",
+    )
+    deployment_template = next(
+        template
+        for template in customized_templates
+        if template.template_id is BoilerplateTemplateId.DOCS_DEPLOYMENT
+    )
+    assert "https://dev.example.test" in deployment_template.content
+    assert "https://staging.example.test" in deployment_template.content
+    assert "https://example.test" in deployment_template.content
 
 
 def test_generate_doc_boilerplate_uses_shell_target_filtering(tmp_path, monkeypatch) -> None:
@@ -1379,3 +1441,175 @@ def test_configure_zensical_extensions_toml_snippet_non_empty_for_all() -> None:
     for cfg in result.extensions:
         assert cfg.toml_snippet.strip(), f"{cfg.extension!r} has empty toml_snippet"
         assert cfg.yaml_snippet.strip(), f"{cfg.extension!r} has empty yaml_snippet"
+
+
+# ---------------------------------------------------------------------------
+# Overwrite=True rollback - file restoration
+# ---------------------------------------------------------------------------
+
+
+def test_init_project_overwrite_restores_original_content_on_mid_write_failure(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """When overwrite=True and init fails mid-write, pre-existing files must be restored."""
+    import mcp_zen_of_docs.generators as gen_mod
+
+    from mcp_zen_of_docs.generators import init_project
+    from mcp_zen_of_docs.models import InitProjectResponse
+
+    # First init succeeds - creates all artifacts.
+    monkeypatch.setattr(gen_mod, "_execute_default_script", lambda **_: None)
+    first = InitProjectResponse.model_validate(init_project(project_root=str(tmp_path)))
+    assert first.status == "success"
+
+    # Overwrite the bash shell script with custom content to simulate a user-modified file.
+    bash_script = tmp_path / ".mcp-zen-of-docs" / "init" / "init.bash.sh"
+    original_bash_content = "#!/usr/bin/env bash\n# user customisation\necho hello\n"
+    bash_script.write_text(original_bash_content, encoding="utf-8")
+
+    # Patch _write_init_state to fail so rollback fires after shell scripts are written.
+    def fail_write_state(*args: object, **kwargs: object) -> None:
+        msg = "simulated disk full on second init"
+        raise OSError(msg)
+
+    monkeypatch.setattr(gen_mod, "_write_init_state", fail_write_state)
+
+    result = InitProjectResponse.model_validate(
+        init_project(project_root=str(tmp_path), overwrite=True)
+    )
+
+    assert result.status == "error"
+    assert result.initialized is False
+    assert "rolled back" in (result.message or "").lower()
+    # The bash script must be RESTORED to original content, not deleted.
+    assert bash_script.exists(), "Pre-existing shell script must be restored, not deleted"
+    assert bash_script.read_text(encoding="utf-8") == original_bash_content
+
+
+def test_init_project_overwrite_deletes_newly_created_files_on_failure(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """When overwrite=True and init fails, newly created files (not pre-existing) are deleted."""
+    import mcp_zen_of_docs.generators as gen_mod
+
+    from mcp_zen_of_docs.generators import init_project
+    from mcp_zen_of_docs.models import InitProjectResponse
+
+    # Patch _write_init_state to fail - shell scripts are newly created.
+    def fail_write_state(*args: object, **kwargs: object) -> None:
+        msg = "simulated disk full"
+        raise OSError(msg)
+
+    monkeypatch.setattr(gen_mod, "_write_init_state", fail_write_state)
+
+    result = InitProjectResponse.model_validate(
+        init_project(project_root=str(tmp_path), overwrite=True)
+    )
+
+    assert result.status == "error"
+    # All newly created shell scripts must be deleted.
+    init_dir = tmp_path / ".mcp-zen-of-docs" / "init"
+    from mcp_zen_of_docs.models import ShellScriptType
+
+    for shell in ShellScriptType:
+        script_name = {
+            ShellScriptType.BASH: "init.bash.sh",
+            ShellScriptType.ZSH: "init.zsh.sh",
+            ShellScriptType.POWERSHELL: "init.powershell.ps1",
+        }[shell]
+        assert not (init_dir / script_name).exists(), (
+            f"Newly created {script_name} must be deleted on rollback"
+        )
+
+
+def test_init_project_overwrite_script_failure_leaves_files_with_new_content(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Script execution failure (warning path) must NOT rollback - files stay with new content."""
+    import mcp_zen_of_docs.generators as gen_mod
+
+    from mcp_zen_of_docs.generators import init_project
+    from mcp_zen_of_docs.models import InitProjectResponse
+
+    # First init - creates files.
+    monkeypatch.setattr(gen_mod, "_execute_default_script", lambda **_: None)
+    InitProjectResponse.model_validate(init_project(project_root=str(tmp_path)))
+
+    # Store original content of the ZSH script, then track what the SECOND init writes.
+    zsh_script = tmp_path / ".mcp-zen-of-docs" / "init" / "init.zsh.sh"
+    original_zsh = "#!/usr/bin/env zsh\n# user custom content\necho mine\n"
+    zsh_script.write_text(original_zsh, encoding="utf-8")
+
+    # Make script execution fail on second init.
+    monkeypatch.setattr(
+        gen_mod,
+        "_execute_default_script",
+        lambda **_: "simulated execution failure",
+    )
+
+    result = InitProjectResponse.model_validate(
+        init_project(project_root=str(tmp_path), overwrite=True)
+    )
+
+    assert result.status == "warning"
+    assert result.initialized is False
+    # Script failure is NOT a write failure - files must remain on disk.
+    assert zsh_script.exists(), "File must exist after script-failure warning (no rollback)"
+    # The file has been overwritten with the new template content (not the custom content).
+    new_content = zsh_script.read_text(encoding="utf-8")
+    assert new_content != original_zsh, (
+        "Overwrite=True must have replaced the file with new template content"
+    )
+    # Files are listed in created_files (they were successfully written).
+    assert result.created_files, "created_files must not be empty on script-failure warning"
+
+
+def test_generate_doc_boilerplate_overwrite_restores_original_content_on_failure(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Boilerplate overwrite=True rollback restores pre-existing files, not deletes them."""
+    import mcp_zen_of_docs.generators as gen_mod
+
+    from mcp_zen_of_docs.generators import generate_doc_boilerplate
+    from mcp_zen_of_docs.generators import init_project
+    from mcp_zen_of_docs.models import BoilerplateGenerationErrorCode
+    from mcp_zen_of_docs.models import GatedBoilerplateGenerationResponse
+
+    # Initialise the project so the gate passes.
+    monkeypatch.setattr(gen_mod, "_execute_default_script", lambda **_: None)
+    init_project(project_root=str(tmp_path))
+
+    # Run first boilerplate to create a file we'll later overwrite.
+    first = generate_doc_boilerplate(
+        project_root=str(tmp_path), gate_confirmed=True, overwrite=False
+    )
+    assert first.boilerplate_generated
+
+    # Pick the first generated file and inject custom content.
+    assert first.generated_files
+    target = first.generated_files[0]
+    original_content = "# user content - must survive rollback\n"
+    target.write_text(original_content, encoding="utf-8")
+
+    # Patch write_text_file to fail after a couple of writes to trigger rollback.
+    call_count = {"n": 0}
+    real_write_text_file = gen_mod.write_text_file
+
+    def failing_write(path: object, *, content: object) -> object:
+        call_count["n"] += 1
+        if call_count["n"] > 1:
+            msg = "simulated disk full"
+            raise OSError(msg)
+        return real_write_text_file(path, content=content)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(gen_mod, "write_text_file", failing_write)
+
+    result = GatedBoilerplateGenerationResponse.model_validate(
+        generate_doc_boilerplate(project_root=str(tmp_path), gate_confirmed=True, overwrite=True)
+    )
+
+    assert result.status == "error"
+    assert result.error_code is BoilerplateGenerationErrorCode.WRITE_FAILED
+    # The pre-existing file (with original content) must be RESTORED.
+    assert target.exists(), "Pre-existing boilerplate file must be restored, not deleted"
+    assert target.read_text(encoding="utf-8") == original_content

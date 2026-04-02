@@ -1,18 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="mcp-zen-of-docs icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"
+     role="img" aria-label="mcp-zen-of-docs icon">
   <title>mcp-zen-of-docs icon</title>
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#131720"/>
-      <stop offset="100%" style="stop-color:#1a2030"/>
-    </linearGradient>
-    <linearGradient id="zen" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0ea27a"/>
-      <stop offset="100%" style="stop-color:#72e8c4"/>
-    </linearGradient>
-  </defs>
-  <rect width="32" height="32" rx="7" fill="url(#bg)"/>
-  <rect x="0" y="0" width="32" height="2.5" rx="1.25" fill="#0ea27a" opacity="0.85"/>
-  <path d="M8 8 L24 8 L8 24 L24 24" stroke="url(#zen)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <circle cx="24" cy="8" r="2.5" fill="#3fc99d"/>
-  <circle cx="8" cy="24" r="2.5" fill="#72e8c4"/>
+  <!-- Light parchment background — matches icons/ system -->
+  <rect width="32" height="32" rx="7" fill="#f7fbf8" stroke="#b8ddd0" stroke-width="1.5"/>
+  <!-- Zen Z-mark: incomplete path through document points, jade primary -->
+  <path d="M8 8 L24 8 L8 24 L24 24"
+        stroke="#0ea27a" stroke-width="2.2" stroke-linecap="round"
+        stroke-linejoin="round" fill="none"/>
+  <!-- Endpoint nodes: dark jade top-right, mint bottom-left -->
+  <circle cx="24" cy="8"  r="2.5" fill="#0b7a5c"/>
+  <circle cx="8"  cy="24" r="2.5" fill="#3fd9a8"/>
 </svg>

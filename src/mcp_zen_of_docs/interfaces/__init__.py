@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
+from importlib import import_module
 from typing import TYPE_CHECKING
-
-from mcp_zen_of_docs.cli import main as _cli_main
-from mcp_zen_of_docs.server import main as _server_main
 
 from .story import InterfaceChannel
 from .story import StoryInteractionLoopSurface
@@ -38,14 +36,16 @@ INTERFACE_RESPONSIBILITIES: tuple[str, ...] = (
 )
 
 
-def run_cli(args: Sequence[str] | None = None) -> None:
+def run_cli(args: Sequence[str] | None = None) -> int:
     """Run the Typer CLI entrypoint."""
-    _cli_main(args)
+    cli_module = import_module("mcp_zen_of_docs.cli")
+    return cli_module.main(args)
 
 
 def run_mcp_server() -> None:
     """Run the FastMCP server entrypoint."""
-    _server_main()
+    server_module = import_module("mcp_zen_of_docs.server")
+    server_module.main()
 
 
 __all__ = [

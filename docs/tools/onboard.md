@@ -1,6 +1,6 @@
 ---
 title: onboard
-description: Run the complete docs onboarding pipeline — detect, plan, scaffold, theme, and configure deployment in one command.
+description: Bootstrap docs setup artifacts, starter pages, and contributor guidance for a project.
 tags:
   - tools
   - onboard
@@ -8,174 +8,146 @@ tags:
 
 # onboard
 
-> Runs the complete docs setup pipeline — detect, plan, scaffold, theme, and CI wiring in one call.
+> Bootstrap docs work from the terminal with a task-shaped command, a shorter `setup` alias, and JSON output when automation needs the raw contract.
 
-`onboard` chains every other tool together: it detects the framework, analyses the codebase to plan a page structure, scaffolds all the stubs, applies a theme, and optionally outputs a CI/CD deployment config — all in a single conversation turn.
+`onboard` is the docs bootstrap command group. For terminal users, the most important behavior changes are:
 
----
+- `setup` is a direct alias for `onboard`
+- `onboard full` is the primary task-shaped entry point
+- interactive terminals get short human summaries, while `--json` preserves the underlying payload
 
-## Modes
-
-| Mode | What it does |
-|------|-------------|
-| `full` | Runs the entire onboarding pipeline end-to-end (default) |
-| `init` | Initialises the framework folder structure only (no content) |
-| `phase` | Executes one named pipeline phase independently |
-| `plan` | Analyses the project and returns a page plan without writing files |
-| `install` | Runs an ephemeral framework CLI install (useful in fresh environments) |
+The command does **not** claim to be a fantasy all-in-one docs platform. It generates contributor guidance, setup artifacts, and optional starter boilerplate that match the shipped implementation.
 
 ---
 
-## When to use it
+## Main command vs subcommands
 
-Use `onboard` when starting a documentation project from zero or inheriting an undocumented codebase. For projects that already have docs, use [scaffold](scaffold.md), [validate](validate.md), or [generate](generate.md) directly. Run `mode="plan"` first on large projects to review the proposed page structure before committing to a full scaffold.
+### `onboard full`
 
----
+This is the human-facing entry point. It accepts `--mode` to control how far the flow goes:
 
-## Parameters
+| `--mode` value | What it does |
+|----------------|--------------|
+| `skeleton` | Generate onboarding guidance only |
+| `init` | Generate setup artifacts only |
+| `boilerplate` | Generate starter docs files only |
+| `full` | Run guide + init + boilerplate |
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `mode` | string | No | Pipeline mode. Default: `"full"` |
-| `project_root` | path | No | Root of the project to onboard. Default: `"."` |
-| `framework` | string | No | Auto-detected from `project_root` if omitted |
-| `docs_root` | path | No | Where to write the docs directory. Default: `"docs"` |
-| `project_name` | string | No | Project name used in generated pages. Default: `"Project"` |
-| `project_name_alias` | string | No | Short name or acronym |
-| `scaffold_docs` | bool | No | Write page stubs after the plan phase. Default: `false` |
-| `deploy_provider` | string | No | Deployment target for CI config. Default: `"github-pages"` |
-| `production_url` | string | No | Canonical URL for the built site |
-| `staging_url` | string | No | Staging URL for preview builds |
-| `phase` | string | No | Starting phase for `phase` mode. Default: `"constitution"` |
-| `onboard_mode` | string | No | Scaffold depth: `"skeleton"` or `"full"`. Default: `"skeleton"` |
-| `include_checklist` | bool | No | Append a post-onboarding checklist. Default: `true` |
-| `include_memories` | bool | No | Persist project context for future tool calls |
-| `include_references` | bool | No | Generate an API reference page |
-| `output_file` | path | No | Save the onboarding report to a file |
+### Other `onboard` subcommands
+
+| Subcommand | Purpose |
+|------------|---------|
+| `onboard plan` | Generate a docs page plan |
+| `onboard phase` | Run one named pipeline phase |
+| `onboard install` | Run an ephemeral installer in a fresh environment |
+| `onboard init <framework>` | Initialize a framework's canonical structure |
 
 ---
 
-## Pipeline phases
+## Human mode vs automation mode
 
-When `mode="full"`, these phases run in sequence:
+- **TTY / `--human`** — focused terminal output for people, such as onboarding guidance or a summary of generated artifacts.
+- **`--json`** — raw payloads for scripts, CI, and tests.
 
-| Phase | What it does |
-|-------|-------------|
-| **Constitution** | Detects framework, reads existing nav, establishes docs root |
-| **Codebase analysis** | Scans `project_root` for modules, CLI entry points, public APIs |
-| **Page plan** | Produces a structured list of pages with titles and section outlines |
-| **Scaffold** | Creates all planned pages *(only when `scaffold_docs=true`)* |
-| **Theme** | Generates `extra.css` and `extra.js` with sensible defaults |
-| **Checklist** | Returns next steps specific to your project |
+The underlying response model is the same either way; only the presentation changes.
+
+---
+
+## `onboard full` flags
+
+| Flag | Type | Required | Description |
+|------|------|----------|-------------|
+| `--project-root` | path | No | Root of the project to onboard. Default: `.` |
+| `--project-name` | string | No | Project name used in generated pages. Default: `Project` |
+| `--mode` | string | No | One of `skeleton`, `init`, `boilerplate`, or `full` |
+| `--output-file` | path | No | Write the onboarding guide to a file |
+| `--include-checklist` | bool | No | Include the checklist in guide output. Default: `true` |
+| `--include-shell-scripts` | bool | No | Emit shell helper scripts. Default: `true` |
+| `--deploy-provider` | string | No | Deployment target for docs workflow generation |
+| `--gate-confirmed` | bool | No | Required when running `--mode boilerplate` directly |
+| `--shell-target` | string | No | Restrict emitted shell script targets |
+| `--overwrite` | bool | No | Allow generated files to replace existing ones |
+
+---
+
+## Behavior notes that matter
+
+### `setup` is just the shorter name
+
+These commands are equivalent:
+
+```bash
+mcp-zen-of-docs setup full --project-root . --mode skeleton
+mcp-zen-of-docs onboard full --project-root . --mode skeleton
+```
+
+### `full` mode is the comprehensive path
+
+When `--mode full` runs successfully, it combines:
+
+1. onboarding guidance
+2. setup artifact generation
+3. starter docs boilerplate
+
+### Direct `boilerplate` mode is gated
+
+If you call `--mode boilerplate` directly, pass `--gate-confirmed` so the CLI knows you intentionally want starter docs written.
 
 ---
 
 ## Examples
 
-**Plan without writing files (`mode="plan"`)**
+### Human guide-only flow
 
-```json
-{
-  "tool": "onboard",
-  "arguments": {
-    "mode": "plan",
-    "project_root": "./my-fastapi-project",
-    "project_name": "FastAPI Toolkit"
-  }
-}
+```bash
+mcp-zen-of-docs --human setup full \
+  --project-root ./my-fastapi-project \
+  --project-name "FastAPI Toolkit" \
+  --mode skeleton
 ```
 
-Returns:
-
-```json
-{
-  "framework": "zensical",
-  "project_name": "FastAPI Toolkit",
-  "page_plan": [
-    { "path": "index.md",              "title": "FastAPI Toolkit",  "sections": ["Overview", "Installation", "Quick start"] },
-    { "path": "quickstart.md",         "title": "Quickstart",       "sections": ["Prerequisites", "Installation", "First request"] },
-    { "path": "reference/api.md",      "title": "API Reference",    "sections": ["Endpoints", "Authentication", "Error codes"] },
-    { "path": "guides/auth.md",        "title": "Authentication",   "sections": ["API keys", "OAuth 2.0", "JWT"] },
-    { "path": "guides/deployment.md",  "title": "Deployment",       "sections": ["Docker", "GitHub Actions", "Environment variables"] },
-    { "path": "contributing/index.md", "title": "Contributing",     "sections": ["Setup", "Tests", "PR checklist"] }
-  ]
-}
-```
-
----
-
-**Full onboard with scaffold (`scaffold_docs=true`)**
-
-```json
-{
-  "tool": "onboard",
-  "arguments": {
-    "mode": "full",
-    "project_root": "./my-fastapi-project",
-    "project_name": "FastAPI Toolkit",
-    "scaffold_docs": true,
-    "production_url": "https://fastapi-toolkit.dev"
-  }
-}
-```
-
-Console output:
+Representative output starts with:
 
 ```text
-✓ Phase 1 — Constitution
-  Framework:   zensical
-  Config:      zensical.toml
-  Docs root:   docs/
-
-✓ Phase 2 — Codebase analysis
-  Modules:     src/fastapi_toolkit/ (12 files)
-  CLI:         Yes (typer app at src/fastapi_toolkit/cli.py)
-  Public API:  42 exported symbols
-
-✓ Phase 3 — Page plan
-  6 pages planned
-
-✓ Phase 4 — Scaffold
-  docs/index.md              ✓ created
-  docs/quickstart.md         ✓ created
-  docs/reference/api.md      ✓ created
-  docs/guides/auth.md        ✓ created
-  docs/guides/deployment.md  ✓ created
-  docs/contributing/index.md ✓ created
-
-✓ Phase 5 — Theme
-  docs/stylesheets/extra.css  ✓ created
-  docs/javascripts/extra.js   ✓ created
+Success: Onboard project
+Project name: FastAPI Toolkit
+Mode: skeleton
 ```
 
-Returns a post-onboarding checklist:
+### Raw JSON init flow
 
-```markdown
-## Post-onboarding checklist
-
-- [ ] Review and customise each page in `docs/`
-- [ ] Set `site_url = "https://fastapi-toolkit.dev"` in `zensical.toml`
-- [ ] Add the GitHub Actions workflow: `.github/workflows/docs.yml`
-- [ ] Run `validate` to confirm quality score >= 0.80
-- [ ] Run `generate` in `reference` mode to build the API reference
+```bash
+mcp-zen-of-docs --json setup full \
+  --project-root ./my-fastapi-project \
+  --project-name "FastAPI Toolkit" \
+  --mode init
 ```
 
----
+Use this when another tool needs fields like `init_result`, `deploy_pipelines`, or `shell_scripts`.
 
-**Initialise directory structure only (`mode="init"`)**
+### Full bootstrap
 
-```json
-{
-  "tool": "onboard",
-  "arguments": {
-    "mode": "init",
-    "framework": "docusaurus",
-    "project_root": "./new-project"
-  }
-}
+```bash
+mcp-zen-of-docs onboard full \
+  --project-root ./my-fastapi-project \
+  --project-name "FastAPI Toolkit"
 ```
 
-Creates the Docusaurus directory structure without scaffolding any content pages.
+### Boilerplate only
+
+```bash
+mcp-zen-of-docs onboard full \
+  --project-root ./my-fastapi-project \
+  --project-name "FastAPI Toolkit" \
+  --mode boilerplate \
+  --gate-confirmed
+```
+
+### Framework-specific structure init
+
+```bash
+mcp-zen-of-docs onboard init zensical --project-root ./my-fastapi-project
+```
 
 ---
 

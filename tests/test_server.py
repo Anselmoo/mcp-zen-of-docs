@@ -31,23 +31,38 @@ from mcp_zen_of_docs.models import TranslatePrimitivesResponse
 from mcp_zen_of_docs.models import ValidateDocsResponse
 from mcp_zen_of_docs.models import VisualAssetKind
 from mcp_zen_of_docs.models import VisualAssetOperation
-from mcp_zen_of_docs.server import compose_docs_story
-from mcp_zen_of_docs.server import create_copilot_artifact
-from mcp_zen_of_docs.server import detect_docs_context
-from mcp_zen_of_docs.server import detect_project_readiness
-from mcp_zen_of_docs.server import generate_reference_docs
-from mcp_zen_of_docs.server import generate_visual_asset
-from mcp_zen_of_docs.server import get_authoring_profile
-from mcp_zen_of_docs.server import mcp
-from mcp_zen_of_docs.server import onboard_project
-from mcp_zen_of_docs.server import resolve_primitive
-from mcp_zen_of_docs.server import score_docs_quality
-from mcp_zen_of_docs.server import translate_primitives
-from mcp_zen_of_docs.server import validate_docs
+from mcp_zen_of_docs.server import audit_docstrings as package_audit_docstrings
+from mcp_zen_of_docs.server import mcp as package_mcp
+from mcp_zen_of_docs.server import write_doc as package_write_doc
+from mcp_zen_of_docs.server.app import compose_docs_story
+from mcp_zen_of_docs.server.app import create_copilot_artifact
+from mcp_zen_of_docs.server.app import detect_docs_context
+from mcp_zen_of_docs.server.app import detect_project_readiness
+from mcp_zen_of_docs.server.app import generate_reference_docs
+from mcp_zen_of_docs.server.app import generate_visual_asset
+from mcp_zen_of_docs.server.app import get_authoring_profile
+from mcp_zen_of_docs.server.app import mcp
+from mcp_zen_of_docs.server.app import onboard_project
+from mcp_zen_of_docs.server.app import resolve_primitive
+from mcp_zen_of_docs.server.app import score_docs_quality
+from mcp_zen_of_docs.server.app import translate_primitives
+from mcp_zen_of_docs.server.app import validate_docs
 
 
 def test_server_mcp_created() -> None:
     assert mcp is not None
+
+
+def test_server_package_reexports_stable_entrypoints() -> None:
+    assert package_mcp is mcp
+    assert callable(package_audit_docstrings)
+    assert callable(package_write_doc)
+
+
+def test_application_interface_imports_server_package_surface() -> None:
+    from mcp_zen_of_docs.application.interface import write_doc
+
+    assert write_doc is package_write_doc
 
 
 def test_server_tool_input_schema_does_not_require_defaulted_fields() -> None:
@@ -88,7 +103,7 @@ def test_server_tool_wrappers_call_impls(tmp_path: Path) -> None:
         kind=GenerateReferenceDocsKind.AUTHORING_PACK,
         source_host=SourceCodeHost.GITHUB,
         repository_url="https://github.com/example/repo",
-        source_file="src/mcp_zen_of_docs/server.py",
+        source_file="src/mcp_zen_of_docs/server/app.py",
         line_start=95,
         line_end=97,
     )
@@ -132,7 +147,7 @@ def test_generate_reference_docs_authoring_pack_writes_markdown_sections(tmp_pat
             kind=GenerateReferenceDocsKind.AUTHORING_PACK,
             output_file=str(output_file),
             repository_url="https://github.com/example/repo",
-            source_file="src/mcp_zen_of_docs/server.py",
+            source_file="src/mcp_zen_of_docs/server/app.py",
             line_start=10,
             line_end=12,
         )
@@ -145,8 +160,8 @@ def test_generate_reference_docs_authoring_pack_writes_markdown_sections(tmp_pat
     assert "## Markup dialect examples" in rendered
     assert "```mdx" in rendered
     assert "```markdoc" in rendered
-    assert "/blob/main/src/mcp_zen_of_docs/server.py#L10-L12" in rendered
-    assert "/-/blob/main/src/mcp_zen_of_docs/server.py#L10-12" in rendered
+    assert "/blob/main/src/mcp_zen_of_docs/server/app.py#L10-L12" in rendered
+    assert "/-/blob/main/src/mcp_zen_of_docs/server/app.py#L10-12" in rendered
 
 
 def test_compose_docs_story_tool_preserves_phase1_interaction_fields() -> None:
@@ -346,6 +361,330 @@ def test_onboard_project_warns_on_ignored_compatibility_keys(tmp_path: Path) -> 
     assert "ignored" in payload.message.lower()
 
 
+def test_onboard_project_full_mode_auto_confirms_boilerplate_gate(tmp_path: Path) -> None:
+    """FULL mode should run boilerplate without requiring explicit gate_confirmed=True."""
+    payload = OnboardProjectResponse.model_validate(
+        asyncio.run(
+            onboard_project(
+                project_root=str(tmp_path),
+                mode=OnboardProjectMode.FULL,
+                # gate_confirmed intentionally omitted - FULL mode must auto-confirm
+            )
+        )
+    )
+    # The overall flow should succeed (or warn, never error on the gate alone).
+    assert payload.status in {"success", "warning"}, (
+        f"FULL mode without gate_confirmed should not error; got {payload.status}"
+    )
+    assert payload.boilerplate_result is not None, "FULL mode must attempt boilerplate"
+    assert payload.boilerplate_result.boilerplate_generated, (
+        "FULL mode must generate boilerplate without explicit gate_confirmed"
+    )
+
+
+def test_onboard_project_defaults_to_skeleton_mode(tmp_path: Path) -> None:
+    """The MCP/server onboarding entrypoint should default to the safe skeleton flow."""
+    payload = OnboardProjectResponse.model_validate(
+        asyncio.run(
+            onboard_project(
+                project_root=str(tmp_path),
+            )
+        )
+    )
+    assert payload.mode == OnboardProjectMode.SKELETON
+    assert payload.skeleton is not None
+    assert payload.init_result is None
+    assert payload.boilerplate_result is None
+
+
+def test_onboard_project_init_mode_honors_shell_targets(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import mcp_zen_of_docs.generators as gen_mod
+
+    monkeypatch.setattr(gen_mod, "_execute_default_script", lambda **_: None)
+
+    payload = OnboardProjectResponse.model_validate(
+        asyncio.run(
+            onboard_project(
+                project_root=str(tmp_path),
+                mode=OnboardProjectMode.INIT,
+                shell_targets=["bash"],
+            )
+        )
+    )
+
+    assert payload.status == "success"
+    assert payload.init_result is not None
+    assert [artifact.shell.value for artifact in payload.init_result.shell_scripts] == ["bash"]
+    assert payload.init_status is not None
+    assert payload.init_status.missing_artifacts == []
+    assert (tmp_path / ".mcp-zen-of-docs" / "init" / "init.bash.sh").exists()
+    assert not (tmp_path / ".mcp-zen-of-docs" / "init" / "init.zsh.sh").exists()
+    assert not (tmp_path / ".mcp-zen-of-docs" / "init" / "init.powershell.ps1").exists()
+
+
+def test_onboard_project_full_mode_propagates_deployment_urls(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import mcp_zen_of_docs.generators as gen_mod
+
+    monkeypatch.setattr(gen_mod, "_execute_default_script", lambda **_: None)
+
+    payload = OnboardProjectResponse.model_validate(
+        asyncio.run(
+            onboard_project(
+                project_root=str(tmp_path),
+                mode=OnboardProjectMode.FULL,
+                dev_url="https://dev.example.test",
+                staging_url="https://staging.example.test",
+                production_url="https://example.test",
+            )
+        )
+    )
+
+    assert payload.status == "success"
+    deployment_doc = (tmp_path / "docs" / "deployment.md").read_text(encoding="utf-8")
+    assert "https://dev.example.test" in deployment_doc
+    assert "https://staging.example.test" in deployment_doc
+    assert "https://example.test" in deployment_doc
+
+
+def test_onboard_project_full_mode_rolls_back_init_files_on_boilerplate_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """When boilerplate fails in FULL mode, previously-created init files are rolled back."""
+    import mcp_zen_of_docs.server.app as server_mod
+
+    from mcp_zen_of_docs.models import BoilerplateGenerationErrorCode
+    from mcp_zen_of_docs.models import GatedBoilerplateGenerationResponse
+
+    def always_fail_boilerplate(**kwargs: object) -> GatedBoilerplateGenerationResponse:
+        return GatedBoilerplateGenerationResponse(
+            status="error",
+            project_root=tmp_path,
+            gate_confirmed=True,
+            boilerplate_generated=False,
+            error_code=BoilerplateGenerationErrorCode.WRITE_FAILED,
+            message="simulated boilerplate failure",
+        )
+
+    monkeypatch.setattr(server_mod, "generate_doc_boilerplate_impl", always_fail_boilerplate)
+
+    payload = OnboardProjectResponse.model_validate(
+        asyncio.run(
+            onboard_project(
+                project_root=str(tmp_path),
+                mode=OnboardProjectMode.FULL,
+            )
+        )
+    )
+
+    assert payload.status == "error"
+    # After rollback the init state file must not exist.
+    state_file = tmp_path / ".mcp-zen-of-docs" / "init" / "state.json"
+    assert not state_file.exists(), (
+        "Cross-step rollback must remove init state.json when boilerplate fails in FULL mode"
+    )
+    assert payload.init_result is not None
+    assert payload.init_result.initialized is False
+    assert payload.init_result.created_files == []
+    assert payload.init_result.message is not None
+    assert "rolled back" in payload.init_result.message.lower()
+
+
+def test_onboard_project_full_mode_rolls_back_framework_artifacts_on_boilerplate_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import mcp_zen_of_docs.generators as gen_mod
+    import mcp_zen_of_docs.server.app as server_mod
+
+    from mcp_zen_of_docs.models import BoilerplateGenerationErrorCode
+    from mcp_zen_of_docs.models import GatedBoilerplateGenerationResponse
+    from mcp_zen_of_docs.models import InitFrameworkStructureResponse
+
+    monkeypatch.setattr(gen_mod, "_execute_default_script", lambda **_: None)
+
+    copied_file = tmp_path / "docs" / "guide.md"
+    copied_dir = tmp_path / "docs" / "assets"
+
+    def fake_init_framework_structure(request: object) -> InitFrameworkStructureResponse:
+        copied_file.parent.mkdir(parents=True, exist_ok=True)
+        copied_file.write_text("# Guide\n", encoding="utf-8")
+        copied_dir.mkdir(parents=True, exist_ok=True)
+        (copied_dir / "image.svg").write_text("<svg />\n", encoding="utf-8")
+        return InitFrameworkStructureResponse(
+            status="success",
+            framework=FrameworkName.ZENSICAL,
+            docs_root=tmp_path / "docs",
+            copied_artifacts=[copied_file, copied_dir],
+            cli_command="zensical init",
+            message="framework copied",
+        )
+
+    def always_fail_boilerplate(**kwargs: object) -> GatedBoilerplateGenerationResponse:
+        return GatedBoilerplateGenerationResponse(
+            status="error",
+            project_root=tmp_path,
+            gate_confirmed=True,
+            boilerplate_generated=False,
+            error_code=BoilerplateGenerationErrorCode.WRITE_FAILED,
+            message="simulated boilerplate failure",
+        )
+
+    monkeypatch.setattr(server_mod, "init_framework_structure_impl", fake_init_framework_structure)
+    monkeypatch.setattr(server_mod, "generate_doc_boilerplate_impl", always_fail_boilerplate)
+
+    payload = OnboardProjectResponse.model_validate(
+        asyncio.run(
+            onboard_project(
+                project_root=str(tmp_path),
+                mode=OnboardProjectMode.FULL,
+                scaffold_docs=True,
+                framework=FrameworkName.ZENSICAL,
+            )
+        )
+    )
+
+    assert payload.status == "error"
+    assert not copied_file.exists()
+    assert not copied_dir.exists()
+    assert payload.framework_init_result is not None
+    assert payload.framework_init_result.copied_artifacts == []
+    assert "rolled back" in (payload.framework_init_result.message or "").lower()
+
+
+def test_init_project_rolls_back_files_on_mid_write_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """init_project must delete already-written files when a later write step raises OSError."""
+    import mcp_zen_of_docs.generators as gen_mod
+
+    from mcp_zen_of_docs.generators import init_project
+    from mcp_zen_of_docs.models import InitProjectResponse
+    from mcp_zen_of_docs.models import ShellScriptType
+
+    def fail_write_state(*args: object, **kwargs: object) -> None:
+        msg = "simulated disk full"
+        raise OSError(msg)
+
+    monkeypatch.setattr(gen_mod, "_write_init_state", fail_write_state)
+
+    result = InitProjectResponse.model_validate(init_project(project_root=str(tmp_path)))
+
+    assert result.status == "error"
+    assert result.initialized is False
+    assert "rolled back" in (result.message or "").lower()
+    # Shell scripts were written before _write_init_state raised; they must be gone.
+    init_dir = tmp_path / ".mcp-zen-of-docs" / "init"
+    for shell in ShellScriptType:
+        script_path = (
+            init_dir
+            / {
+                ShellScriptType.BASH: "init.bash.sh",
+                ShellScriptType.ZSH: "init.zsh.sh",
+                ShellScriptType.POWERSHELL: "init.powershell.ps1",
+            }[shell]
+        )
+        assert not script_path.exists(), (
+            f"Rollback must remove {script_path.name} after failed init"
+        )
+
+
+def test_init_project_returns_warning_on_default_script_failure_and_keeps_files(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Script execution failure is a warning - files are NOT rolled back (write succeeded)."""
+    import mcp_zen_of_docs.generators as gen_mod
+
+    from mcp_zen_of_docs.generators import init_project
+    from mcp_zen_of_docs.models import InitProjectResponse
+    from mcp_zen_of_docs.models import ShellScriptType
+
+    monkeypatch.setattr(
+        gen_mod,
+        "_execute_default_script",
+        lambda **_: "simulated shell execution failure",
+    )
+
+    result = InitProjectResponse.model_validate(init_project(project_root=str(tmp_path)))
+
+    assert result.status == "warning"
+    assert result.initialized is False
+    # Files are written successfully even though the script failed - no rollback.
+    assert result.created_files, "created_files must not be empty; files WERE written"
+    assert "simulated shell execution failure" in (result.message or "")
+    init_dir = tmp_path / ".mcp-zen-of-docs" / "init"
+    for shell in ShellScriptType:
+        script_path = (
+            init_dir
+            / {
+                ShellScriptType.BASH: "init.bash.sh",
+                ShellScriptType.ZSH: "init.zsh.sh",
+                ShellScriptType.POWERSHELL: "init.powershell.ps1",
+            }[shell]
+        )
+        assert script_path.exists(), (
+            f"{script_path.name} must exist after script-failure warning (no rollback)"
+        )
+
+
+def test_generate_doc_boilerplate_rolls_back_files_on_mid_write_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """generate_doc_boilerplate must delete already-written files when write_text_file raises."""
+    import mcp_zen_of_docs.generators as gen_mod
+
+    from mcp_zen_of_docs.generators import generate_doc_boilerplate
+    from mcp_zen_of_docs.generators import init_project
+    from mcp_zen_of_docs.models import BoilerplateGenerationErrorCode
+    from mcp_zen_of_docs.models import GatedBoilerplateGenerationResponse
+
+    # First initialize the project so the gate passes.
+    init_result = init_project(project_root=str(tmp_path))
+    assert init_result.initialized
+
+    call_count = 0
+    original_write = gen_mod.write_text_file
+
+    def fail_on_second_write(file_path: Path, *, content: str) -> Path:
+        nonlocal call_count
+        call_count += 1
+        if call_count >= 2:
+            msg = "simulated write failure"
+            raise OSError(msg)
+        return original_write(file_path, content=content)
+
+    monkeypatch.setattr(gen_mod, "write_text_file", fail_on_second_write)
+
+    result = GatedBoilerplateGenerationResponse.model_validate(
+        generate_doc_boilerplate(
+            project_root=str(tmp_path),
+            gate_confirmed=True,
+        )
+    )
+
+    assert result.status == "error"
+    assert result.error_code == BoilerplateGenerationErrorCode.WRITE_FAILED
+    assert result.boilerplate_generated is False
+    assert "rolled back" in (result.message or "").lower()
+    # The first file that was successfully written must have been rolled back.
+    assert result.generated_files is None or len(result.generated_files) == 0
+
+
+def test_mcp_onboard_tool_onboard_mode_defaults_to_skeleton(tmp_path: Path) -> None:
+    """The MCP onboard tool's onboard_mode parameter should default to the safe skeleton flow."""
+    import inspect
+
+    from mcp_zen_of_docs.server.app import onboard
+
+    sig = inspect.signature(onboard)
+    default = sig.parameters["onboard_mode"].default
+    assert default == "skeleton", (
+        f"onboard tool onboard_mode should default to 'skeleton', got {default!r}"
+    )
+
+
 def test_compose_docs_story_tool_preserves_loop_control_defaults_for_existing_callers(
     monkeypatch,
 ) -> None:
@@ -363,7 +702,7 @@ def test_compose_docs_story_tool_preserves_loop_control_defaults_for_existing_ca
         )
         return StoryGenerationResponse(status="success")
 
-    monkeypatch.setattr("mcp_zen_of_docs.server.generate_story_impl", fake_generate_story_impl)
+    monkeypatch.setattr("mcp_zen_of_docs.server.app.generate_story_impl", fake_generate_story_impl)
 
     payload = compose_docs_story("Default compatibility story")
 
@@ -388,7 +727,7 @@ def test_compose_docs_story_tool_accepts_explicit_loop_controls(monkeypatch) -> 
         )
         return StoryGenerationResponse(status="success")
 
-    monkeypatch.setattr("mcp_zen_of_docs.server.generate_story_impl", fake_generate_story_impl)
+    monkeypatch.setattr("mcp_zen_of_docs.server.app.generate_story_impl", fake_generate_story_impl)
 
     payload = compose_docs_story(
         "Loop control story",
@@ -413,7 +752,7 @@ def test_compose_docs_story_tool_accepts_migration_controls(monkeypatch) -> None
         captured_kwargs.update({"prompt": prompt, **kwargs})
         return StoryGenerationResponse(status="success")
 
-    monkeypatch.setattr("mcp_zen_of_docs.server.generate_story_impl", fake_generate_story_impl)
+    monkeypatch.setattr("mcp_zen_of_docs.server.app.generate_story_impl", fake_generate_story_impl)
 
     payload = compose_docs_story(
         "Migration story",
@@ -613,7 +952,7 @@ def test_server_tool_schema_exposes_copilot_artifact_kind_enum() -> None:
 
 
 def test_server_registers_only_consolidated_tools() -> None:
-    server_source = Path("src/mcp_zen_of_docs/server.py").read_text(encoding="utf-8")
+    server_source = Path("src/mcp_zen_of_docs/server/app.py").read_text(encoding="utf-8")
     registered_tools = set(
         re.findall(
             r"^@mcp\.tool\([\s\S]*?\)\s*\n(?:async\s+)?def\s+([A-Za-z0-9_]+)\s*\(",
@@ -676,3 +1015,62 @@ def test_pyproject_exposes_cli_script_alias() -> None:
     scripts = data["project"]["scripts"]
     assert scripts["mcp-zen-of-docs"] == "mcp_zen_of_docs.__main__:main"
     assert scripts["mcp-zen-of-docs-cli"] == "mcp_zen_of_docs.cli:main"
+
+
+def test_onboard_project_full_mode_overwrite_restores_init_files_on_boilerplate_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Cross-step rollback with overwrite=True must restore pre-existing init files."""
+    import asyncio
+
+    import mcp_zen_of_docs.generators as gen_mod
+    import mcp_zen_of_docs.server.app as server_mod
+
+    from mcp_zen_of_docs.models import BoilerplateGenerationErrorCode
+    from mcp_zen_of_docs.models import GatedBoilerplateGenerationResponse
+    from mcp_zen_of_docs.models import OnboardProjectMode
+    from mcp_zen_of_docs.models import OnboardProjectResponse
+    from mcp_zen_of_docs.server.app import onboard_project
+
+    # First full onboard - creates all init files.
+    monkeypatch.setattr(gen_mod, "_execute_default_script", lambda **_: None)
+    first = OnboardProjectResponse.model_validate(
+        asyncio.run(onboard_project(project_root=str(tmp_path), mode=OnboardProjectMode.FULL))
+    )
+    assert first.status == "success"
+
+    # Inject custom content into the bash init script to simulate user modification.
+    bash_script = tmp_path / ".mcp-zen-of-docs" / "init" / "init.bash.sh"
+    original_bash = "#!/usr/bin/env bash\n# user custom\necho my script\n"
+    bash_script.write_text(original_bash, encoding="utf-8")
+
+    # Make boilerplate fail on the second (overwrite) run.
+    def always_fail_boilerplate(**kwargs: object) -> GatedBoilerplateGenerationResponse:
+        return GatedBoilerplateGenerationResponse(
+            status="error",
+            project_root=tmp_path,
+            gate_confirmed=True,
+            boilerplate_generated=False,
+            error_code=BoilerplateGenerationErrorCode.WRITE_FAILED,
+            message="simulated boilerplate failure",
+        )
+
+    monkeypatch.setattr(server_mod, "generate_doc_boilerplate_impl", always_fail_boilerplate)
+
+    payload = OnboardProjectResponse.model_validate(
+        asyncio.run(
+            onboard_project(
+                project_root=str(tmp_path),
+                mode=OnboardProjectMode.FULL,
+                overwrite=True,
+            )
+        )
+    )
+
+    assert payload.status == "error"
+    # The bash script must be RESTORED to original content, not deleted.
+    assert bash_script.exists(), "Pre-existing init bash script must be restored, not deleted"
+    assert bash_script.read_text(encoding="utf-8") == original_bash
+    assert payload.init_result is not None
+    assert payload.init_result.initialized is False
+    assert "rolled back" in (payload.init_result.message or "").lower()

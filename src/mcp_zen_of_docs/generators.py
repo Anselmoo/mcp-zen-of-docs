@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import contextlib
 import datetime
 import hashlib
 import os
@@ -15,6 +16,7 @@ import tempfile
 from collections.abc import Callable
 from pathlib import Path
 from typing import Literal
+from typing import Protocol
 from typing import TypedDict
 
 from .asset_conversion import convert_visual_asset
@@ -22,10 +24,14 @@ from .asset_conversion import generate_svg_png_conversion_scripts
 from .frameworks.material_profile import DEFAULT_SECTIONS
 from .frameworks.material_profile import MATERIAL_SNIPPETS
 from .generator import orchestrate_story
+from .generator_manifest_docs import (
+    generate_project_manifest_docs as generate_project_manifest_docs_impl,
+)
 from .infrastructure import capture_framework_detection_snapshot
 from .infrastructure.filesystem_adapter import discover_copilot_assets
 from .infrastructure.filesystem_adapter import discover_docs_deploy_pipelines
 from .infrastructure.filesystem_adapter import discover_shell_scripts
+from .infrastructure.filesystem_adapter import init_state_file
 from .infrastructure.filesystem_adapter import persist_init_state
 from .infrastructure.filesystem_adapter import required_init_artifacts
 from .infrastructure.filesystem_adapter import resolve_project_root
@@ -61,6 +67,7 @@ from .models import CreateInstructionResponse
 from .models import CreatePromptRequest
 from .models import CreatePromptResponse
 from .models import CustomThemeTarget
+from .models import DeploymentUrlConfig
 from .models import DetectFrameworkRequest
 from .models import DetectFrameworkResponse
 from .models import DiagramType
@@ -70,6 +77,7 @@ from .models import EnrichDocRequest
 from .models import EnrichDocResponse
 from .models import EphemeralInstallRequest
 from .models import EphemeralInstallResponse
+from .models import FileWriteRecord
 from .models import FrameworkInitSpec  # noqa: F401  (re-exported for server convenience)
 from .models import FrameworkName
 from .models import GatedBoilerplateGenerationRequest
@@ -207,11 +215,35 @@ def _coerce_primitive(value: AuthoringPrimitive | str) -> AuthoringPrimitive:
 
 
 def _resolve_mcp_target_path(target: Path | None) -> Path:
-    return Path(target or "src/mcp_zen_of_docs/server.py")
+    """Resolve the path to the MCP server implementation file."""
+    if target:
+        return Path(target)
+
+    # Try the new location first
+    new_location = Path("src/mcp_zen_of_docs/server/app.py")
+    if new_location.exists():
+        return new_location
+
+    # Fallback to old location for backward compatibility or different structures
+    return Path("src/mcp_zen_of_docs/server.py")
 
 
 def _resolve_project_root(project_root: Path | str) -> Path:
     return resolve_project_root(project_root)
+
+
+def _rollback_files(records: list[FileWriteRecord]) -> None:
+    """Restore pre-existing files to their original content; delete newly created files.
+
+    Best-effort: individual OSError failures are suppressed so that the rollback
+    continues to process the remaining records.
+    """
+    for record in records:
+        with contextlib.suppress(OSError):
+            if record.was_preexisting and record.original_content is not None:
+                record.path.write_text(record.original_content, encoding="utf-8")
+            else:
+                record.path.unlink(missing_ok=True)
 
 
 def _write_shell_script(
@@ -219,7 +251,7 @@ def _write_shell_script(
     *,
     shell: ShellScriptType,
     overwrite: bool,
-) -> tuple[ShellScriptArtifactMetadata, Path | None]:
+) -> tuple[ShellScriptArtifactMetadata, FileWriteRecord | None]:
     return write_shell_script(project_root, shell=shell, overwrite=overwrite)
 
 
@@ -254,8 +286,13 @@ def _required_init_artifacts(
     project_root: Path,
     *,
     deploy_provider: DocsDeployProvider,
+    shell_targets: list[ShellScriptType] | None = None,
 ) -> list[Path]:
-    return required_init_artifacts(project_root, deploy_provider=deploy_provider)
+    return required_init_artifacts(
+        project_root,
+        deploy_provider=deploy_provider,
+        shell_targets=shell_targets,
+    )
 
 
 def _discover_shell_scripts(project_root: Path) -> list[ShellScriptArtifactMetadata]:
@@ -266,7 +303,7 @@ def _write_copilot_assets(
     project_root: Path,
     *,
     overwrite: bool,
-) -> tuple[list[CopilotInitArtifactMetadata], list[Path]]:
+) -> tuple[list[CopilotInitArtifactMetadata], list[FileWriteRecord]]:
     return write_copilot_assets(project_root, overwrite=overwrite)
 
 
@@ -279,7 +316,7 @@ def _write_docs_deploy_pipeline(
     *,
     provider: DocsDeployProvider,
     overwrite: bool,
-) -> tuple[DocsDeployPipelineArtifactMetadata, Path | None]:
+) -> tuple[DocsDeployPipelineArtifactMetadata, FileWriteRecord | None]:
     return write_docs_deploy_pipeline(
         project_root,
         provider=provider,
@@ -680,6 +717,24 @@ class _ZensicalExtensionRegistryEntry(TypedDict):
     requires: list[ZensicalExtension]
 
 
+class _AgentConfigGenerator(Protocol):
+    """Callable shape for generated agent config content factories."""
+
+    def __call__(self, *, include_tools: bool) -> str:
+        """Return config content for one agent platform."""
+
+
+class _PlanSectionSpec(TypedDict):
+    """Typed section metadata used by the plan_docs workflow."""
+
+    slug: str
+    title: str
+    description: str
+    primitives: list[AuthoringPrimitive]
+    dependencies: list[str]
+    priority: Literal["high", "medium", "low"]
+
+
 def _generate_cargo_markdown(manifest_path: Path) -> tuple[str, str, str]:
     """Parse Cargo.toml and return (markdown, name, version)."""
     import tomllib  # noqa: PLC0415
@@ -851,107 +906,12 @@ _MANIFEST_CANDIDATES: list[tuple[str, ManifestType, ManifestParser]] = [
 ]
 
 
-def generate_project_manifest_docs(  # noqa: C901, PLR0912
+def generate_project_manifest_docs(
     target: Path | str | None = None,
     output_file: Path | str | None = None,
 ) -> GenerateProjectManifestDocsResponse:
-    """Generate a comprehensive Markdown reference page from a project manifest.
-
-    Auto-detects the project type by scanning for standard manifest files in
-    priority order: ``pyproject.toml`` (Python), ``package.json`` (Node.js/JS/TS),
-    ``Cargo.toml`` (Rust), ``go.mod`` (Go), ``Gemfile``/``*.gemspec`` (Ruby).
-
-    A direct path to a manifest file may also be supplied via *target* to bypass
-    auto-detection.
-
-    Args:
-        target: Path to a manifest file **or** a project directory to scan.
-            Defaults to the current working directory.
-        output_file: Optional path to write the generated Markdown file.
-
-    Returns:
-        GenerateProjectManifestDocsResponse with markdown, detected manifest
-        type, project name, and version.
-    """
-    target_path = _coerce_path(target) or Path.cwd()
-
-    # Direct file path supplied — infer type from name
-    if target_path.is_file():
-        for filename, mtype, parser in _MANIFEST_CANDIDATES:
-            if target_path.name == filename or target_path.name.endswith(".gemspec"):
-                manifest_path = target_path
-                manifest_type = mtype
-                _parser: Callable[[Path], tuple[str, str, str]] = parser
-                break
-        else:
-            return GenerateProjectManifestDocsResponse(
-                status="error",
-                manifest_type=ManifestType.UNKNOWN,
-                manifest_file=target_path.name,
-                message=f"Unrecognised manifest file: {target_path.name}",
-            )
-    else:
-        # Directory — scan for known manifests in priority order
-        manifest_path = None
-        manifest_type = ManifestType.UNKNOWN
-        _parser: ManifestParser | None = None
-        for filename, mtype, parser in _MANIFEST_CANDIDATES:
-            candidate = target_path / filename
-            if candidate.exists():
-                manifest_path = candidate
-                manifest_type = mtype
-                _parser = parser
-                break
-        # Also check for *.gemspec files when Gemfile not found
-        if manifest_path is None:
-            gemspecs = list(target_path.glob("*.gemspec"))
-            if gemspecs:
-                manifest_path = gemspecs[0]
-                manifest_type = ManifestType.RUBY
-                _parser = _generate_gemfile_markdown
-
-        if manifest_path is None:
-            return GenerateProjectManifestDocsResponse(
-                status="error",
-                manifest_type=ManifestType.UNKNOWN,
-                message=(
-                    f"No recognised project manifest found in {target_path}. "
-                    "Looked for: pyproject.toml, package.json, Cargo.toml, go.mod, Gemfile, *.gemspec"  # noqa: E501
-                ),
-            )
-
-    if _parser is None:
-        return GenerateProjectManifestDocsResponse(
-            status="error",
-            manifest_type=manifest_type,
-            manifest_file=manifest_path.name,
-            message=f"Unable to resolve a parser for {manifest_path.name}.",
-        )
-
-    try:
-        markdown, name, version = _parser(manifest_path)
-    except Exception as exc:  # noqa: BLE001
-        return GenerateProjectManifestDocsResponse(
-            status="error",
-            manifest_type=manifest_type,
-            manifest_file=manifest_path.name,
-            message=f"Failed to parse {manifest_path.name}: {exc}",
-        )
-
-    out_path = _coerce_path(output_file)
-    if out_path is not None:
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(markdown, encoding="utf-8")
-
-    return GenerateProjectManifestDocsResponse(
-        status="success",
-        manifest_type=manifest_type,
-        manifest_file=manifest_path.name,
-        project_name=name or None,
-        project_version=version or None,
-        output_file=out_path,
-        markdown=markdown,
-    )
+    """Generate a comprehensive Markdown reference page from a project manifest."""
+    return generate_project_manifest_docs_impl(target=target, output_file=output_file)
 
 
 def generate_material_reference_snippets(topic: str | None = None) -> MaterialSnippetResponse:
@@ -1289,6 +1249,7 @@ def init_project(
     overwrite: bool = False,
     include_shell_scripts: bool = True,
     deploy_provider: DocsDeployProvider = DocsDeployProvider.GITHUB_PAGES,
+    shell_targets: list[ShellScriptType] | None = None,
 ) -> InitProjectResponse:
     """Initialize deterministic local artifacts, including shell bootstrap scripts.
 
@@ -1306,6 +1267,8 @@ def init_project(
             Defaults to ``True``.
         deploy_provider: CI/CD deploy provider for which to generate the
             pipeline configuration. Defaults to ``DocsDeployProvider.GITHUB_PAGES``.
+        shell_targets: Shell script variants to generate. When omitted, all
+            supported shell scripts are written.
 
     Returns:
         Response with status, initialized flag, paths of created files,
@@ -1317,6 +1280,12 @@ def init_project(
         overwrite=overwrite,
         include_shell_scripts=include_shell_scripts,
         deploy_provider=deploy_provider,
+        shell_targets=shell_targets
+        or [
+            ShellScriptType.BASH,
+            ShellScriptType.ZSH,
+            ShellScriptType.POWERSHELL,
+        ],
     )
     resolved_root = _resolve_project_root(request.project_root)
     if not resolved_root.exists() or not resolved_root.is_dir():
@@ -1338,44 +1307,69 @@ def init_project(
         )
 
     shell_scripts: list[ShellScriptArtifactMetadata] = []
-    created_files: list[Path] = []
-    for shell in ShellScriptType:
-        artifact, created_file = _write_shell_script(
+    write_records: list[FileWriteRecord] = []
+    copilot_assets: list[CopilotInitArtifactMetadata] = []
+    deploy_pipelines: list[DocsDeployPipelineArtifactMetadata] = []
+    try:
+        for shell in request.shell_targets:
+            artifact, write_record = _write_shell_script(
+                resolved_root,
+                shell=shell,
+                overwrite=request.overwrite,
+            )
+            shell_scripts.append(artifact)
+            if write_record is not None:
+                write_records.append(write_record)
+
+        copilot_assets, copilot_write_records = _write_copilot_assets(
             resolved_root,
-            shell=shell,
             overwrite=request.overwrite,
         )
-        shell_scripts.append(artifact)
-        if created_file is not None:
-            created_files.append(created_file)
+        write_records.extend(copilot_write_records)
+        deploy_pipeline, deploy_pipeline_record = _write_docs_deploy_pipeline(
+            resolved_root,
+            provider=request.deploy_provider,
+            overwrite=request.overwrite,
+        )
+        deploy_pipelines = [deploy_pipeline]
+        if deploy_pipeline_record is not None:
+            write_records.append(deploy_pipeline_record)
+        state_file_path = init_state_file(resolved_root)
+        state_preexisting = state_file_path.exists()
+        state_original = state_file_path.read_text(encoding="utf-8") if state_preexisting else None
+        state_file = _write_init_state(
+            resolved_root,
+            shell_scripts=shell_scripts,
+            copilot_assets=copilot_assets,
+            deploy_pipelines=deploy_pipelines,
+        )
+        write_records.append(
+            FileWriteRecord(
+                path=state_file,
+                was_preexisting=state_preexisting,
+                original_content=state_original,
+            )
+        )
+    except OSError as exc:
+        _rollback_files(write_records)
+        return InitProjectResponse(
+            status="error",
+            project_root=resolved_root,
+            initialized=False,
+            message=(
+                f"Initialization failed mid-write; "
+                f"{len(write_records)} file(s) rolled back. Cause: {exc}"
+            ),
+        )
 
-    copilot_assets, copilot_created_files = _write_copilot_assets(
-        resolved_root,
-        overwrite=request.overwrite,
-    )
-    created_files.extend(copilot_created_files)
-    deploy_pipeline, deploy_pipeline_created = _write_docs_deploy_pipeline(
-        resolved_root,
-        provider=request.deploy_provider,
-        overwrite=request.overwrite,
-    )
-    deploy_pipelines = [deploy_pipeline]
-    if deploy_pipeline_created is not None:
-        created_files.append(deploy_pipeline_created)
-    state_file = _write_init_state(
-        resolved_root,
-        shell_scripts=shell_scripts,
-        copilot_assets=copilot_assets,
-        deploy_pipelines=deploy_pipelines,
-    )
-    if request.overwrite or state_file not in created_files:
-        created_files.append(state_file)
-
+    created_files = [r.path for r in write_records]
     execution_error = _execute_default_script(
         project_root=resolved_root,
         shell_scripts=shell_scripts,
     )
     if execution_error is not None:
+        # Script execution failure is a warning - files were written successfully.
+        # Do NOT rollback; leave files on disk so the user can inspect/re-run manually.
         return InitProjectResponse(
             status="warning",
             project_root=resolved_root,
@@ -1385,6 +1379,7 @@ def init_project(
             copilot_assets=copilot_assets,
             deploy_pipelines=deploy_pipelines,
             message=execution_error,
+            write_records=write_records,
         )
 
     return InitProjectResponse(
@@ -1395,6 +1390,7 @@ def init_project(
         shell_scripts=shell_scripts,
         copilot_assets=copilot_assets,
         deploy_pipelines=deploy_pipelines,
+        write_records=write_records,
     )
 
 
@@ -1433,6 +1429,7 @@ def check_init_status(
     project_root: Path | str = Path(),
     *,
     deploy_provider: DocsDeployProvider = DocsDeployProvider.GITHUB_PAGES,
+    shell_targets: list[ShellScriptType] | None = None,
 ) -> CheckInitStatusResponse:
     """Check deterministic initialization artifacts without relying on process-level globals.
 
@@ -1445,6 +1442,9 @@ def check_init_status(
             the current working directory.
         deploy_provider: Deploy provider used to determine which pipeline
             artifact to expect. Defaults to ``DocsDeployProvider.GITHUB_PAGES``.
+        shell_targets: Shell script variants that should be treated as
+            required for initialization completeness. When omitted, all shell
+            variants are required.
 
     Returns:
         Response with initialization status, readiness level, lists of
@@ -1461,6 +1461,7 @@ def check_init_status(
     required_artifacts = _required_init_artifacts(
         resolved_root,
         deploy_provider=deploy_provider,
+        shell_targets=shell_targets,
     )
     missing_artifacts = [artifact for artifact in required_artifacts if not artifact.exists()]
     shell_scripts = _discover_shell_scripts(resolved_root)
@@ -1476,7 +1477,7 @@ def check_init_status(
     )
     initialized = readiness_level is not ReadinessLevel.NONE
     return CheckInitStatusResponse(
-        status="success" if not missing_artifacts else "warning",
+        status="warning" if missing_artifacts else "success",
         project_root=resolved_root,
         initialized=initialized,
         readiness_level=readiness_level,
@@ -1498,12 +1499,15 @@ def _resolve_shell_script_metadata(
     return [script for script in discovered_scripts if script.shell in selected_shells]
 
 
-def generate_doc_boilerplate(
+def generate_doc_boilerplate(  # noqa: PLR0913
     project_root: Path | str = Path(),
     *,
     gate_confirmed: bool = False,
     overwrite: bool = False,
     shell_targets: list[ShellScriptType] | None = None,
+    dev_url: str | None = None,
+    staging_url: str | None = None,
+    production_url: str | None = None,
 ) -> GatedBoilerplateGenerationResponse:
     """Generate deterministic documentation boilerplate after hard init gate validation.
 
@@ -1520,11 +1524,28 @@ def generate_doc_boilerplate(
             Defaults to ``False``.
         shell_targets: Specific shell script types to include in boilerplate
             generation. When ``None``, all available scripts are used.
+        dev_url: Development deployment URL rendered into deployment docs when
+            provided.
+        staging_url: Staging deployment URL rendered into deployment docs when
+            provided.
+        production_url: Production deployment URL rendered into deployment docs
+            when provided.
 
     Returns:
         Response with status, error code on gate failure, generated file paths,
         and shell script artifact metadata.
     """
+    deployment_urls = (
+        DeploymentUrlConfig.model_validate(
+            {
+                "dev_url": dev_url,
+                "staging_url": staging_url,
+                "production_url": production_url,
+            }
+        )
+        if dev_url or staging_url or production_url
+        else None
+    )
     request = GatedBoilerplateGenerationRequest(
         project_root=Path(project_root),
         gate_confirmed=gate_confirmed,
@@ -1535,6 +1556,9 @@ def generate_doc_boilerplate(
             ShellScriptType.ZSH,
             ShellScriptType.POWERSHELL,
         ],
+        dev_url=deployment_urls.dev_url if deployment_urls is not None else None,
+        staging_url=deployment_urls.staging_url if deployment_urls is not None else None,
+        production_url=deployment_urls.production_url if deployment_urls is not None else None,
     )
     resolved_root = _resolve_project_root(request.project_root)
     if not resolved_root.exists() or not resolved_root.is_dir():
@@ -1565,7 +1589,10 @@ def generate_doc_boilerplate(
             ),
         )
 
-    init_status = check_init_status(project_root=resolved_root)
+    init_status = check_init_status(
+        project_root=resolved_root,
+        shell_targets=request.shell_targets,
+    )
     if not init_status.initialized:
         return GatedBoilerplateGenerationResponse(
             status="error",
@@ -1582,22 +1609,52 @@ def generate_doc_boilerplate(
             ),
         )
 
-    generated_files: list[Path] = []
-    for template in sorted(
-        iter_doc_boilerplate_templates(),
-        key=lambda item: item.relative_path.as_posix(),
-    ):
-        file_path = resolved_root / template.relative_path
-        if file_path.exists() and not request.overwrite:
-            continue
-        generated_files.append(write_text_file(file_path, content=template.content))
+    write_records: list[FileWriteRecord] = []
+    try:
+        for template in sorted(
+            iter_doc_boilerplate_templates(
+                dev_url=str(request.dev_url) if request.dev_url is not None else None,
+                staging_url=str(request.staging_url) if request.staging_url is not None else None,
+                production_url=(
+                    str(request.production_url) if request.production_url is not None else None
+                ),
+            ),
+            key=lambda item: item.relative_path.as_posix(),
+        ):
+            file_path = resolved_root / template.relative_path
+            if file_path.exists() and not request.overwrite:
+                continue
+            was_preexisting = file_path.exists()
+            original_content = file_path.read_text(encoding="utf-8") if was_preexisting else None
+            written_path = write_text_file(file_path, content=template.content)
+            write_records.append(
+                FileWriteRecord(
+                    path=written_path,
+                    was_preexisting=was_preexisting,
+                    original_content=original_content,
+                )
+            )
+    except OSError as exc:
+        _rollback_files(write_records)
+        return GatedBoilerplateGenerationResponse(
+            status="error",
+            project_root=resolved_root,
+            gate_confirmed=True,
+            boilerplate_generated=False,
+            shell_scripts=shell_scripts,
+            error_code=BoilerplateGenerationErrorCode.WRITE_FAILED,
+            message=(
+                f"Boilerplate generation failed mid-write; "
+                f"{len(write_records)} file(s) rolled back. Cause: {exc}"
+            ),
+        )
 
     return GatedBoilerplateGenerationResponse(
         status="success",
         project_root=resolved_root,
         gate_confirmed=True,
         boilerplate_generated=True,
-        generated_files=generated_files,
+        generated_files=[r.path for r in write_records],
         shell_scripts=shell_scripts,
     )
 
@@ -2359,30 +2416,62 @@ def _copy_ephemeral_artifacts(
     patterns: list[str],
 ) -> list[Path]:
     """Copy matching artifacts from *tmp_dir* back to *resolved_root*."""
+    tmp_root = tmp_dir.resolve()
+    project_root = resolved_root.resolve()
+
+    def _resolve_within_root(path: Path, *, root: Path, label: str) -> Path:
+        resolved_path = path.resolve()
+        if not resolved_path.is_relative_to(root):
+            msg = f"{label} escapes the allowed root: {path}"
+            raise ValueError(msg)
+        return resolved_path
+
     copied: list[Path] = []
     for pattern in patterns:
         src_path = tmp_dir / pattern
         if src_path.is_dir():
+            safe_src_path = _resolve_within_root(src_path, root=tmp_root, label="Artifact source")
             dest_path = resolved_root / pattern
-            if dest_path.exists():
-                shutil.rmtree(dest_path)
-            shutil.copytree(src_path, dest_path)
-            copied.append(dest_path)
+            safe_dest_path = _resolve_within_root(
+                dest_path,
+                root=project_root,
+                label="Artifact destination",
+            )
+            if safe_dest_path.exists():
+                shutil.rmtree(safe_dest_path)
+            shutil.copytree(safe_src_path, safe_dest_path)
+            copied.append(safe_dest_path)
         elif src_path.is_file():
+            safe_src_path = _resolve_within_root(src_path, root=tmp_root, label="Artifact source")
             dest_path = resolved_root / pattern
-            dest_path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(src_path, dest_path)
-            copied.append(dest_path)
+            safe_dest_path = _resolve_within_root(
+                dest_path,
+                root=project_root,
+                label="Artifact destination",
+            )
+            safe_dest_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(safe_src_path, safe_dest_path)
+            copied.append(safe_dest_path)
         else:
             for match_path in tmp_dir.glob(pattern):
-                rel = match_path.relative_to(tmp_dir)
+                safe_match_path = _resolve_within_root(
+                    match_path,
+                    root=tmp_root,
+                    label="Artifact source",
+                )
+                rel = safe_match_path.relative_to(tmp_root)
                 dest = resolved_root / rel
-                dest.parent.mkdir(parents=True, exist_ok=True)
-                if match_path.is_dir():
-                    shutil.copytree(match_path, dest)
+                safe_dest_path = _resolve_within_root(
+                    dest,
+                    root=project_root,
+                    label="Artifact destination",
+                )
+                safe_dest_path.parent.mkdir(parents=True, exist_ok=True)
+                if safe_match_path.is_dir():
+                    shutil.copytree(safe_match_path, safe_dest_path)
                 else:
-                    shutil.copy2(match_path, dest)
-                copied.append(dest)
+                    shutil.copy2(safe_match_path, safe_dest_path)
+                copied.append(safe_dest_path)
     return copied
 
 
@@ -2433,7 +2522,16 @@ def run_ephemeral_install(
 
         # Resolve the source directory — strip source_subdir prefix if set
         src_base = tmp_dir / request.source_subdir if request.source_subdir else tmp_dir
-        copied = _copy_ephemeral_artifacts(src_base, resolved_root, request.copy_artifacts)
+        try:
+            copied = _copy_ephemeral_artifacts(src_base, resolved_root, request.copy_artifacts)
+        except ValueError as exc:
+            return EphemeralInstallResponse(
+                status="error",
+                installer=request.installer,
+                package=request.package,
+                tmp_dir=tmp_dir,
+                message=str(exc),
+            )
         return EphemeralInstallResponse(
             status="success",
             installer=request.installer,
@@ -2670,7 +2768,7 @@ def enrich_doc(
 # plan_docs — structured page plan with dependencies
 # ---------------------------------------------------------------------------
 
-_FULL_SECTIONS: list[dict[str, object]] = [
+_FULL_SECTIONS: list[_PlanSectionSpec] = [
     {
         "slug": "index",
         "title": "Home",
@@ -2888,7 +2986,7 @@ def _generic_config_content(*, include_tools: bool) -> str:
     )
 
 
-_PLATFORM_GENERATORS: dict[AgentPlatform, tuple[str, object]] = {
+_PLATFORM_GENERATORS: dict[AgentPlatform, tuple[str, _AgentConfigGenerator]] = {
     AgentPlatform.COPILOT: (".github/copilot-instructions.md", _copilot_config_content),
     AgentPlatform.CURSOR: (".cursor/rules/zen-docs.mdc", _cursor_config_content),
     AgentPlatform.WINDSURF: (".windsurfrules", _windsurf_config_content),
@@ -2923,7 +3021,7 @@ def generate_agent_config(request: AgentConfigRequest) -> AgentConfigResponse:
         )
 
     file_path, generator_fn = entry
-    content = generator_fn(include_tools=request.include_tools)  # type: ignore[operator]
+    content = generator_fn(include_tools=request.include_tools)
 
     return AgentConfigResponse(
         status="success",
@@ -2979,21 +3077,21 @@ def plan_docs(
 
     pages: list[PlannedPage] = []
     for section in sections:
-        slug: str = section["slug"]  # type: ignore[assignment]
+        slug = section["slug"]
         rel_path = str(request.docs_root / f"{slug}.md")
         dep_paths = [
             str(request.docs_root / f"{d}.md")
-            for d in section["dependencies"]  # type: ignore[union-attr]
+            for d in section["dependencies"]
             if d in allowed_slugs
         ]
         pages.append(
             PlannedPage(
                 path=rel_path,
-                title=section["title"],  # type: ignore[arg-type]
-                description=section["description"],  # type: ignore[arg-type]
-                suggested_primitives=list(section["primitives"]),  # type: ignore[arg-type]
+                title=section["title"],
+                description=section["description"],
+                suggested_primitives=list(section["primitives"]),
                 dependencies=dep_paths,
-                priority=section["priority"],  # type: ignore[arg-type]
+                priority=section["priority"],
                 exists=rel_path in existing_files,
             )
         )
@@ -3001,7 +3099,7 @@ def plan_docs(
     # Sort by priority then dependency order.
     pages.sort(key=lambda p: (_PRIORITY_ORDER.get(p.priority, 1), len(p.dependencies)))
 
-    existing_count = sum(1 for p in pages if p.exists)
+    existing_count = sum(p.exists for p in pages)
     return PlanDocsResponse(
         status="success",
         framework=detected_framework,

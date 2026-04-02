@@ -1,81 +1,95 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"
      role="img" aria-label="mcp-zen-of-docs — Ten MCP tools. Four frameworks. Documentation quality for the AI era.">
   <title>mcp-zen-of-docs social card</title>
-
+  <desc>Open Graph social card. Jade and parchment palette with mountain landscape backdrop and a floating white content panel, matching the chapter visual system.</desc>
   <defs>
-    <!-- ── Subtle radial vignette: darkens the corners slightly ──────── -->
-    <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
-      <stop offset="0%"   stop-color="#1a2030" stop-opacity="0"/>
-      <stop offset="100%" stop-color="#0c1018" stop-opacity="0.55"/>
-    </radialGradient>
+    <linearGradient id="panelSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#edf8f4"/>
+      <stop offset="58%"  stop-color="#f7fbf8"/>
+      <stop offset="100%" stop-color="#faf6ee"/>
+    </linearGradient>
+    <linearGradient id="ridgeFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#d5ebe3"/>
+      <stop offset="100%" stop-color="#bfddd1"/>
+    </linearGradient>
+    <linearGradient id="ridgeMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#b7dbcd"/>
+      <stop offset="100%" stop-color="#8fc7b5"/>
+    </linearGradient>
+    <linearGradient id="ridgeNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#31584d"/>
+      <stop offset="100%" stop-color="#17332e"/>
+    </linearGradient>
+    <linearGradient id="mistBand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="18%"  stop-color="#f5fbf8" stop-opacity="0.68"/>
+      <stop offset="54%"  stop-color="#edf8f4" stop-opacity="0.80"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#17332e" flood-opacity="0.12"/>
+    </filter>
   </defs>
 
-  <!-- ── Background ────────────────────────────────────────────────────── -->
-  <rect width="1200" height="630" fill="#131720"/>
-  <rect width="1200" height="630" fill="url(#vignette)"/>
+  <!-- Sky card — rx=30 matches chapter card convention -->
+  <rect width="1200" height="630" rx="30" fill="url(#panelSky)"/>
 
-  <!-- ── Jade accent bar at top: full width, 6 px ─────────────────────── -->
-  <rect width="1200" height="6" fill="#0ea27a"/>
+  <!-- Sun disc + halo, upper-right (chapter motif) -->
+  <circle cx="1020" cy="148" r="72" fill="#cbe8dc" opacity="0.34"/>
+  <circle cx="1020" cy="148" r="48" fill="#e4f5ed" opacity="0.96"/>
 
-  <!-- ── Enso watermark ────────────────────────────────────────────────
-       Large brushstroke circle in bottom-right. Centered at (1080, 490),
-       radius 160. Bezier approx: k = 0.5523 × 160 ≈ 88.
-       Open at top (gap: M ends at 1060, start opens to 1080).
-       Most of the circle is outside the viewBox — artistically cropped.
-  ──────────────────────────────────────────────────────────────────────── -->
-  <path d="M 1080 330
-           C 1168 330, 1240 402, 1240 490
-           C 1240 578, 1168 650, 1080 650
-           C 992  650, 920  578, 920  490
-           C 920  402, 992  330, 1060 330"
-        fill="none"
-        stroke="#0ea27a"
-        stroke-width="26"
-        stroke-linecap="round"
-        opacity="0.05"/>
+  <!-- Ridge bands in lower third (960×320→1200×630: scaleX=1.25, scaleY=1.969) -->
+  <path d="M0 421 C133 374,272 374,423 421 C588 473,752 473,920 421 C1033 385,1128 381,1200 398 L1200 630 L0 630 Z"
+        fill="url(#ridgeFar)"/>
+  <path d="M0 469 C165 421,308 424,473 471 C638 526,793 526,950 469 C1057 430,1142 434,1200 444 L1200 630 L0 630 Z"
+        fill="url(#ridgeMid)" opacity="0.92"/>
+  <path d="M0 535 C173 495,343 499,508 551 C675 601,850 597,1200 524 L1200 630 L0 630 Z"
+        fill="url(#ridgeNear)"/>
 
-  <!-- ── Logo mark (top-left, ~48 px enso) ─────────────────────────────
-       Mini enso: center (98, 74), radius 26. Open at top-right.
-  ──────────────────────────────────────────────────────────────────────── -->
-  <path d="M 99 48
-           C 83 46, 70 58, 70 74
-           C 70 90, 82 102, 98 102
-           C 114 102, 126 90, 126 74
-           C 126 63, 120 54, 112 50"
-        fill="none"
-        stroke="#0ea27a"
-        stroke-width="3.5"
-        stroke-linecap="round"/>
+  <!-- Mist strokes over ridges -->
+  <path d="M65 434 C240 416,390 419,540 450 C690 481,875 479,1095 440"
+        fill="none" stroke="url(#mistBand)" stroke-width="26" stroke-linecap="round"/>
+  <path d="M102 508 C275 494,450 498,620 530 C802 562,960 560,1120 522"
+        fill="none" stroke="url(#mistBand)" stroke-width="20" stroke-linecap="round" opacity="0.9"/>
 
-  <!-- Mini doc lines inside logo mark -->
-  <line x1="89" y1="70" x2="107" y2="70" stroke="#0ea27a" stroke-width="2"   stroke-linecap="round"/>
-  <line x1="89" y1="76" x2="107" y2="76" stroke="#0ea27a" stroke-width="2"   stroke-linecap="round"/>
-  <line x1="89" y1="82" x2="100" y2="82" stroke="#0ea27a" stroke-width="2"   stroke-linecap="round"/>
+  <!-- Floating content layer — feDropShadow identical to chapter content groups -->
+  <g filter="url(#softShadow)">
 
-  <!-- ── Main title ────────────────────────────────────────────────────── -->
-  <text x="80" y="295"
-        font-family="system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
-        font-size="72"
-        font-weight="700"
-        fill="#e4dfd4"
-        letter-spacing="-0.025em">mcp-zen-of-docs</text>
+    <!-- Enso brand emblem — sits above the white content panel as a logo mark.
+         Mirrors zen-icon.svg motif: incomplete enso arc (zen imperfection) +
+         doc lines below. Like the jade hammer in contributing-workbench, it
+         "announces" the panel below without being contained by it. -->
+    <path d="M98 44 C82 42,70 54,70 70 C70 86,82 98,98 98 C114 98,126 86,126 70 C126 58,120 49,112 46"
+          fill="none" stroke="#0ea27a" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="88" y1="66" x2="108" y2="66" stroke="#0b7a5c" stroke-width="2" stroke-linecap="round"/>
+    <line x1="88" y1="73" x2="108" y2="73" stroke="#0b7a5c" stroke-width="2" stroke-linecap="round"/>
+    <line x1="88" y1="80" x2="100" y2="80" stroke="#3fd9a8" stroke-width="2"
+          stroke-linecap="round" opacity="0.7"/>
 
-  <!-- ── Subtitle ──────────────────────────────────────────────────────── -->
-  <text x="80" y="352"
-        font-family="system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
-        font-size="28"
-        fill="#c4bfb4">Ten MCP tools. Four frameworks.</text>
+    <!-- White content panel card
+         Enclosing rectangle behind all text elements.
+         philosophy-garden / contributing-workbench convention:
+         fill=#ffffff stroke=#b8ddd0 stroke-width=4 rx=32. -->
+    <rect x="52" y="148" width="1096" height="248" rx="32"
+          fill="#ffffff" stroke="#b8ddd0" stroke-width="4"/>
 
-  <!-- ── Separator line above footer ──────────────────────────────────── -->
-  <line x1="80" y1="548" x2="1120" y2="548"
-        stroke="#0ea27a" stroke-width="1" opacity="0.2"/>
+    <!-- Main title — dark forest heading on white panel -->
+    <text x="84" y="234"
+          font-family="system-ui,-apple-system,BlinkMacSystemFont,sans-serif"
+          font-size="72" font-weight="700" fill="#17332e" letter-spacing="-0.025em">mcp-zen-of-docs</text>
 
-  <!-- ── Bottom tagline ────────────────────────────────────────────────── -->
-  <text x="80" y="578"
-        font-family="system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
-        font-size="18"
-        font-weight="500"
-        fill="#0ea27a"
-        letter-spacing="0.06em">Documentation · Quality · AI-native</text>
+    <!-- Subtitle — secondary forest text -->
+    <text x="84" y="287"
+          font-family="system-ui,-apple-system,BlinkMacSystemFont,sans-serif"
+          font-size="26" fill="#31584d">Ten MCP tools. Four frameworks.</text>
 
+    <!-- Separator — jade mist-border miniature, inset to panel margins -->
+    <line x1="84" y1="328" x2="1116" y2="328" stroke="#b8ddd0" stroke-width="2"/>
+
+    <!-- Tagline — accent jade, uppercase tracking (chapter label convention) -->
+    <text x="84" y="364"
+          font-family="system-ui,-apple-system,BlinkMacSystemFont,sans-serif"
+          font-size="18" font-weight="600" fill="#0b7a5c" letter-spacing="0.06em">DOCUMENTATION · QUALITY · AI-NATIVE</text>
+
+  </g>
 </svg>

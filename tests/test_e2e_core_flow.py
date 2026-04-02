@@ -28,18 +28,18 @@ from mcp_zen_of_docs.models import StorySessionStatus
 from mcp_zen_of_docs.models import ValidateDocsResponse
 from mcp_zen_of_docs.models import VisualAssetKind
 from mcp_zen_of_docs.models import VisualAssetOperation
-from mcp_zen_of_docs.server import batch_scaffold_docs
-from mcp_zen_of_docs.server import compose_docs_story
-from mcp_zen_of_docs.server import create_copilot_artifact
-from mcp_zen_of_docs.server import detect_docs_context
-from mcp_zen_of_docs.server import detect_project_readiness
-from mcp_zen_of_docs.server import enrich_doc
-from mcp_zen_of_docs.server import generate_visual_asset
-from mcp_zen_of_docs.server import get_authoring_profile
-from mcp_zen_of_docs.server import plan_docs
-from mcp_zen_of_docs.server import scaffold_doc
-from mcp_zen_of_docs.server import score_docs_quality
-from mcp_zen_of_docs.server import validate_docs
+from mcp_zen_of_docs.server.app import batch_scaffold_docs
+from mcp_zen_of_docs.server.app import compose_docs_story
+from mcp_zen_of_docs.server.app import create_copilot_artifact
+from mcp_zen_of_docs.server.app import detect_docs_context
+from mcp_zen_of_docs.server.app import detect_project_readiness
+from mcp_zen_of_docs.server.app import enrich_doc
+from mcp_zen_of_docs.server.app import generate_visual_asset
+from mcp_zen_of_docs.server.app import get_authoring_profile
+from mcp_zen_of_docs.server.app import plan_docs
+from mcp_zen_of_docs.server.app import scaffold_doc
+from mcp_zen_of_docs.server.app import score_docs_quality
+from mcp_zen_of_docs.server.app import validate_docs
 
 
 if TYPE_CHECKING:

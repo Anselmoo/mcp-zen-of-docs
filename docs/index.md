@@ -29,7 +29,7 @@ tags:
 
     ---
 
-    Check links, frontmatter, navigation sync, and quality signals before a docs change ships.
+    Check links, orphaned pages, frontmatter, navigation sync, and quality signals before a docs change ships.
 
     [:octicons-arrow-right-24: validate](tools/validate.md)
 
@@ -39,18 +39,31 @@ tags:
 
 ## Why this exists
 
-AI assistants are good at writing Markdown. They are not automatically good at writing the
-*right dialect* of Markdown for the site in front of them.
+AI assistants are good at writing Markdown. They are not automatically good at writing the *right dialect* of Markdown for the site in front of them.
 
-Ask for a note on a Docusaurus page and an assistant might return MkDocs syntax. Ask for tabs
-in Starlight and it might answer with a VitePress container. The wording can be excellent while
-the rendered result is still broken.
+Ask for a note on a Docusaurus page and an assistant might return MkDocs syntax. Ask for tabs in Starlight and it might answer with a VitePress container. The wording can be excellent while the rendered result is still broken.
 
-`mcp-zen-of-docs` fixes that problem by turning framework context into a first-class input. It
-detects the docs stack, loads the matching authoring profile, and gives every tool the rules it
-needs to emit native syntax for 22 canonical documentation primitives.
+`mcp-zen-of-docs` fixes that problem by turning framework context into a first-class input. It detects the docs stack, loads the matching authoring profile, and gives every tool the rules it needs to emit native syntax for 22 canonical documentation primitives.
 
 If you want the longer case for why this matters, start with [Why Zen Docs](guides/why-zen-docs.md).
+
+---
+
+## CLI for humans, JSON for automation
+
+The redesigned CLI is intentionally dual-surface:
+
+- **Human mode** (`--human`, or an interactive TTY) prints short summaries for commands like `validate`, `setup`, and `story`.
+- **Automation mode** (`--json`) preserves the raw response contract for scripts, CI, and editor integrations.
+- **`setup`** is a direct alias for `onboard`, so terminal-first docs bootstrapping can use the shorter name without losing parity.
+
+Examples:
+
+```bash
+mcp-zen-of-docs --human validate all --docs-root docs --check orphans
+mcp-zen-of-docs --human setup full --project-root . --mode skeleton
+mcp-zen-of-docs --json story --prompt "Document the docs release flow"
+```
 
 ---
 
@@ -61,7 +74,7 @@ If you want the longer case for why this matters, start with [Why Zen Docs](guid
     <article class="zen-advanced-card zen-advanced-card--wide">
       <p class="zen-advanced-card__eyebrow">System setup</p>
       <h3>Onboard inherited docs without reverse-engineering the stack</h3>
-      <p><code>onboard</code> combines context detection, readiness checks, scaffolding, and theme wiring so a new or inherited docs project can become AI-ready in one guided pass.</p>
+      <p><code>onboard</code> and its <code>setup</code> alias generate contributor guidance, setup artifacts, and optional starter docs without pretending to be a different workflow.</p>
       <p><a href="tools/onboard.md">Explore onboard</a> · <a href="quickstart.md">Start with quickstart</a></p>
     </article>
     <article class="zen-advanced-card">
@@ -94,7 +107,7 @@ If you want the longer case for why this matters, start with [Why Zen Docs](guid
 | [`detect`](tools/detect.md) | Detect framework context and readiness | First call in any new project or session |
 | [`profile`](tools/profile.md) | Query primitive support and render native snippets | Resolve framework-specific syntax before writing |
 | [`scaffold`](tools/scaffold.md) | Create, enrich, or fully write docs pages | Generate a correct page skeleton quickly |
-| [`validate`](tools/validate.md) | Audit quality, frontmatter, links, and nav state | Gate docs changes before merge |
+| [`validate`](tools/validate.md) | Audit quality, links, orphans, structure, frontmatter, and nav state | Gate docs changes before merge |
 | [`generate`](tools/generate.md) | Produce diagrams, SVGs, changelogs, and reference assets | Build the visual and reference layer |
 | [`onboard`](tools/onboard.md) | Bootstrap docs structure and configuration | Stand up a new or inherited docs site |
 | [`theme`](tools/theme.md) | Generate CSS/JS theme files and configuration | Apply a coherent visual system |

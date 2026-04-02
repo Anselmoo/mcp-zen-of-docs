@@ -763,9 +763,47 @@ def render_deployment_environments_brick(
     )
 
 
-def iter_doc_boilerplate_templates() -> tuple[BoilerplateTemplate, ...]:
-    """Return boilerplate templates in deterministic registry order."""
-    return DOC_BOILERPLATE_REGISTRY
+def iter_doc_boilerplate_templates(
+    *,
+    dev_url: str | None = None,
+    staging_url: str | None = None,
+    production_url: str | None = None,
+) -> tuple[BoilerplateTemplate, ...]:
+    """Return boilerplate templates in deterministic registry order.
+
+    When deployment URLs are provided, the deployment template is rebuilt with a
+    project-specific environments brick while the rest of the registry remains
+    unchanged.
+    """
+    if dev_url is None and staging_url is None and production_url is None:
+        return DOC_BOILERPLATE_REGISTRY
+
+    templates: list[BoilerplateTemplate] = []
+    for template in DOC_BOILERPLATE_REGISTRY:
+        if template.template_id is not BoilerplateTemplateId.DOCS_DEPLOYMENT:
+            templates.append(template)
+            continue
+
+        bricks = tuple(
+            render_deployment_environments_brick(
+                dev_url=dev_url,
+                staging_url=staging_url,
+                production_url=production_url,
+            )
+            if brick.brick_id is BoilerplateBrickId.DEPLOYMENT_ENVIRONMENTS
+            else brick
+            for brick in template.bricks
+        )
+        content = "\n\n".join(brick.content for brick in bricks).rstrip() + "\n"
+        templates.append(
+            BoilerplateTemplate(
+                template_id=template.template_id,
+                relative_path=template.relative_path,
+                bricks=bricks,
+                content=content,
+            )
+        )
+    return tuple(templates)
 
 
 __all__ = [

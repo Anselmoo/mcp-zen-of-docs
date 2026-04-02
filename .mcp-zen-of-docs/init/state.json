@@ -1,0 +1,308 @@
+{
+  "initialized": true,
+  "shell_scripts": [
+    {
+      "shell": "bash",
+      "script_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.mcp-zen-of-docs/init/init.bash.sh",
+      "executable": true,
+      "generated": true
+    },
+    {
+      "shell": "powershell",
+      "script_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.mcp-zen-of-docs/init/init.powershell.ps1",
+      "executable": false,
+      "generated": true
+    },
+    {
+      "shell": "zsh",
+      "script_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.mcp-zen-of-docs/init/init.zsh.sh",
+      "executable": true,
+      "generated": true
+    }
+  ],
+  "copilot_assets": [
+    {
+      "artifact_id": "agents.directory-readme",
+      "family": "agents",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/agents/README.md",
+      "required": true,
+      "hook_target": null,
+      "generated": false
+    },
+    {
+      "artifact_id": "agents.docs-init",
+      "family": "agents",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/agents/docs-init.agent.md",
+      "required": true,
+      "hook_target": null,
+      "generated": true
+    },
+    {
+      "artifact_id": "hooks.default.post-init",
+      "family": "extension-hooks",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/hooks/default-post-init.hook.md",
+      "required": true,
+      "hook_target": "post-init-enrich",
+      "generated": true
+    },
+    {
+      "artifact_id": "instructions.config",
+      "family": "instructions",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/config.instructions.md",
+      "required": true,
+      "hook_target": null,
+      "generated": true
+    },
+    {
+      "artifact_id": "instructions.core",
+      "family": "instructions",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/project.instructions.md",
+      "required": true,
+      "hook_target": null,
+      "generated": false
+    },
+    {
+      "artifact_id": "instructions.docs",
+      "family": "instructions",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/docs.instructions.md",
+      "required": true,
+      "hook_target": null,
+      "generated": false
+    },
+    {
+      "artifact_id": "instructions.env",
+      "family": "instructions",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/env.instructions.md",
+      "required": true,
+      "hook_target": null,
+      "generated": true
+    },
+    {
+      "artifact_id": "instructions.src-python",
+      "family": "instructions",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/src-python.instructions.md",
+      "required": true,
+      "hook_target": null,
+      "generated": true
+    },
+    {
+      "artifact_id": "instructions.tests",
+      "family": "instructions",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/tests.instructions.md",
+      "required": true,
+      "hook_target": null,
+      "generated": true
+    },
+    {
+      "artifact_id": "instructions.yaml",
+      "family": "instructions",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/yaml.instructions.md",
+      "required": true,
+      "hook_target": null,
+      "generated": true
+    },
+    {
+      "artifact_id": "prompts.directory-readme",
+      "family": "prompts",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/prompts/README.md",
+      "required": true,
+      "hook_target": null,
+      "generated": true
+    },
+    {
+      "artifact_id": "prompts.init-checklist",
+      "family": "prompts",
+      "pack": "default",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/prompts/init-checklist.prompt.md",
+      "required": true,
+      "hook_target": null,
+      "generated": false
+    },
+    {
+      "artifact_id": "hooks.team-bootstrap.pre-init",
+      "family": "extension-hooks",
+      "pack": "team-bootstrap-preview",
+      "file_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/hooks/team-bootstrap-pre-init.hook.md",
+      "required": false,
+      "hook_target": "pre-init-validate",
+      "generated": true
+    }
+  ],
+  "deploy_pipelines": [
+    {
+      "provider": "github-pages",
+      "workflow_path": "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/workflows/docs-deploy.yml",
+      "required": true,
+      "generated": true
+    }
+  ],
+  "responsibility_pillar": "clear-responsibility",
+  "workflow_pillar": "intuitive-workflows",
+  "instruction_root": ".github/instructions",
+  "operation_log": [
+    {
+      "operation_id": "deploy-pipeline:github-pages",
+      "responsibility": "generate-docs-deploy-pipeline",
+      "workflow_step": "init-docs-deploy-pipeline",
+      "tool_family": "docs-deploy",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/workflows/docs-deploy.yml"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:agents.directory-readme",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/agents/README.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:agents.docs-init",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/agents/docs-init.agent.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:hooks.default.post-init",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/hooks/default-post-init.hook.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:hooks.team-bootstrap.pre-init",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/hooks/team-bootstrap-pre-init.hook.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:instructions.config",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/config.instructions.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:instructions.core",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/project.instructions.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:instructions.docs",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/docs.instructions.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:instructions.env",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/env.instructions.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:instructions.src-python",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/src-python.instructions.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:instructions.tests",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/tests.instructions.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:instructions.yaml",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/instructions/yaml.instructions.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:prompts.directory-readme",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/prompts/README.md"
+      ]
+    },
+    {
+      "operation_id": "instruction-artifact:prompts.init-checklist",
+      "responsibility": "generate-instructions-artifact",
+      "workflow_step": "init-instructions-artifacts",
+      "tool_family": "instructions",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.github/prompts/init-checklist.prompt.md"
+      ]
+    },
+    {
+      "operation_id": "shell-script:bash",
+      "responsibility": "generate-shell-bootstrap",
+      "workflow_step": "init-shell-bootstrap",
+      "tool_family": "shell",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.mcp-zen-of-docs/init/init.bash.sh"
+      ]
+    },
+    {
+      "operation_id": "shell-script:powershell",
+      "responsibility": "generate-shell-bootstrap",
+      "workflow_step": "init-shell-bootstrap",
+      "tool_family": "shell",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.mcp-zen-of-docs/init/init.powershell.ps1"
+      ]
+    },
+    {
+      "operation_id": "shell-script:zsh",
+      "responsibility": "generate-shell-bootstrap",
+      "workflow_step": "init-shell-bootstrap",
+      "tool_family": "shell",
+      "touched_files": [
+        "/Users/hahn/LocalDocuments/GitHub_Forks/mcp-zen-of-docs/.mcp-zen-of-docs/init/init.zsh.sh"
+      ]
+    }
+  ]
+}

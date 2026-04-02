@@ -78,7 +78,7 @@ from .visual_assets import generate_svg_prompt
 from .visual_assets import generate_svg_prompt_toolkit
 
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = [
     "AnswerSlotContract",
     "AnswerSlotType",
