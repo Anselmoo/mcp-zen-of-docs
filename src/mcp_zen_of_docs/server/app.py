@@ -26,7 +26,9 @@ from mcp_zen_of_docs.frameworks import list_general_docs_references
 from mcp_zen_of_docs.generators import check_init_status as check_init_status_impl
 from mcp_zen_of_docs.generators import configure_zensical_extensions_impl
 from mcp_zen_of_docs.generators import create_copilot_artifact_impl
-from mcp_zen_of_docs.generators import default_reference_output_file as default_reference_output_file_impl
+from mcp_zen_of_docs.generators import (
+    default_reference_output_file as default_reference_output_file_impl,
+)
 from mcp_zen_of_docs.generators import detect_framework as detect_framework_impl
 from mcp_zen_of_docs.generators import enrich_doc as enrich_doc_impl
 from mcp_zen_of_docs.generators import generate_agent_config as generate_agent_config_impl
@@ -39,15 +41,23 @@ from mcp_zen_of_docs.generators import (
     generate_material_reference_snippets as generate_material_reference_snippets_impl,
 )
 from mcp_zen_of_docs.generators import generate_mcp_tools_docs as generate_mcp_tools_docs_impl
-from mcp_zen_of_docs.generators import generate_onboarding_skeleton as generate_onboarding_skeleton_impl
-from mcp_zen_of_docs.generators import generate_project_manifest_docs as generate_project_manifest_docs_impl
-from mcp_zen_of_docs.generators import generate_reference_authoring_pack as generate_reference_authoring_pack_impl
+from mcp_zen_of_docs.generators import (
+    generate_onboarding_skeleton as generate_onboarding_skeleton_impl,
+)
+from mcp_zen_of_docs.generators import (
+    generate_project_manifest_docs as generate_project_manifest_docs_impl,
+)
+from mcp_zen_of_docs.generators import (
+    generate_reference_authoring_pack as generate_reference_authoring_pack_impl,
+)
 from mcp_zen_of_docs.generators import generate_story as generate_story_impl
 from mcp_zen_of_docs.generators import generate_visual_asset_impl
 from mcp_zen_of_docs.generators import (
     get_framework_capability_matrix_v2 as get_framework_capability_matrix_v2_impl,
 )
-from mcp_zen_of_docs.generators import get_runtime_onboarding_matrix as get_runtime_onboarding_matrix_impl
+from mcp_zen_of_docs.generators import (
+    get_runtime_onboarding_matrix as get_runtime_onboarding_matrix_impl,
+)
 from mcp_zen_of_docs.generators import init_framework_structure_impl
 from mcp_zen_of_docs.generators import init_project as init_project_impl
 from mcp_zen_of_docs.generators import list_authoring_primitives as list_authoring_primitives_impl
@@ -59,7 +69,6 @@ from mcp_zen_of_docs.generators import run_ephemeral_install
 from mcp_zen_of_docs.generators import run_pipeline_phase as run_pipeline_phase_impl
 from mcp_zen_of_docs.generators import translate_primitive_syntax as translate_primitive_syntax_impl
 from mcp_zen_of_docs.generators import write_doc_impl
-from .middleware import build_default_middleware
 from mcp_zen_of_docs.models import COPILOT_DEFAULT_TOOLS
 from mcp_zen_of_docs.models import AgentConfigRequest
 from mcp_zen_of_docs.models import AgentConfigResponse
@@ -162,6 +171,8 @@ from mcp_zen_of_docs.validators import scaffold_doc as scaffold_doc_impl
 from mcp_zen_of_docs.validators import score_docs_quality as score_docs_quality_impl
 from mcp_zen_of_docs.validators import sync_nav_impl
 from mcp_zen_of_docs.visual_assets import create_svg_asset_impl
+
+from .middleware import build_default_middleware
 
 
 if TYPE_CHECKING:

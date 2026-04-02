@@ -25,6 +25,7 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
+from mcp_zen_of_docs.cli.presenters import format_human_payload
 from mcp_zen_of_docs.generator import get_story_generator_boundary
 from mcp_zen_of_docs.generators import run_ephemeral_install
 from mcp_zen_of_docs.interfaces.story import InterfaceChannel
@@ -95,7 +96,6 @@ from mcp_zen_of_docs.server.app import sync_nav
 from mcp_zen_of_docs.server.app import translate_primitives
 from mcp_zen_of_docs.server.app import validate_docs
 from mcp_zen_of_docs.server.app import write_doc
-from mcp_zen_of_docs.cli.presenters import format_human_payload
 
 
 if TYPE_CHECKING:
