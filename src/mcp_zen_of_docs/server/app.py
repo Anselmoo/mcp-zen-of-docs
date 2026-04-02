@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import shutil
 
 from contextlib import asynccontextmanager
 from contextlib import suppress as ctx_suppress
@@ -18,149 +19,149 @@ from fastmcp.server.elicitation import AcceptedElicitation
 from mcp.types import Icon
 from mcp.types import ToolAnnotations
 
-from .docstring_optimizer import audit_docstrings_impl
-from .docstring_optimizer import optimize_docstrings_impl
-from .frameworks import list_framework_advantages
-from .frameworks import list_general_docs_references
-from .generators import check_init_status as check_init_status_impl
-from .generators import configure_zensical_extensions_impl
-from .generators import create_copilot_artifact_impl
-from .generators import default_reference_output_file as default_reference_output_file_impl
-from .generators import detect_framework as detect_framework_impl
-from .generators import enrich_doc as enrich_doc_impl
-from .generators import generate_agent_config as generate_agent_config_impl
-from .generators import generate_changelog_impl
-from .generators import generate_cli_docs as generate_cli_docs_impl
-from .generators import generate_custom_theme_impl
-from .generators import generate_diagram_impl
-from .generators import generate_doc_boilerplate as generate_doc_boilerplate_impl
-from .generators import (
+from ..docstring_optimizer import audit_docstrings_impl
+from ..docstring_optimizer import optimize_docstrings_impl
+from ..frameworks import list_framework_advantages
+from ..frameworks import list_general_docs_references
+from ..generators import check_init_status as check_init_status_impl
+from ..generators import configure_zensical_extensions_impl
+from ..generators import create_copilot_artifact_impl
+from ..generators import default_reference_output_file as default_reference_output_file_impl
+from ..generators import detect_framework as detect_framework_impl
+from ..generators import enrich_doc as enrich_doc_impl
+from ..generators import generate_agent_config as generate_agent_config_impl
+from ..generators import generate_changelog_impl
+from ..generators import generate_cli_docs as generate_cli_docs_impl
+from ..generators import generate_custom_theme_impl
+from ..generators import generate_diagram_impl
+from ..generators import generate_doc_boilerplate as generate_doc_boilerplate_impl
+from ..generators import (
     generate_material_reference_snippets as generate_material_reference_snippets_impl,
 )
-from .generators import generate_mcp_tools_docs as generate_mcp_tools_docs_impl
-from .generators import generate_onboarding_skeleton as generate_onboarding_skeleton_impl
-from .generators import generate_project_manifest_docs as generate_project_manifest_docs_impl
-from .generators import generate_reference_authoring_pack as generate_reference_authoring_pack_impl
-from .generators import generate_story as generate_story_impl
-from .generators import generate_visual_asset_impl
-from .generators import (
+from ..generators import generate_mcp_tools_docs as generate_mcp_tools_docs_impl
+from ..generators import generate_onboarding_skeleton as generate_onboarding_skeleton_impl
+from ..generators import generate_project_manifest_docs as generate_project_manifest_docs_impl
+from ..generators import generate_reference_authoring_pack as generate_reference_authoring_pack_impl
+from ..generators import generate_story as generate_story_impl
+from ..generators import generate_visual_asset_impl
+from ..generators import (
     get_framework_capability_matrix_v2 as get_framework_capability_matrix_v2_impl,
 )
-from .generators import get_runtime_onboarding_matrix as get_runtime_onboarding_matrix_impl
-from .generators import init_framework_structure_impl
-from .generators import init_project as init_project_impl
-from .generators import list_authoring_primitives as list_authoring_primitives_impl
-from .generators import lookup_primitive_support as lookup_primitive_support_impl
-from .generators import plan_docs as plan_docs_impl
-from .generators import render_diagram_impl
-from .generators import render_framework_primitive as render_framework_primitive_impl
-from .generators import run_ephemeral_install
-from .generators import run_pipeline_phase as run_pipeline_phase_impl
-from .generators import translate_primitive_syntax as translate_primitive_syntax_impl
-from .generators import write_doc_impl
+from ..generators import get_runtime_onboarding_matrix as get_runtime_onboarding_matrix_impl
+from ..generators import init_framework_structure_impl
+from ..generators import init_project as init_project_impl
+from ..generators import list_authoring_primitives as list_authoring_primitives_impl
+from ..generators import lookup_primitive_support as lookup_primitive_support_impl
+from ..generators import plan_docs as plan_docs_impl
+from ..generators import render_diagram_impl
+from ..generators import render_framework_primitive as render_framework_primitive_impl
+from ..generators import run_ephemeral_install
+from ..generators import run_pipeline_phase as run_pipeline_phase_impl
+from ..generators import translate_primitive_syntax as translate_primitive_syntax_impl
+from ..generators import write_doc_impl
 from .middleware import build_default_middleware
-from .models import COPILOT_DEFAULT_TOOLS
-from .models import AgentConfigRequest
-from .models import AgentConfigResponse
-from .models import AgentPlatform
-from .models import AuthoringPrimitive
-from .models import BatchScaffoldRequest
-from .models import BatchScaffoldResponse
-from .models import ChangelogEntryFormat
-from .models import CheckDocsLinksResponse
-from .models import CheckLanguageStructureResponse
-from .models import CheckOrphanDocsResponse
-from .models import ComposeDocsStoryRequest
-from .models import ComposeDocsStoryResponse
-from .models import ConfigureZensicalExtensionsRequest
-from .models import ConfigureZensicalExtensionsResponse
-from .models import CopilotAgentMode
-from .models import CopilotArtifactKind
-from .models import CreateCopilotArtifactRequest
-from .models import CreateCopilotArtifactResponse
-from .models import CreateSvgAssetRequest
-from .models import CreateSvgAssetResponse
-from .models import CustomThemeTarget
-from .models import DeploymentUrlConfig
-from .models import DetectDocsContextRequest
-from .models import DetectDocsContextResponse
-from .models import DetectProjectReadinessRequest
-from .models import DetectProjectReadinessResponse
-from .models import DiagramType
-from .models import DocsDeployProvider
-from .models import DocsValidationCheck
-from .models import DocstringAuditRequest
-from .models import DocstringAuditResponse
-from .models import DocstringOptimizerRequest
-from .models import DocstringOptimizerResponse
-from .models import EnrichDocRequest
-from .models import EnrichDocResponse
-from .models import EphemeralInstallRequest
-from .models import EphemeralInstallResponse
-from .models import FileWriteRecord
-from .models import FrameworkName
-from .models import FrontmatterAuditRequest
-from .models import FrontmatterAuditResponse
-from .models import GenerateChangelogRequest
-from .models import GenerateChangelogResponse
-from .models import GenerateCustomThemeRequest
-from .models import GenerateCustomThemeResponse
-from .models import GenerateDiagramRequest
-from .models import GenerateDiagramResponse
-from .models import GenerateReferenceDocsKind
-from .models import GenerateReferenceDocsRequest
-from .models import GenerateReferenceDocsResponse
-from .models import GenerateVisualAssetRequest
-from .models import GenerateVisualAssetResponse
-from .models import GetAuthoringProfileResponse
-from .models import InitFrameworkStructureRequest
-from .models import InitFrameworkStructureResponse
-from .models import OnboardProjectMode
-from .models import OnboardProjectRequest
-from .models import OnboardProjectResponse
-from .models import OnboardProjectWarningMetadata
-from .models import PipelineContext
-from .models import PipelinePhase
-from .models import PipelinePhaseRequest
-from .models import PipelinePhaseResponse
-from .models import PlanDocsRequest
-from .models import PlanDocsResponse
-from .models import PrimitiveResolutionMode
-from .models import PrimitiveSupportLookupResponse
-from .models import RenderDiagramRequest
-from .models import RenderDiagramResponse
-from .models import RenderPrimitiveSnippetResponse
-from .models import ResolvePrimitiveRequest
-from .models import ResolvePrimitiveResponse
-from .models import ScaffoldDocRequest
-from .models import ScaffoldDocResponse
-from .models import ScoreDocsQualityRequest
-from .models import ScoreDocsQualityResponse
-from .models import ShellScriptType
-from .models import SourceCodeHost
-from .models import StoryMigrationMode
-from .models import SyncNavMode
-from .models import SyncNavRequest
-from .models import SyncNavResponse
-from .models import TranslatePrimitivesRequest
-from .models import TranslatePrimitivesResponse
-from .models import ValidateDocsRequest
-from .models import ValidateDocsResponse
-from .models import VisualAssetKind
-from .models import VisualAssetOperation
-from .models import WriteDocRequest
-from .models import WriteDocResponse
-from .models import ZensicalExtension
-from .validators import _find_and_load_docs_config
-from .validators import audit_frontmatter_impl
-from .validators import batch_scaffold_docs as batch_scaffold_docs_impl
-from .validators import check_docs_links as check_docs_links_impl
-from .validators import check_language_structure as check_language_structure_impl
-from .validators import check_orphan_docs as check_orphan_docs_impl
-from .validators import scaffold_doc as scaffold_doc_impl
-from .validators import score_docs_quality as score_docs_quality_impl
-from .validators import sync_nav_impl
-from .visual_assets import create_svg_asset_impl
+from ..models import COPILOT_DEFAULT_TOOLS
+from ..models import AgentConfigRequest
+from ..models import AgentConfigResponse
+from ..models import AgentPlatform
+from ..models import AuthoringPrimitive
+from ..models import BatchScaffoldRequest
+from ..models import BatchScaffoldResponse
+from ..models import ChangelogEntryFormat
+from ..models import CheckDocsLinksResponse
+from ..models import CheckLanguageStructureResponse
+from ..models import CheckOrphanDocsResponse
+from ..models import ComposeDocsStoryRequest
+from ..models import ComposeDocsStoryResponse
+from ..models import ConfigureZensicalExtensionsRequest
+from ..models import ConfigureZensicalExtensionsResponse
+from ..models import CopilotAgentMode
+from ..models import CopilotArtifactKind
+from ..models import CreateCopilotArtifactRequest
+from ..models import CreateCopilotArtifactResponse
+from ..models import CreateSvgAssetRequest
+from ..models import CreateSvgAssetResponse
+from ..models import CustomThemeTarget
+from ..models import DeploymentUrlConfig
+from ..models import DetectDocsContextRequest
+from ..models import DetectDocsContextResponse
+from ..models import DetectProjectReadinessRequest
+from ..models import DetectProjectReadinessResponse
+from ..models import DiagramType
+from ..models import DocsDeployProvider
+from ..models import DocsValidationCheck
+from ..models import DocstringAuditRequest
+from ..models import DocstringAuditResponse
+from ..models import DocstringOptimizerRequest
+from ..models import DocstringOptimizerResponse
+from ..models import EnrichDocRequest
+from ..models import EnrichDocResponse
+from ..models import EphemeralInstallRequest
+from ..models import EphemeralInstallResponse
+from ..models import FileWriteRecord
+from ..models import FrameworkName
+from ..models import FrontmatterAuditRequest
+from ..models import FrontmatterAuditResponse
+from ..models import GenerateChangelogRequest
+from ..models import GenerateChangelogResponse
+from ..models import GenerateCustomThemeRequest
+from ..models import GenerateCustomThemeResponse
+from ..models import GenerateDiagramRequest
+from ..models import GenerateDiagramResponse
+from ..models import GenerateReferenceDocsKind
+from ..models import GenerateReferenceDocsRequest
+from ..models import GenerateReferenceDocsResponse
+from ..models import GenerateVisualAssetRequest
+from ..models import GenerateVisualAssetResponse
+from ..models import GetAuthoringProfileResponse
+from ..models import InitFrameworkStructureRequest
+from ..models import InitFrameworkStructureResponse
+from ..models import OnboardProjectMode
+from ..models import OnboardProjectRequest
+from ..models import OnboardProjectResponse
+from ..models import OnboardProjectWarningMetadata
+from ..models import PipelineContext
+from ..models import PipelinePhase
+from ..models import PipelinePhaseRequest
+from ..models import PipelinePhaseResponse
+from ..models import PlanDocsRequest
+from ..models import PlanDocsResponse
+from ..models import PrimitiveResolutionMode
+from ..models import PrimitiveSupportLookupResponse
+from ..models import RenderDiagramRequest
+from ..models import RenderDiagramResponse
+from ..models import RenderPrimitiveSnippetResponse
+from ..models import ResolvePrimitiveRequest
+from ..models import ResolvePrimitiveResponse
+from ..models import ScaffoldDocRequest
+from ..models import ScaffoldDocResponse
+from ..models import ScoreDocsQualityRequest
+from ..models import ScoreDocsQualityResponse
+from ..models import ShellScriptType
+from ..models import SourceCodeHost
+from ..models import StoryMigrationMode
+from ..models import SyncNavMode
+from ..models import SyncNavRequest
+from ..models import SyncNavResponse
+from ..models import TranslatePrimitivesRequest
+from ..models import TranslatePrimitivesResponse
+from ..models import ValidateDocsRequest
+from ..models import ValidateDocsResponse
+from ..models import VisualAssetKind
+from ..models import VisualAssetOperation
+from ..models import WriteDocRequest
+from ..models import WriteDocResponse
+from ..models import ZensicalExtension
+from ..validators import _find_and_load_docs_config
+from ..validators import audit_frontmatter_impl
+from ..validators import batch_scaffold_docs as batch_scaffold_docs_impl
+from ..validators import check_docs_links as check_docs_links_impl
+from ..validators import check_language_structure as check_language_structure_impl
+from ..validators import check_orphan_docs as check_orphan_docs_impl
+from ..validators import scaffold_doc as scaffold_doc_impl
+from ..validators import score_docs_quality as score_docs_quality_impl
+from ..validators import sync_nav_impl
+from ..visual_assets import create_svg_asset_impl
 
 
 if TYPE_CHECKING:
@@ -293,17 +294,24 @@ async def _elicit_deployment_urls(
     Returns ``None`` when elicitation is not applicable (wrong mode, no
     context, or user declines/cancels the prompt).
     """
+    def _build_deployment_urls() -> DeploymentUrlConfig | None:
+        if not (dev_url or staging_url or production_url):
+            return None
+        return DeploymentUrlConfig.model_validate(
+            {
+                "dev_url": dev_url,
+                "staging_url": staging_url,
+                "production_url": production_url,
+            }
+        )
+
     # Only elicit when generating boilerplate content that needs URLs
     if mode not in {OnboardProjectMode.BOILERPLATE, OnboardProjectMode.FULL}:
         return None
 
     # If all three URLs were already provided explicitly, validate and return
     if dev_url and staging_url and production_url:
-        return DeploymentUrlConfig(
-            dev_url=dev_url,  # type: ignore[arg-type]
-            staging_url=staging_url,  # type: ignore[arg-type]
-            production_url=production_url,  # type: ignore[arg-type]
-        )
+        return _build_deployment_urls()
 
     # Attempt interactive elicitation via FastMCP context
     if ctx is not None:
@@ -314,21 +322,16 @@ async def _elicit_deployment_urls(
                 "the template will include TODO placeholders instead.",
                 DeploymentUrlConfig,
             )
-            if isinstance(result, AcceptedElicitation):
-                data: DeploymentUrlConfig = result.data  # type: ignore[assignment]
-                return data
+            if isinstance(result, AcceptedElicitation) and isinstance(
+                result.data,
+                DeploymentUrlConfig,
+            ):
+                return result.data
         except Exception:  # noqa: BLE001
             _logger.debug("Elicitation unavailable or declined — using fallback", exc_info=True)
 
     # Build from whatever was provided (may be partially None)
-    if dev_url or staging_url or production_url:
-        return DeploymentUrlConfig(
-            dev_url=dev_url,  # type: ignore[arg-type]
-            staging_url=staging_url,  # type: ignore[arg-type]
-            production_url=production_url,  # type: ignore[arg-type]
-        )
-
-    return None
+    return _build_deployment_urls()
 
 
 def detect_docs_context(project_root: str = ".") -> DetectDocsContextResponse:
@@ -720,6 +723,7 @@ def _rollback_onboard_files(
     *,
     init_files: list[FileWriteRecord],
     skeleton_output: Path | None,
+    framework_artifacts: list[Path] | None = None,
 ) -> None:
     """Best-effort cleanup/restore of files written during a failed FULL onboard run.
 
@@ -733,6 +737,17 @@ def _rollback_onboard_files(
                 record.path.write_text(record.original_content, encoding="utf-8")
             else:
                 record.path.unlink(missing_ok=True)
+    if framework_artifacts is not None:
+        for artifact_path in sorted(
+            framework_artifacts,
+            key=lambda path: len(path.parts),
+            reverse=True,
+        ):
+            with ctx_suppress(OSError):
+                if artifact_path.is_dir():
+                    shutil.rmtree(artifact_path)
+                else:
+                    artifact_path.unlink(missing_ok=True)
     if skeleton_output is not None and skeleton_output.exists():
         with ctx_suppress(OSError):
             skeleton_output.unlink(missing_ok=True)
@@ -748,7 +763,7 @@ async def onboard_project(  # noqa: PLR0913
     includeMemories: bool | None = None,  # noqa: N803
     includeReferences: bool | None = None,  # noqa: N803
     output_file: str | None = None,
-    mode: OnboardProjectMode = OnboardProjectMode.FULL,
+    mode: OnboardProjectMode = OnboardProjectMode.SKELETON,
     include_checklist: bool = True,
     overwrite: bool = False,
     include_shell_scripts: bool = True,
@@ -846,11 +861,13 @@ async def onboard_project(  # noqa: PLR0913
             overwrite=request.overwrite,
             include_shell_scripts=request.include_shell_scripts,
             deploy_provider=request.deploy_provider,
+            shell_targets=request.shell_targets,
         )
         statuses.append(init_result.status)
         init_status = check_init_status_impl(
             project_root=request.project_root,
             deploy_provider=request.deploy_provider,
+            shell_targets=request.shell_targets,
         )
         statuses.append(init_status.status)
 
@@ -874,32 +891,56 @@ async def onboard_project(  # noqa: PLR0913
             gate_confirmed=effective_gate,
             overwrite=request.overwrite,
             shell_targets=request.shell_targets,
+            dev_url=str(deployment_urls.dev_url) if deployment_urls is not None else None,
+            staging_url=str(deployment_urls.staging_url) if deployment_urls is not None else None,
+            production_url=(
+                str(deployment_urls.production_url) if deployment_urls is not None else None
+            ),
         )
         statuses.append(boilerplate_result.status)
         # Cross-step atomicity: if boilerplate fails after init already wrote files,
         # roll back init artifacts to avoid a partially-onboarded repo.
-        if (
-            boilerplate_result.status == "error"
-            and init_result is not None
-            and init_result.write_records
+        if boilerplate_result.status == "error" and (
+            (init_result is not None and init_result.write_records)
+            or (
+                framework_init_result is not None and framework_init_result.copied_artifacts
+            )
         ):
             _rollback_onboard_files(
-                init_files=init_result.write_records,
+                init_files=init_result.write_records if init_result is not None else [],
                 skeleton_output=request.output_file,
+                framework_artifacts=(
+                    framework_init_result.copied_artifacts
+                    if framework_init_result is not None
+                    else None
+                ),
             )
             rollback_message = "Rolled back init artifacts after boilerplate failure."
-            combined_message = (
-                rollback_message
-                if not init_result.message
-                else f"{init_result.message} {rollback_message}"
-            )
-            init_result = init_result.model_copy(
-                update={
-                    "created_files": [],
-                    "initialized": False,
-                    "message": combined_message,
-                }
-            )
+            if init_result is not None:
+                combined_message = (
+                    rollback_message
+                    if not init_result.message
+                    else f"{init_result.message} {rollback_message}"
+                )
+                init_result = init_result.model_copy(
+                    update={
+                        "created_files": [],
+                        "initialized": False,
+                        "message": combined_message,
+                    }
+                )
+            if framework_init_result is not None:
+                framework_message = (
+                    rollback_message
+                    if not framework_init_result.message
+                    else f"{framework_init_result.message} {rollback_message}"
+                )
+                framework_init_result = framework_init_result.model_copy(
+                    update={
+                        "copied_artifacts": [],
+                        "message": framework_message,
+                    }
+                )
     if warning_metadata is not None:
         statuses.append("warning")
 
@@ -1695,7 +1736,7 @@ def generate(  # noqa: ANN202, PLR0913
     name="onboard",
     version=TOOL_VERSION,
     title="Onboard — Project Documentation Setup",
-    description="Set up documentation for any project. mode='full' (default) runs the complete onboarding flow, mode='init' initializes a framework's folder structure, mode='phase' executes a pipeline phase, mode='plan' creates a page plan, mode='install' runs ephemeral framework CLI install.",  # noqa: E501
+    description="Set up documentation for any project. mode='full' routes to onboarding flows and defaults to a safe skeleton plan unless onboard_mode is set explicitly; mode='init' initializes a framework's folder structure, mode='phase' executes a pipeline phase, mode='plan' creates a page plan, mode='install' runs ephemeral framework CLI install.",  # noqa: E501
     tags={"onboarding", "setup"},
     annotations=MUTATING_ANNOTATIONS,
 )
@@ -1708,10 +1749,10 @@ async def onboard(  # noqa: PLR0913
     dev_url: str | None = None,
     staging_url: str | None = None,
     production_url: str | None = None,
-    onboard_mode: str = "full",
+    onboard_mode: str = "skeleton",
     include_checklist: bool = True,
     include_shell_scripts: bool = True,
-    shell_targets: list[str] | None = None,  # noqa: ARG001
+    shell_targets: list[str] | None = None,
     scaffold_docs: bool = False,
     output_file: str | None = None,
     include_memories: bool | None = None,  # noqa: ARG001
@@ -1786,6 +1827,11 @@ async def onboard(  # noqa: PLR0913
         mode=OnboardProjectMode(onboard_mode),
         include_checklist=include_checklist,
         include_shell_scripts=include_shell_scripts,
+        shell_targets=(
+            [ShellScriptType(target) for target in shell_targets]
+            if shell_targets
+            else None
+        ),
         scaffold_docs=scaffold_docs,
         output_file=output_file,
         ctx=ctx,
@@ -1906,8 +1952,8 @@ def docstring(  # noqa: PLR0913
     context_hint: str | None = None,
 ) -> DocstringAuditResponse | DocstringOptimizerResponse:
     """Audit or optimize docstrings in source code."""
-    from .docstring_optimizer import DocstringLanguage  # noqa: PLC0415
-    from .docstring_optimizer import DocstringStyle  # noqa: PLC0415
+    from ..docstring_optimizer import DocstringLanguage  # noqa: PLC0415
+    from ..docstring_optimizer import DocstringStyle  # noqa: PLC0415
 
     lang = DocstringLanguage(language) if language else None
     if mode == "optimize":

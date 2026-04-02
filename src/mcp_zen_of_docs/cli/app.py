@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 from typing import Annotated
 from typing import Literal
 from typing import NoReturn
+from typing import cast
 
 import typer
 
@@ -24,77 +25,77 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from .cli_presenters import format_human_payload
-from .generator import get_story_generator_boundary
-from .generators import run_ephemeral_install
-from .interfaces.story import InterfaceChannel
-from .interfaces.story import adapt_story_response_channel
-from .interfaces.story import build_story_loop_advance_surface
-from .interfaces.story import build_story_loop_initialize_surface
-from .interfaces.story import build_story_request
-from .interfaces.story import build_story_session_advance_request
-from .interfaces.story import build_story_session_initialize_request
-from .models import AgentPlatform
-from .models import AnswerSlotContract
-from .models import AnswerSlotType
-from .models import AuthoringPrimitive
-from .models import ChangelogEntryFormat
-from .models import ComposeDocsStoryResponse
-from .models import CopilotAgentMode
-from .models import CopilotArtifactKind
-from .models import CustomThemeTarget
-from .models import DiagramType
-from .models import DocsDeployProvider
-from .models import DocsValidationCheck
-from .models import DocstringAuditRequest
-from .models import DocstringLanguage
-from .models import DocstringOptimizerRequest
-from .models import DocstringStyle
-from .models import EphemeralInstallRequest
-from .models import FrameworkName
-from .models import GenerateReferenceDocsKind
-from .models import OnboardProjectMode
-from .models import PipelinePhase
-from .models import PrimitiveResolutionMode
-from .models import ScaffoldDocRequest
-from .models import ShellScriptType
-from .models import SourceCodeHost
-from .models import StoryGenerationRequest
-from .models import StoryGenerationResponse
-from .models import StoryMigrationMode
-from .models import SyncNavMode
-from .models import VisualAssetKind
-from .models import VisualAssetOperation
-from .models import WriteDocRequest
-from .models import ZensicalExtension
-from .server import audit_docstrings
-from .server import audit_frontmatter
-from .server import batch_scaffold_docs
-from .server import compose_docs_story
-from .server import create_copilot_artifact
-from .server import create_svg_asset
-from .server import detect_docs_context
-from .server import detect_project_readiness
-from .server import enrich_doc
-from .server import generate_agent_config
-from .server import generate_changelog
-from .server import generate_diagram
-from .server import generate_reference_docs
-from .server import generate_visual_asset
-from .server import get_authoring_profile
-from .server import init_framework_structure
-from .server import onboard_project
-from .server import optimize_docstrings
-from .server import plan_docs
-from .server import render_diagram
-from .server import resolve_primitive
-from .server import run_pipeline_phase
-from .server import scaffold_doc
-from .server import score_docs_quality
-from .server import sync_nav
-from .server import translate_primitives
-from .server import validate_docs
-from .server import write_doc
+from .presenters import format_human_payload
+from ..generator import get_story_generator_boundary
+from ..generators import run_ephemeral_install
+from ..interfaces.story import InterfaceChannel
+from ..interfaces.story import adapt_story_response_channel
+from ..interfaces.story import build_story_loop_advance_surface
+from ..interfaces.story import build_story_loop_initialize_surface
+from ..interfaces.story import build_story_request
+from ..interfaces.story import build_story_session_advance_request
+from ..interfaces.story import build_story_session_initialize_request
+from ..models import AgentPlatform
+from ..models import AnswerSlotContract
+from ..models import AnswerSlotType
+from ..models import AuthoringPrimitive
+from ..models import ChangelogEntryFormat
+from ..models import ComposeDocsStoryResponse
+from ..models import CopilotAgentMode
+from ..models import CopilotArtifactKind
+from ..models import CustomThemeTarget
+from ..models import DiagramType
+from ..models import DocsDeployProvider
+from ..models import DocsValidationCheck
+from ..models import DocstringAuditRequest
+from ..models import DocstringLanguage
+from ..models import DocstringOptimizerRequest
+from ..models import DocstringStyle
+from ..models import EphemeralInstallRequest
+from ..models import FrameworkName
+from ..models import GenerateReferenceDocsKind
+from ..models import OnboardProjectMode
+from ..models import PipelinePhase
+from ..models import PrimitiveResolutionMode
+from ..models import ScaffoldDocRequest
+from ..models import ShellScriptType
+from ..models import SourceCodeHost
+from ..models import StoryGenerationRequest
+from ..models import StoryGenerationResponse
+from ..models import StoryMigrationMode
+from ..models import SyncNavMode
+from ..models import VisualAssetKind
+from ..models import VisualAssetOperation
+from ..models import WriteDocRequest
+from ..models import ZensicalExtension
+from ..server.app import audit_docstrings
+from ..server.app import audit_frontmatter
+from ..server.app import batch_scaffold_docs
+from ..server.app import compose_docs_story
+from ..server.app import create_copilot_artifact
+from ..server.app import create_svg_asset
+from ..server.app import detect_docs_context
+from ..server.app import detect_project_readiness
+from ..server.app import enrich_doc
+from ..server.app import generate_agent_config
+from ..server.app import generate_changelog
+from ..server.app import generate_diagram
+from ..server.app import generate_reference_docs
+from ..server.app import generate_visual_asset
+from ..server.app import get_authoring_profile
+from ..server.app import init_framework_structure
+from ..server.app import onboard_project
+from ..server.app import optimize_docstrings
+from ..server.app import plan_docs
+from ..server.app import render_diagram
+from ..server.app import resolve_primitive
+from ..server.app import run_pipeline_phase
+from ..server.app import scaffold_doc
+from ..server.app import score_docs_quality
+from ..server.app import sync_nav
+from ..server.app import translate_primitives
+from ..server.app import validate_docs
+from ..server.app import write_doc
 
 
 if TYPE_CHECKING:
@@ -429,7 +430,7 @@ def _render_mapping(
 def _render_framework_detection(value: dict[str, JsonValue], *, indent: int = 0) -> list[str]:
     """Render framework detection results as a concise summary."""
     prefix = " " * indent
-    lines = [f"{prefix}Framework match"]
+    lines: list[str] = [f"{prefix}Framework match"]
     best_match = value.get("best_match")
     if not isinstance(best_match, dict):
         return lines
@@ -451,16 +452,17 @@ def _render_framework_detection(value: dict[str, JsonValue], *, indent: int = 0)
 
     candidates = value.get("candidates")
     if isinstance(candidates, list):
+        candidate_items = cast("list[JsonValue]", candidates)
         alternatives = [
             candidate
-            for candidate in candidates
+            for candidate in candidate_items
             if isinstance(candidate, dict) and candidate.get("framework") != framework
         ]
         if alternatives:
             lines.extend(
                 _render_bullets(
                     "Alternative frameworks",
-                    alternatives,
+                    cast("list[JsonValue]", alternatives),
                     indent=indent + 2,
                     limit=3,
                 )
@@ -471,13 +473,13 @@ def _render_framework_detection(value: dict[str, JsonValue], *, indent: int = 0)
 def _render_runtime_onboarding(value: dict[str, JsonValue], *, indent: int = 0) -> list[str]:
     """Render runtime onboarding guidance for humans."""
     prefix = " " * indent
-    lines = [f"{prefix}Runtime guidance"]
+    lines: list[str] = [f"{prefix}Runtime guidance"]
     python_tracks = value.get("python_tracks")
     if isinstance(python_tracks, list) and python_tracks:
         lines.extend(
             _render_bullets(
                 "Recommended Python runtimes",
-                python_tracks,
+                cast("list[JsonValue]", python_tracks),
                 indent=indent + 2,
             )
         )
@@ -487,7 +489,7 @@ def _render_runtime_onboarding(value: dict[str, JsonValue], *, indent: int = 0) 
         lines.extend(
             _render_bullets(
                 "Recommended JS runtimes",
-                js_tracks,
+                cast("list[JsonValue]", js_tracks),
                 indent=indent + 2,
             )
         )
@@ -497,7 +499,7 @@ def _render_runtime_onboarding(value: dict[str, JsonValue], *, indent: int = 0) 
         lines.extend(
             _render_bullets(
                 "Follow-up questions",
-                follow_up_questions,
+                cast("list[JsonValue]", follow_up_questions),
                 indent=indent + 2,
             )
         )
@@ -1537,6 +1539,9 @@ def onboard_project_command(  # noqa: PLR0913
     project_root: Annotated[Path, typer.Option("--project-root")] = Path(),
     output_file: Annotated[Path | None, typer.Option("--output-file")] = None,
     mode: Annotated[OnboardProjectMode, typer.Option("--mode")] = OnboardProjectMode.FULL,
+    dev_url: Annotated[str | None, typer.Option("--dev-url")] = None,
+    staging_url: Annotated[str | None, typer.Option("--staging-url")] = None,
+    production_url: Annotated[str | None, typer.Option("--production-url")] = None,
     *,
     include_checklist: Annotated[
         bool, typer.Option("--include-checklist/--no-include-checklist")
@@ -1563,6 +1568,9 @@ def onboard_project_command(  # noqa: PLR0913
                 deploy_provider=deploy_provider,
                 gate_confirmed=gate_confirmed,
                 shell_targets=shell_targets,
+                dev_url=dev_url,
+                staging_url=staging_url,
+                production_url=production_url,
             )
         )
     )
@@ -1664,7 +1672,12 @@ def integrations_artifact_command(  # noqa: PLR0913
     """Create an AI/editor integration artifact for this repository."""
     if (content is None) == (from_file is None):
         _emit_error("Provide exactly one of --content or --from-file.")
-    artifact_content = content if content is not None else from_file.read_text(encoding="utf-8")
+    if content is not None:
+        artifact_content = content
+    else:
+        if from_file is None:
+            _emit_error("Provide exactly one of --content or --from-file.")
+        artifact_content = from_file.read_text(encoding="utf-8")
     _emit(
         create_copilot_artifact(
             kind=kind,
@@ -2056,7 +2069,7 @@ def create_svg_asset_command(  # noqa: PLR0913
     else:
         typer.echo("Error: provide --svg-markup or --svg-file", err=True)
         raise typer.Exit(1)
-    from .models import CreateSvgAssetRequest  # noqa: PLC0415
+    from ..models import CreateSvgAssetRequest  # noqa: PLC0415
 
     _emit(
         create_svg_asset(
@@ -2090,7 +2103,7 @@ def asset_write_svg_command(  # noqa: PLR0913
         markup = svg_markup
     else:
         _emit_error("Provide --svg-markup or --svg-file.")
-    from .models import CreateSvgAssetRequest  # noqa: PLC0415
+    from ..models import CreateSvgAssetRequest  # noqa: PLC0415
 
     _emit(
         create_svg_asset(
@@ -2216,8 +2229,8 @@ def generate_custom_theme_command(  # noqa: PLR0913
     font_code: Annotated[str | None, typer.Option("--font-code")] = None,
 ) -> None:
     """Generate framework-specific CSS/JS theme files with brand colors."""
-    from .generators import generate_custom_theme_impl  # noqa: PLC0415
-    from .models import GenerateCustomThemeRequest  # noqa: PLC0415
+    from ..generators import generate_custom_theme_impl  # noqa: PLC0415
+    from ..models import GenerateCustomThemeRequest  # noqa: PLC0415
 
     _emit(
         generate_custom_theme_impl(
@@ -2249,8 +2262,8 @@ def configure_zensical_extensions_command(
     ] = True,
 ) -> None:
     """Generate zensical.toml / mkdocs.yml config blocks for pymdownx extensions."""
-    from .generators import configure_zensical_extensions_impl  # noqa: PLC0415
-    from .models import ConfigureZensicalExtensionsRequest  # noqa: PLC0415
+    from ..generators import configure_zensical_extensions_impl  # noqa: PLC0415
+    from ..models import ConfigureZensicalExtensionsRequest  # noqa: PLC0415
 
     fmt: Literal["toml", "yaml", "both"] = (
         "toml" if output_format == "toml" else ("yaml" if output_format == "yaml" else "both")

@@ -57,6 +57,15 @@ BUILTIN_PROFILES: tuple[AuthoringProfile, ...] = (
     VitePressProfile(),
     StarlightProfile(),
 )
+_DETECTION_PRIORITY: dict[FrameworkName, int] = {
+    FrameworkName.ZENSICAL: 70,
+    FrameworkName.MKDOCS_MATERIAL: 60,
+    FrameworkName.DOCUSAURUS: 50,
+    FrameworkName.VITEPRESS: 40,
+    FrameworkName.STARLIGHT: 30,
+    FrameworkName.SPHINX: 20,
+    FrameworkName.GENERIC_MARKDOWN: 10,
+}
 _FRAMEWORK_ADVANTAGES: tuple[FrameworkAdvantage, ...] = (
     FrameworkAdvantage(
         framework=FrameworkName.ZENSICAL,
@@ -348,15 +357,30 @@ def _detect_generic_markdown(project_root: Path) -> FrameworkDetectionResult:
     )
 
 
-def register_builtin_profiles(*, replace: bool = True) -> None:
-    """Register all built-in profile instances with optional replacement."""
+def _ensure_builtin_profiles_registered() -> None:
+    """Ensure built-in profile frameworks exist without overriding custom registrations."""
+    registered = {profile.framework for profile in iter_profiles()}
+    if all(profile.framework in registered for profile in BUILTIN_PROFILES):
+        return
+    register_builtin_profiles(replace=False)
+
+
+def register_builtin_profiles(*, replace: bool = False) -> None:
+    """Register built-in profiles without clobbering custom overrides by default."""
     for profile in BUILTIN_PROFILES:
-        register_profile(profile, replace=replace)
+        existing = get_profile(profile.framework)
+        if existing is profile:
+            continue
+        if existing is None:
+            register_profile(profile)
+            continue
+        if replace:
+            register_profile(profile, replace=True)
 
 
 def detect_frameworks(project_root: Path | str = ".") -> list[FrameworkDetectionResult]:
     """Return framework candidates sorted by descending detection confidence."""
-    register_builtin_profiles()
+    _ensure_builtin_profiles_registered()
     root = Path(project_root)
     detections = [profile.detect(root) for profile in iter_profiles()]
     detections.extend(
@@ -366,7 +390,14 @@ def detect_frameworks(project_root: Path | str = ".") -> list[FrameworkDetection
             _detect_generic_markdown(root),
         )
     )
-    return sorted(detections, key=lambda result: result.confidence, reverse=True)
+    return sorted(
+        detections,
+        key=lambda result: (
+            result.confidence,
+            _DETECTION_PRIORITY.get(result.framework, 0),
+        ),
+        reverse=True,
+    )
 
 
 def detect_best_framework(project_root: Path | str = ".") -> FrameworkDetectionResult | None:
@@ -384,8 +415,6 @@ def list_general_docs_references() -> list[GeneralDocsReference]:
     """Return curated industry best-practice documentation references."""
     return list(_GENERAL_DOCS_REFERENCES)
 
-
-register_builtin_profiles()
 
 __all__ = [
     "BUILTIN_PROFILES",

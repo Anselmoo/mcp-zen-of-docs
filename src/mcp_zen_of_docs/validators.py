@@ -12,35 +12,31 @@ from typing import Literal
 import yaml
 
 from .frameworks import detect_best_framework
-from .frameworks.material_profile import DEFAULT_FRONTMATTER_KEYS
 from .frameworks.material_profile import DEFAULT_SECTIONS
 from .frameworks.material_profile import render_frontmatter
 from .models import AuthoringPrimitive
 from .models import BatchScaffoldRequest
 from .models import BatchScaffoldResponse
-from .models import CheckDocsLinksRequest
 from .models import CheckDocsLinksResponse
-from .models import CheckLanguageStructureRequest
 from .models import CheckLanguageStructureResponse
 from .models import CheckOrphanDocsResponse
 from .models import FrameworkName
 from .models import FrontmatterAuditRequest
 from .models import FrontmatterAuditResponse
 from .models import FrontmatterFileAudit
-from .models import LinkIssue
 from .models import NavIssue
 from .models import NavIssueKind
-from .models import QualityIssue
-from .models import QualityScore
 from .models import ScaffoldDocRequest
 from .models import ScaffoldDocResponse
-from .models import ScoreDocsQualityRequest
 from .models import ScoreDocsQualityResponse
-from .models import StructureIssue
 from .models import SyncNavMode
 from .models import SyncNavRequest
 from .models import SyncNavResponse
 from .templates import FRAMEWORK_INIT_SPECS
+from .validator_read_only import check_docs_links as check_docs_links_impl
+from .validator_read_only import check_language_structure as check_language_structure_impl
+from .validator_read_only import check_orphan_docs as check_orphan_docs_impl
+from .validator_read_only import score_docs_quality as score_docs_quality_impl
 
 
 LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
@@ -78,6 +74,7 @@ def _load_docs_config(
         with candidate.open() as fh:
             return candidate, yaml.safe_load(fh) or {}
     return None, None
+
 
 def _find_and_load_docs_config(
     docs_root: Path,
@@ -282,147 +279,15 @@ def _resolve_doc_target(base_file: Path, link_target: str) -> Path:
 def check_docs_links(
     docs_root: Path | str = "docs", external_mode: str = "report"
 ) -> CheckDocsLinksResponse:
-    """Check internal links and report external links.
-
-    Scans all Markdown files under *docs_root* for hyperlinks, verifies that
-    internal links resolve to existing files, and optionally surfaces external
-    URLs for human review.
-
-    Args:
-        docs_root: Root directory containing Markdown documentation files.
-            Defaults to ``"docs"``.
-        external_mode: How to handle external (``http://``, ``https://``)
-            links. ``"report"`` surfaces them as issues; ``"ignore"`` skips
-            them silently. Defaults to ``"report"``.
-
-    Returns:
-        Response with status, list of link issues, and count of broken
-        internal links.
-    """
-    normalized_external_mode: Literal["report", "ignore"]
-    normalized_external_mode = "report" if external_mode == "report" else "ignore"
-    request = CheckDocsLinksRequest(
-        docs_root=Path(docs_root),
-        external_mode=normalized_external_mode,
-    )
-    docs_path = request.docs_root
-    if not docs_path.exists():
-        return CheckDocsLinksResponse(
-            status="error",
-            docs_root=request.docs_root,
-            message="docs_root does not exist.",
-        )
-
-    issues: list[LinkIssue] = []
-    for file_path in _markdown_files(docs_path):
-        content = file_path.read_text(encoding="utf-8")
-        for raw_target in LINK_PATTERN.findall(content):
-            if raw_target.startswith(("#", "mailto:", "tel:", "javascript:")):
-                continue
-            if raw_target.startswith(("http://", "https://")):
-                if request.external_mode == "report":
-                    issues.append(
-                        LinkIssue(type="external_unchecked", file=str(file_path), target=raw_target)
-                    )
-                continue
-
-            target = _resolve_doc_target(file_path, raw_target)
-            exists = target.exists() or (target.is_dir() and (target / "index.md").exists())
-            if not exists:
-                issues.append(
-                    LinkIssue(type="missing_internal_link", file=str(file_path), target=raw_target)
-                )
-
-    missing_count = sum(1 for issue in issues if issue.type == "missing_internal_link")
-    return CheckDocsLinksResponse(
-        status="success" if missing_count == 0 else "warning",
-        docs_root=request.docs_root,
-        issues=issues,
-        missing_internal_count=missing_count,
-    )
+    """Check internal links and optionally report external links."""
+    return check_docs_links_impl(docs_root=docs_root, external_mode=external_mode)
 
 
 def check_orphan_docs(
     docs_root: Path | str = "docs", mkdocs_file: Path | str | None = None
 ) -> CheckOrphanDocsResponse:
-    """Find docs files that are not referenced in the docs nav configuration.
-
-    Compares the set of Markdown files on disk under *docs_root* against
-    the paths declared in the nav configuration and returns any files that
-    are not referenced.
-
-    Supports both MkDocs YAML (``mkdocs.yml`` / ``mkdocs.yaml``) and Zensical
-    TOML (``zensical.toml``) nav formats.  When *mkdocs_file* is ``None`` the
-    function auto-detects the config by searching *docs_root* first, then the
-    project root (``docs_root.parent``).
-
-    Args:
-        docs_root: Root directory containing Markdown documentation files.
-            Defaults to ``"docs"``.
-        mkdocs_file: Explicit path to the docs config file.  When ``None``
-            (default), auto-detection is attempted.
-
-    Returns:
-        Response with status, sorted list of orphan file paths relative to
-        *docs_root*, an optional ``detected_config`` path when auto-detection
-        was used, and an error message when resolution fails.
-    """
-    docs_path = Path(docs_root)
-    explicit_path = Path(mkdocs_file) if mkdocs_file is not None else None
-
-    if not docs_path.exists():
-        return CheckOrphanDocsResponse(
-            status="error",
-            docs_root=docs_path,
-            mkdocs_file=explicit_path or Path("mkdocs.yml"),
-            message="docs_root or mkdocs_file does not exist.",
-        )
-
-    # Resolve the config path: use explicit if given and exists, else auto-detect.
-    detected_config: Path | None = None
-    if explicit_path is not None and explicit_path.exists():
-        config_path: Path | None = explicit_path
-        config_data: dict[str, object] | None = None  # loaded below
-    elif explicit_path is not None:
-        # Caller gave a specific path that doesn't exist → error.
-        return CheckOrphanDocsResponse(
-            status="error",
-            docs_root=docs_path,
-            mkdocs_file=explicit_path,
-            message="docs_root or mkdocs_file does not exist.",
-        )
-    else:
-        found_path, found_data = _find_and_load_docs_config(docs_path)
-        if found_path is None:
-            return CheckOrphanDocsResponse(
-                status="error",
-                docs_root=docs_path,
-                mkdocs_file=Path("mkdocs.yml"),
-                message="No docs config found (tried zensical.toml, mkdocs.yml, mkdocs.yaml).",
-            )
-        config_path = found_path
-        config_data = found_data
-        detected_config = found_path
-
-    # Load config data when an explicit path was resolved above without loading.
-    if config_data is None and config_path is not None:
-        if config_path.suffix == ".toml":
-            with config_path.open("rb") as fh:
-                config_data = tomllib.load(fh)
-        else:
-            config_data = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
-
-    nav_raw = (config_data or {}).get("nav")
-    referenced = _flatten_nav(nav_raw)
-    docs_files = {path.relative_to(docs_path).as_posix() for path in _markdown_files(docs_path)}
-    orphans = sorted(docs_files - referenced)
-    return CheckOrphanDocsResponse(
-        status="success" if not orphans else "warning",
-        docs_root=docs_path,
-        mkdocs_file=config_path or Path("mkdocs.yml"),
-        detected_config=detected_config,
-        orphans=orphans,
-    )
+    """Find docs files that are not referenced in the nav configuration."""
+    return check_orphan_docs_impl(docs_root=docs_root, mkdocs_file=mkdocs_file)
 
 
 def check_language_structure(
@@ -430,285 +295,19 @@ def check_language_structure(
     required_headers: list[str] | None = None,
     required_frontmatter: list[str] | None = None,
 ) -> CheckLanguageStructureResponse:
-    """Validate markdown files against a Material-oriented writing profile.
-
-    Checks each Markdown file in *docs_root* for the presence of required
-    frontmatter keys and heading strings, and reports detected authoring
-    primitives per file.
-
-    Args:
-        docs_root: Root directory containing Markdown documentation files.
-            Defaults to ``"docs"``.
-        required_headers: List of heading strings that must appear in each
-            Markdown file. When ``None``, no heading requirements are enforced.
-        required_frontmatter: List of frontmatter key names that must be
-            present in each file's YAML frontmatter block. When ``None``,
-            no frontmatter requirements are enforced.
-
-    Returns:
-        Response with status, per-file structure issues, and an error message
-        when *docs_root* does not exist.
-    """
-    request = CheckLanguageStructureRequest(
-        docs_root=Path(docs_root),
+    """Validate markdown files against structure and frontmatter expectations."""
+    return check_language_structure_impl(
+        docs_root=docs_root,
         required_headers=required_headers,
         required_frontmatter=required_frontmatter,
     )
-    docs_path = request.docs_root
-    if not docs_path.exists():
-        return CheckLanguageStructureResponse(
-            status="error",
-            docs_root=request.docs_root,
-            message="docs_root does not exist.",
-        )
-
-    headers = request.required_headers or []
-    required_keys = request.required_frontmatter or list(DEFAULT_FRONTMATTER_KEYS)
-    issues: list[StructureIssue] = []
-    for file_path in _markdown_files(docs_path):
-        content = file_path.read_text(encoding="utf-8")
-        frontmatter, body = _split_frontmatter(content)
-        issues.extend(
-            StructureIssue(type="missing_frontmatter_key", file=str(file_path), detail=key)
-            for key in required_keys
-            if key not in frontmatter
-        )
-        if not re.search(r"^#\s+\S+", body, flags=re.MULTILINE):
-            issues.append(
-                StructureIssue(
-                    type="missing_h1", file=str(file_path), detail="No level-1 heading found."
-                )
-            )
-        issues.extend(
-            StructureIssue(type="missing_required_header", file=str(file_path), detail=header)
-            for header in headers
-            if header not in body
-        )
-
-        untyped_fences = _count_untyped_opening_fences(body)
-        issues.extend(
-            StructureIssue(
-                type="untyped_code_fence",
-                file=str(file_path),
-                detail="Code fence missing language identifier.",
-            )
-            for _ in range(untyped_fences)
-        )
-
-    return CheckLanguageStructureResponse(
-        status="success" if not issues else "warning",
-        docs_root=request.docs_root,
-        required_headers=headers,
-        required_frontmatter=required_keys,
-        issues=issues,
-    )
 
 
-def score_docs_quality(  # noqa: C901, PLR0912, PLR0915
+def score_docs_quality(
     docs_root: Path | str = "docs",
 ) -> ScoreDocsQualityResponse:
-    """Score docs quality across structure, frontmatter, primitive usage, and code hygiene.
-
-    Evaluates all Markdown files under *docs_root* across four dimensions:
-    structural conventions, frontmatter completeness, authoring primitive
-    usage breadth, and code fence hygiene.
-
-    Args:
-        docs_root: Root directory containing Markdown documentation files
-            to score. Defaults to ``"docs"``.
-
-    Returns:
-        Response with an aggregated quality score (0-100), per-category
-        component scores, detected primitives, quality issues, and
-        actionable improvement suggestions.
-    """
-    request = ScoreDocsQualityRequest(docs_root=Path(docs_root))
-    docs_path = request.docs_root
-    if not docs_path.exists():
-        return ScoreDocsQualityResponse(
-            status="error",
-            docs_root=request.docs_root,
-            message="docs_root does not exist.",
-        )
-
-    markdown_files = _markdown_files(docs_path)
-    if not markdown_files:
-        return ScoreDocsQualityResponse(
-            status="error",
-            docs_root=request.docs_root,
-            message="No markdown files found under docs_root.",
-        )
-
-    component_scores: dict[str, int] = {
-        "structure": 100,
-        "frontmatter": 100,
-        "primitive-usage": 100,
-        "code-hygiene": 100,
-    }
-    issues: list[QualityIssue] = []
-    suggestions: set[str] = set()
-    detected_primitives: set[AuthoringPrimitive] = set()
-
-    for file_path in markdown_files:
-        content = file_path.read_text(encoding="utf-8")
-        frontmatter, body = _split_frontmatter(content)
-        primitives = _detect_primitives(frontmatter, body)
-        detected_primitives.update(primitives)
-
-        if not body.strip():
-            component_scores["structure"] -= 30
-            issues.append(
-                QualityIssue(
-                    category="structure",
-                    severity="high",
-                    file=str(file_path),
-                    detail="Markdown body is empty.",
-                    suggestion="Add a focused heading and actionable content.",
-                )
-            )
-            suggestions.add("Add meaningful body content to empty documentation pages.")
-            continue
-
-        if AuthoringPrimitive.HEADING_H1 not in primitives:
-            component_scores["structure"] -= 12
-            issues.append(
-                QualityIssue(
-                    category="structure",
-                    severity="medium",
-                    file=str(file_path),
-                    detail="Missing level-1 heading.",
-                    suggestion="Add a single H1 heading near the top of the file.",
-                )
-            )
-            suggestions.add("Ensure each page has one clear H1 heading.")
-
-        if not frontmatter:
-            component_scores["frontmatter"] -= 20
-            issues.append(
-                QualityIssue(
-                    category="frontmatter",
-                    severity="high",
-                    file=str(file_path),
-                    detail="Missing YAML frontmatter block.",
-                    suggestion="Add frontmatter with title and description metadata.",
-                )
-            )
-            suggestions.add("Add frontmatter to all pages for navigation and metadata consistency.")
-        else:
-            missing_keys = [key for key in DEFAULT_FRONTMATTER_KEYS if key not in frontmatter]
-            if missing_keys:
-                component_scores["frontmatter"] -= 8 * len(missing_keys)
-                issues.append(
-                    QualityIssue(
-                        category="frontmatter",
-                        severity="medium",
-                        file=str(file_path),
-                        detail=f"Missing frontmatter keys: {', '.join(missing_keys)}.",
-                        suggestion="Provide title and description keys in frontmatter.",
-                    )
-                )
-                suggestions.add("Populate required frontmatter keys (title, description).")
-
-        if len(primitives) < MIN_PRIMITIVE_VARIETY:
-            component_scores["primitive-usage"] -= 10
-            issues.append(
-                QualityIssue(
-                    category="primitive-usage",
-                    severity="medium",
-                    file=str(file_path),
-                    detail="Limited primitive variety detected.",
-                    suggestion="Add a supporting primitive like a link, table, or code fence.",
-                )
-            )
-            suggestions.add(
-                "Use supporting primitives (links, examples, callouts) to improve readability."
-            )
-
-        untyped_fences = _count_untyped_opening_fences(body)
-        if untyped_fences:
-            component_scores["primitive-usage"] -= min(20, 6 * untyped_fences)
-            component_scores["code-hygiene"] -= min(20, 6 * untyped_fences)
-            issues.append(
-                QualityIssue(
-                    category="code-hygiene",
-                    severity="high",
-                    file=str(file_path),
-                    detail=f"{untyped_fences} code fence(s) missing language identifiers.",
-                    suggestion="Annotate each code fence with a language (for example ```bash).",
-                )
-            )
-            suggestions.add(
-                "Always specify code fence languages for syntax highlighting and clarity."
-            )
-
-        todo_hits = len(re.findall(r"\bTODO\b", body))
-        if todo_hits:
-            component_scores["code-hygiene"] -= min(16, 4 * todo_hits)
-            issues.append(
-                QualityIssue(
-                    category="code-hygiene",
-                    severity="low",
-                    file=str(file_path),
-                    detail=f"{todo_hits} TODO placeholder(s) remain in content.",
-                    suggestion="Replace TODO placeholders with concrete instructions or examples.",
-                )
-            )
-            suggestions.add("Replace TODO placeholders before publishing docs.")
-
-        long_lines = sum(1 for line in body.splitlines() if len(line) > MAX_DOC_LINE_LENGTH)
-        if long_lines:
-            # Report the issue but do NOT deduct from the shared component score here.
-            # Long-line impact is captured by the global _compute_code_hygiene ratio
-            # (applied below) so that many files with a few long lines each do not
-            # collectively drive the score to zero through unbounded accumulation.
-            issues.append(
-                QualityIssue(
-                    category="code-hygiene",
-                    severity="low",
-                    file=str(file_path),
-                    detail=f"{long_lines} line(s) exceed 120 characters.",
-                    suggestion="Wrap long lines to improve readability in diffs and editors.",
-                )
-            )
-
-    richness_floor = max(0, 20 - (len(detected_primitives) * 2))
-    component_scores["primitive-usage"] -= richness_floor
-    # Incorporate global code-hygiene ratio (long lines, unlabelled fences)
-    hygiene_ratio = _compute_code_hygiene(docs_path)
-    component_scores["code-hygiene"] = min(
-        component_scores["code-hygiene"],
-        round(hygiene_ratio * 100),
-    )
-    for key, score in component_scores.items():
-        component_scores[key] = _clamp_score(score)
-
-    quality_score = QualityScore(
-        readability=round((component_scores["structure"] + component_scores["code-hygiene"]) / 2),
-        completeness=round(
-            (component_scores["frontmatter"] + component_scores["primitive-usage"]) / 2
-        ),
-        consistency=round(
-            (
-                component_scores["structure"]
-                + component_scores["frontmatter"]
-                + component_scores["code-hygiene"]
-            )
-            / 3
-        ),
-        overall=round(sum(component_scores.values()) / len(component_scores)),
-    )
-
-    best_detection = detect_best_framework(docs_path.parent)
-    return ScoreDocsQualityResponse(
-        status="success" if not issues else "warning",
-        docs_root=request.docs_root,
-        framework=best_detection.framework if best_detection else None,
-        quality_score=quality_score,
-        component_scores=component_scores,
-        detected_primitives=sorted(detected_primitives, key=lambda primitive: primitive.value),
-        issues=issues,
-        suggestions=sorted(suggestions),
-    )
+    """Score docs quality across structure, frontmatter, primitive usage, and hygiene."""
+    return score_docs_quality_impl(docs_root=docs_root)
 
 
 def _append_nav_entry(mkdocs_path: Path, title: str, nav_path: str) -> bool:

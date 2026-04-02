@@ -162,6 +162,33 @@ def test_init_project_writes_hardened_shell_script_content(tmp_path, monkeypatch
     assert "$ErrorActionPreference = 'Stop'" in powershell_body
 
 
+def test_init_project_honors_shell_targets(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr("mcp_zen_of_docs.generators._execute_default_script", lambda **_: None)
+    payload = InitProjectResponse.model_validate(
+        init_project(
+            project_root=tmp_path,
+            shell_targets=[generators_module.ShellScriptType.BASH],
+        )
+    )
+
+    assert payload.status == "success"
+    assert [metadata.shell for metadata in payload.shell_scripts] == [
+        generators_module.ShellScriptType.BASH
+    ]
+    assert (tmp_path / ".mcp-zen-of-docs" / "init" / "init.bash.sh").exists()
+    assert not (tmp_path / ".mcp-zen-of-docs" / "init" / "init.zsh.sh").exists()
+    assert not (tmp_path / ".mcp-zen-of-docs" / "init" / "init.powershell.ps1").exists()
+
+    status = CheckInitStatusResponse.model_validate(
+        check_init_status(
+            project_root=tmp_path,
+            shell_targets=[generators_module.ShellScriptType.BASH],
+        )
+    )
+    assert status.status == "success"
+    assert status.missing_artifacts == []
+
+
 def test_check_init_status_reports_missing_artifacts(tmp_path) -> None:
     payload = CheckInitStatusResponse.model_validate(check_init_status(project_root=tmp_path))
     assert payload.status == "warning"
@@ -538,6 +565,27 @@ def test_generate_doc_boilerplate_renders_template_contents(tmp_path, monkeypatc
         assert (tmp_path / template.relative_path).read_text(encoding="utf-8") == template.content
 
 
+def test_generate_doc_boilerplate_renders_deployment_urls(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr("mcp_zen_of_docs.generators._execute_default_script", lambda **_: None)
+    InitProjectResponse.model_validate(init_project(project_root=tmp_path))
+
+    payload = GatedBoilerplateGenerationResponse.model_validate(
+        generate_doc_boilerplate(
+            project_root=tmp_path,
+            gate_confirmed=True,
+            dev_url="https://dev.example.test",
+            staging_url="https://staging.example.test",
+            production_url="https://example.test",
+        )
+    )
+
+    assert payload.status == "success"
+    deployment_doc = (tmp_path / "docs" / "deployment.md").read_text(encoding="utf-8")
+    assert "https://dev.example.test" in deployment_doc
+    assert "https://staging.example.test" in deployment_doc
+    assert "https://example.test" in deployment_doc
+
+
 def test_iter_doc_boilerplate_templates_returns_typed_registry() -> None:
     templates = iter_doc_boilerplate_templates()
     assert len(templates) == 10
@@ -554,6 +602,20 @@ def test_iter_doc_boilerplate_templates_returns_typed_registry() -> None:
         BoilerplateTemplateId.DOCS_DEPLOYMENT,
     }
     assert len({template.relative_path for template in templates}) == len(templates)
+
+    customized_templates = iter_doc_boilerplate_templates(
+        dev_url="https://dev.example.test",
+        staging_url="https://staging.example.test",
+        production_url="https://example.test",
+    )
+    deployment_template = next(
+        template
+        for template in customized_templates
+        if template.template_id is BoilerplateTemplateId.DOCS_DEPLOYMENT
+    )
+    assert "https://dev.example.test" in deployment_template.content
+    assert "https://staging.example.test" in deployment_template.content
+    assert "https://example.test" in deployment_template.content
 
 
 def test_generate_doc_boilerplate_uses_shell_target_filtering(tmp_path, monkeypatch) -> None:
@@ -1394,6 +1456,7 @@ def test_init_project_overwrite_restores_original_content_on_mid_write_failure(
 
     from mcp_zen_of_docs.generators import init_project
     from mcp_zen_of_docs.models import InitProjectResponse
+
     # First init succeeds - creates all artifacts.
     monkeypatch.setattr(gen_mod, "_execute_default_script", lambda **_: None)
     first = InitProjectResponse.model_validate(init_project(project_root=str(tmp_path)))
@@ -1511,6 +1574,7 @@ def test_generate_doc_boilerplate_overwrite_restores_original_content_on_failure
     from mcp_zen_of_docs.generators import init_project
     from mcp_zen_of_docs.models import BoilerplateGenerationErrorCode
     from mcp_zen_of_docs.models import GatedBoilerplateGenerationResponse
+
     # Initialise the project so the gate passes.
     monkeypatch.setattr(gen_mod, "_execute_default_script", lambda **_: None)
     init_project(project_root=str(tmp_path))

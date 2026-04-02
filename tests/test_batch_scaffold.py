@@ -9,7 +9,7 @@ import pytest
 from mcp_zen_of_docs.models import BatchScaffoldRequest
 from mcp_zen_of_docs.models import BatchScaffoldResponse
 from mcp_zen_of_docs.models import ScaffoldDocRequest
-from mcp_zen_of_docs.server import batch_scaffold_docs as server_batch
+from mcp_zen_of_docs.server.app import batch_scaffold_docs as server_batch
 from mcp_zen_of_docs.validators import batch_scaffold_docs
 
 

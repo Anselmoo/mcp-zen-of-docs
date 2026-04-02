@@ -1,6 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="prompts-title">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"
+     role="img" aria-labelledby="prompts-title">
   <title id="prompts-title">Prompts tool icon</title>
-  <rect width="64" height="64" rx="12" fill="#f2effb" />
-  <path d="M14 18H50C52.2 18 54 19.8 54 22V38C54 40.2 52.2 42 50 42H34L24 50V42H14C11.8 42 10 40.2 10 38V22C10 19.8 11.8 18 14 18Z" fill="#c9b3ff" opacity="0.9" />
-  <path d="M20 28H44M20 34H36" fill="none" stroke="#2b2044" stroke-width="2.5" stroke-linecap="round" />
+  <defs>
+    <filter id="iconShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#17332e" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#f7fbf8" filter="url(#iconShadow)"/>
+  <rect width="64" height="64" rx="12" fill="none" stroke="#b8ddd0" stroke-width="1.5"/>
+  <!-- Chat bubble (white card with chapter jade border) -->
+  <path d="M10 16 H54 C56.2 16 58 17.8 58 20 V38 C58 40.2 56.2 42 54 42 H36 L26 52 V42 H10 C7.8 42 6 40.2 6 38 V20 C6 17.8 7.8 16 10 16 Z"
+        fill="#ffffff" stroke="#9fd0bf" stroke-width="2"/>
+  <!-- Text lines (dark jade + mint tertiary) -->
+  <line x1="14" y1="27" x2="50" y2="27" stroke="#0b7a5c" stroke-width="2" stroke-linecap="round"/>
+  <line x1="14" y1="34" x2="38" y2="34" stroke="#3fd9a8" stroke-width="2"
+        stroke-linecap="round" opacity="0.7"/>
 </svg>

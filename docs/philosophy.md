@@ -18,6 +18,10 @@ Ten principles guide every tool, every default, and every generated page.
 
 ## The Zen of Documentation
 
+<figure class="chapter-banner">
+    <img src="../assets/illustration-zen-principles.svg" alt="A zen-garden path of principles set among mountains, mist, and forest." />
+</figure>
+
 **1. Clarity over cleverness.**
 If a reader has to decode the structure, the structure is already failing.
 

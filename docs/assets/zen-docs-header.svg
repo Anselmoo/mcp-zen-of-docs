@@ -1,166 +1,177 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="420" viewBox="0 0 1440 420" role="img" aria-label="mcp-zen-of-docs — Universal Documentation Quality MCP Server">
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="420" viewBox="0 0 1440 420"
+     role="img" aria-label="mcp-zen-of-docs — Universal Documentation Quality MCP Server">
+  <title>mcp-zen-of-docs site header</title>
+  <desc>Wide site header banner. Jade-and-parchment sky, layered mountain ridges, pine silhouettes at the edges, mist bands, foreground stones, and a floating white panel bearing the project name — the same visual language as the chapter illustrations.</desc>
   <defs>
-    <!-- Dark canvas base -->
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#131720"/>
-      <stop offset="50%" style="stop-color:#1a2030"/>
-      <stop offset="100%" style="stop-color:#222843"/>
+    <!-- Canonical chapter palette — IDs prefixed hdr to avoid inline-SVG ID clashes -->
+    <linearGradient id="hdrSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#edf8f4"/>
+      <stop offset="58%"  stop-color="#f7fbf8"/>
+      <stop offset="100%" stop-color="#faf6ee"/>
     </linearGradient>
-    <!-- Title gradient: teal → violet -->
-    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#72e8c4"/>
-      <stop offset="40%" style="stop-color:#0ea27a"/>
-      <stop offset="100%" style="stop-color:#72e8c4"/>
+    <linearGradient id="hdrRidgeFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#d5ebe3"/>
+      <stop offset="100%" stop-color="#bfddd1"/>
     </linearGradient>
-    <!-- Teal glow left -->
-    <radialGradient id="glowLeft" cx="25%" cy="50%" r="50%">
-      <stop offset="0%" style="stop-color:#0ea27a;stop-opacity:0.10"/>
-      <stop offset="100%" style="stop-color:#0ea27a;stop-opacity:0"/>
-    </radialGradient>
-    <!-- Violet glow right -->
-    <radialGradient id="glowRight" cx="75%" cy="50%" r="50%">
-      <stop offset="0%" style="stop-color:#3fc99d;stop-opacity:0.10"/>
-      <stop offset="100%" style="stop-color:#3fc99d;stop-opacity:0"/>
-    </radialGradient>
-    <!-- Node glow filter -->
-    <filter id="nodeGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <!-- Text glow -->
-    <filter id="textGlow" x="-5%" y="-20%" width="110%" height="140%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <linearGradient id="hdrRidgeMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#b7dbcd"/>
+      <stop offset="100%" stop-color="#8fc7b5"/>
+    </linearGradient>
+    <linearGradient id="hdrRidgeNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#31584d"/>
+      <stop offset="100%" stop-color="#17332e"/>
+    </linearGradient>
+    <linearGradient id="hdrMist" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="18%"  stop-color="#f5fbf8" stop-opacity="0.68"/>
+      <stop offset="54%"  stop-color="#edf8f4" stop-opacity="0.80"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="hdrShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#17332e" flood-opacity="0.12"/>
     </filter>
   </defs>
 
-  <!-- Background -->
-  <rect width="1440" height="420" fill="url(#bgGrad)"/>
-  <!-- Ambient glows -->
-  <rect width="1440" height="420" fill="url(#glowLeft)"/>
-  <rect width="1440" height="420" fill="url(#glowRight)"/>
+  <!-- Sky canvas — full bleed, no rx (banner convention) -->
+  <rect width="1440" height="420" fill="url(#hdrSky)"/>
 
-  <!-- Grid lines — horizontal -->
-  <g stroke="#0ea27a" stroke-opacity="0.04" stroke-width="1">
-    <line x1="0" y1="60" x2="1440" y2="60"/>
-    <line x1="0" y1="120" x2="1440" y2="120"/>
-    <line x1="0" y1="180" x2="1440" y2="180"/>
-    <line x1="0" y1="240" x2="1440" y2="240"/>
-    <line x1="0" y1="300" x2="1440" y2="300"/>
-    <line x1="0" y1="360" x2="1440" y2="360"/>
-  </g>
-  <!-- Grid lines — vertical -->
-  <g stroke="#0ea27a" stroke-opacity="0.04" stroke-width="1">
-    <line x1="120" y1="0" x2="120" y2="420"/>
-    <line x1="240" y1="0" x2="240" y2="420"/>
-    <line x1="360" y1="0" x2="360" y2="420"/>
-    <line x1="480" y1="0" x2="480" y2="420"/>
-    <line x1="600" y1="0" x2="600" y2="420"/>
-    <line x1="720" y1="0" x2="720" y2="420"/>
-    <line x1="840" y1="0" x2="840" y2="420"/>
-    <line x1="960" y1="0" x2="960" y2="420"/>
-    <line x1="1080" y1="0" x2="1080" y2="420"/>
-    <line x1="1200" y1="0" x2="1200" y2="420"/>
-    <line x1="1320" y1="0" x2="1320" y2="420"/>
-  </g>
+  <!-- Moon disc + halo, upper-left — balances sun disc upper-right -->
+  <circle cx="216" cy="106" r="64" fill="#cbe8dc" opacity="0.26"/>
+  <circle cx="216" cy="106" r="38" fill="#e4f5ed" opacity="0.88"/>
 
-  <!-- Circuit-style nodes at grid intersections — teal -->
-  <g fill="#0ea27a" filter="url(#nodeGlow)">
-    <circle cx="120" cy="120" r="3" opacity="0.6"/>
-    <circle cx="360" cy="60" r="2" opacity="0.4"/>
-    <circle cx="240" cy="240" r="3" opacity="0.5"/>
-    <circle cx="480" cy="180" r="2.5" opacity="0.5"/>
-    <circle cx="600" cy="300" r="2" opacity="0.3"/>
-    <circle cx="1320" cy="120" r="3" opacity="0.6"/>
-    <circle cx="1200" cy="60" r="2" opacity="0.4"/>
-    <circle cx="1080" cy="240" r="3" opacity="0.5"/>
-    <circle cx="960" cy="180" r="2.5" opacity="0.5"/>
-    <circle cx="840" cy="300" r="2" opacity="0.3"/>
-  </g>
-  <!-- Violet accent nodes -->
-  <g fill="#3fc99d" filter="url(#nodeGlow)">
-    <circle cx="360" cy="300" r="2.5" opacity="0.5"/>
-    <circle cx="120" cy="360" r="2" opacity="0.4"/>
-    <circle cx="1080" cy="360" r="2.5" opacity="0.5"/>
-    <circle cx="1320" cy="300" r="2" opacity="0.4"/>
-    <circle cx="720" cy="60" r="3" opacity="0.4"/>
-  </g>
+  <!-- Sun disc + halo, upper-right (canonical chapter motif) -->
+  <circle cx="1222" cy="104" r="62" fill="#cbe8dc" opacity="0.30"/>
+  <circle cx="1222" cy="104" r="36" fill="#e4f5ed" opacity="0.94"/>
 
-  <!-- Connecting circuit lines left cluster -->
-  <g stroke="#0ea27a" stroke-opacity="0.15" stroke-width="1" fill="none">
-    <path d="M120 120 L240 120 L240 240"/>
-    <path d="M360 60 L480 60 L480 180"/>
-    <path d="M240 240 L360 240 L360 300"/>
+  <!-- Three ridge bands — same anchor geometry as original header -->
+  <path d="M0 281 C159 249,327 249,507 281 C705 315,903 315,1104 281 C1239 257,1353 254,1440 265 L1440 420 L0 420 Z"
+        fill="url(#hdrRidgeFar)"/>
+  <path d="M0 312 C198 281,369 283,567 317 C765 351,951 351,1140 312 C1266 286,1368 288,1440 296 L1440 420 L0 420 Z"
+        fill="url(#hdrRidgeMid)" opacity="0.92"/>
+  <path d="M0 357 C207 330,411 333,609 367 C810 401,1020 398,1440 349 L1440 420 L0 420 Z"
+        fill="url(#hdrRidgeNear)"/>
+
+  <!-- Mist strokes over ridges (two-band convention from all chapter illustrations) -->
+  <path d="M78 296 C288 278,468 281,648 309 C828 337,1050 335,1314 291"
+        fill="none" stroke="url(#hdrMist)" stroke-width="22" stroke-linecap="round"/>
+  <path d="M123 338 C330 325,540 331,744 359 C963 388,1152 385,1344 349"
+        fill="none" stroke="url(#hdrMist)" stroke-width="18" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- Pine silhouettes — left cluster, rooted on near-ridge.
+       Each pine: 3 stacked triangles (narrowing upward) + trunk rect.
+       Fill: canonical near-ridge darks #17332e / #1d3d35 / #234239. -->
+
+  <!-- L1 tall, cx=52 -->
+  <g fill="#17332e" opacity="0.92">
+    <polygon points="36,358 52,324 68,358"/>
+    <polygon points="40,340 52,306 64,340"/>
+    <polygon points="45,322 52,292 59,322"/>
+    <rect x="50" y="358" width="4" height="12" rx="1"/>
   </g>
-  <!-- Connecting circuit lines right cluster -->
-  <g stroke="#0ea27a" stroke-opacity="0.15" stroke-width="1" fill="none">
-    <path d="M1320 120 L1200 120 L1200 60"/>
-    <path d="M1080 240 L960 240 L960 180"/>
-    <path d="M1200 240 L1080 240"/>
+  <!-- L2 medium, cx=88 -->
+  <g fill="#1d3d35" opacity="0.82">
+    <polygon points="74,364 88,334 102,364"/>
+    <polygon points="77,348 88,318 99,348"/>
+    <polygon points="82,333 88,307 94,333"/>
+    <rect x="86" y="364" width="4" height="10" rx="1"/>
   </g>
-  <!-- Violet connection -->
-  <g stroke="#3fc99d" stroke-opacity="0.12" stroke-width="1" fill="none">
-    <path d="M360 300 L360 360 L120 360"/>
-    <path d="M1080 360 L1320 360 L1320 300"/>
+  <!-- L3 small, cx=22 -->
+  <g fill="#17332e" opacity="0.66">
+    <polygon points="12,368 22,345 32,368"/>
+    <polygon points="15,354 22,331 29,354"/>
+    <rect x="20" y="368" width="3" height="8" rx="1"/>
+  </g>
+  <!-- L4 background-small, cx=118 -->
+  <g fill="#234239" opacity="0.50">
+    <polygon points="110,367 118,348 126,367"/>
+    <polygon points="112,355 118,336 124,355"/>
+    <rect x="116" y="367" width="3" height="7" rx="1"/>
   </g>
 
-  <!-- Top border accent line -->
-  <line x1="0" y1="0" x2="1440" y2="0" stroke="#0ea27a" stroke-opacity="0.4" stroke-width="2"/>
-  <!-- Bottom border accent line -->
-  <line x1="0" y1="418" x2="1440" y2="418" stroke="#0ea27a" stroke-opacity="0.2" stroke-width="1"/>
+  <!-- Pine silhouettes — right cluster -->
 
-  <!-- Version / status badge -->
-  <rect x="664" y="100" width="112" height="24" rx="12" fill="#0ea27a" fill-opacity="0.12" stroke="#0ea27a" stroke-opacity="0.4" stroke-width="1"/>
-  <text x="720" y="116" text-anchor="middle" dominant-baseline="middle"
-    font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="11" font-weight="600"
-    fill="#0ea27a" letter-spacing="0.08em">v0.1 · MCP</text>
-
-  <!-- Main title — gradient fill with glow -->
-  <text x="720" y="200" text-anchor="middle" dominant-baseline="middle"
-    font-family="'Inter', system-ui, -apple-system, sans-serif"
-    font-size="76" font-weight="800" letter-spacing="-0.03em"
-    fill="url(#titleGrad)" filter="url(#textGlow)">mcp-zen-of-docs</text>
-
-  <!-- Subtitle -->
-  <text x="720" y="258" text-anchor="middle" dominant-baseline="middle"
-    font-family="'Inter', system-ui, sans-serif" font-size="20" font-weight="400"
-    fill="#c9d1d9" opacity="0.8" letter-spacing="0.02em">Universal Documentation Quality · Write less. Explain more. Validate always.</text>
-
-  <!-- Stats strip separator -->
-  <line x1="400" y1="300" x2="1040" y2="300" stroke="#0ea27a" stroke-opacity="0.15" stroke-width="1"/>
-
-  <!-- Stats strip -->
-  <g font-family="'Inter', system-ui, sans-serif" text-anchor="middle">
-    <!-- 4 Frameworks -->
-    <text x="500" y="330" font-size="26" font-weight="800" fill="#0ea27a" dominant-baseline="middle">4</text>
-    <text x="500" y="355" font-size="11" font-weight="500" fill="#8b949e" dominant-baseline="middle" letter-spacing="0.08em" text-transform="uppercase">FRAMEWORKS</text>
-    <!-- separator dot -->
-    <circle cx="580" cy="340" r="2" fill="#0ea27a" opacity="0.3"/>
-    <!-- 16 Primitives -->
-    <text x="660" y="330" font-size="26" font-weight="800" fill="#0ea27a" dominant-baseline="middle">16</text>
-    <text x="660" y="355" font-size="11" font-weight="500" fill="#8b949e" dominant-baseline="middle" letter-spacing="0.08em">PRIMITIVES</text>
-    <!-- separator dot -->
-    <circle cx="740" cy="340" r="2" fill="#3fc99d" opacity="0.4"/>
-    <!-- 530+ Tests -->
-    <text x="820" y="330" font-size="26" font-weight="800" fill="#72e8c4" dominant-baseline="middle">530+</text>
-    <text x="820" y="355" font-size="11" font-weight="500" fill="#8b949e" dominant-baseline="middle" letter-spacing="0.08em">TESTS</text>
-    <!-- separator dot -->
-    <circle cx="900" cy="340" r="2" fill="#0ea27a" opacity="0.3"/>
-    <!-- MCP Protocol -->
-    <text x="980" y="330" font-size="26" font-weight="800" fill="#72e8c4" dominant-baseline="middle">MCP</text>
-    <text x="980" y="355" font-size="11" font-weight="500" fill="#8b949e" dominant-baseline="middle" letter-spacing="0.08em">PROTOCOL</text>
+  <!-- R1 tall, cx=1388 -->
+  <g fill="#17332e" opacity="0.92">
+    <polygon points="1372,354 1388,320 1404,354"/>
+    <polygon points="1376,336 1388,302 1400,336"/>
+    <polygon points="1381,318 1388,288 1395,318"/>
+    <rect x="1386" y="354" width="4" height="12" rx="1"/>
+  </g>
+  <!-- R2 medium, cx=1352 -->
+  <g fill="#1d3d35" opacity="0.82">
+    <polygon points="1338,360 1352,330 1366,360"/>
+    <polygon points="1341,345 1352,315 1363,345"/>
+    <polygon points="1346,330 1352,304 1358,330"/>
+    <rect x="1350" y="360" width="4" height="10" rx="1"/>
+  </g>
+  <!-- R3 small, cx=1418 -->
+  <g fill="#17332e" opacity="0.66">
+    <polygon points="1408,364 1418,341 1428,364"/>
+    <polygon points="1411,350 1418,327 1425,350"/>
+    <rect x="1416" y="364" width="3" height="8" rx="1"/>
+  </g>
+  <!-- R4 background-small, cx=1322 -->
+  <g fill="#234239" opacity="0.50">
+    <polygon points="1314,366 1322,347 1330,366"/>
+    <polygon points="1316,354 1322,335 1328,354"/>
+    <rect x="1320" y="366" width="3" height="7" rx="1"/>
   </g>
 
-  <!-- Corner decoration — bottom left -->
-  <g stroke="#0ea27a" stroke-opacity="0.2" fill="none" stroke-width="1">
-    <rect x="20" y="390" width="60" height="20" rx="3"/>
-    <text x="50" y="404" text-anchor="middle" dominant-baseline="middle"
-      font-family="monospace" font-size="9" fill="#0ea27a" opacity="0.5">detect→act</text>
-  </g>
-  <!-- Corner decoration — bottom right -->
-  <g stroke="#3fc99d" stroke-opacity="0.2" fill="none" stroke-width="1">
-    <rect x="1360" y="390" width="60" height="20" rx="3"/>
-    <text x="1390" y="404" text-anchor="middle" dominant-baseline="middle"
-      font-family="monospace" font-size="9" fill="#72e8c4" opacity="0.5">profile</text>
+  <!-- Foreground stones on near ridge — karesansui accent,
+       same dark-jade ellipse idiom as philosophy-garden -->
+  <ellipse cx="168" cy="384" rx="30" ry="15" fill="#1c3b31" opacity="0.80"/>
+  <ellipse cx="230" cy="395" rx="18" ry="9"  fill="#234239" opacity="0.70"/>
+  <ellipse cx="1272" cy="382" rx="27" ry="14" fill="#1c3b31" opacity="0.78"/>
+  <ellipse cx="1212" cy="393" rx="17" ry="8"  fill="#234239" opacity="0.68"/>
+
+  <!-- Floating content panel — feDropShadow filter, rx=32 per chapter content-group convention -->
+  <g filter="url(#hdrShadow)">
+
+    <rect x="180" y="42" width="1080" height="248" rx="32"
+          fill="#ffffff" stroke="#b8ddd0" stroke-width="4"/>
+
+    <!-- Caption — small monospace jade label, same convention as chapter section captions -->
+    <text x="720" y="76" text-anchor="middle" dominant-baseline="middle"
+          font-family="'JetBrains Mono','Fira Code',monospace"
+          font-size="11" font-weight="600" fill="#0b7a5c" letter-spacing="0.10em" opacity="0.72">ZEN OF DOCUMENTATION</text>
+
+    <!-- Brand title — dark forest ink, weight/tracking match original -->
+    <text x="720" y="158" text-anchor="middle" dominant-baseline="middle"
+          font-family="system-ui,-apple-system,BlinkMacSystemFont,sans-serif"
+          font-size="70" font-weight="800" letter-spacing="-0.03em" fill="#17332e">mcp-zen-of-docs</text>
+
+    <!-- Subtitle — unchanged wording, mid-jade, same style as original -->
+    <text x="720" y="206" text-anchor="middle" dominant-baseline="middle"
+          font-family="system-ui,-apple-system,sans-serif"
+          font-size="17" font-weight="400" fill="#31584d" letter-spacing="0.01em">Universal Documentation Quality · Write less. Explain more. Validate always.</text>
+
+    <!-- Separator — chapter mist-border convention in miniature -->
+    <line x1="360" y1="238" x2="1080" y2="238" stroke="#b8ddd0" stroke-width="1.5"/>
+
+    <!-- Three-stone motif (ten-chi-jin: heaven · earth · humanity).
+         Replaces all version/stats chips with a timeless karesansui arrangement.
+         Mirrors the philosophy-garden ellipse trio scaled for the panel footer zone.
+         Outer ring: pale jade; inner filled dot: jade accent — identical node idiom
+         to api-constellation and quickstart-path milestone circles. -->
+    <ellipse cx="606" cy="261" rx="24" ry="11" fill="#edf8f4" stroke="#9fd0bf" stroke-width="2"/>
+    <ellipse cx="606" cy="261" rx="7"  ry="4"  fill="#9fd0bf" opacity="0.60"/>
+
+    <ellipse cx="720" cy="257" rx="32" ry="14" fill="#edf8f4" stroke="#0ea27a" stroke-width="2.5"/>
+    <ellipse cx="720" cy="257" rx="9"  ry="5"  fill="#0ea27a" opacity="0.55"/>
+
+    <ellipse cx="834" cy="261" rx="24" ry="11" fill="#edf8f4" stroke="#9fd0bf" stroke-width="2"/>
+    <ellipse cx="834" cy="261" rx="7"  ry="4"  fill="#9fd0bf" opacity="0.60"/>
+
+    <!-- Rake-line pairs flanking the stone trio — suggest raked sand,
+         echoing the mist-stroke grammar at panel scale -->
+    <path d="M398 253 C452 250,508 251,558 254"
+          fill="none" stroke="#cbe8dc" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+    <path d="M398 263 C452 260,508 261,558 264"
+          fill="none" stroke="#cbe8dc" stroke-width="2" stroke-linecap="round" opacity="0.44"/>
+    <path d="M882 254 C932 251,988 250,1042 253"
+          fill="none" stroke="#cbe8dc" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+    <path d="M882 264 C932 261,988 260,1042 263"
+          fill="none" stroke="#cbe8dc" stroke-width="2" stroke-linecap="round" opacity="0.44"/>
+
   </g>
 </svg>

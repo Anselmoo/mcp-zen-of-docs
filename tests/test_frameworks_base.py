@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+from mcp_zen_of_docs.frameworks import detect_best_framework
 from mcp_zen_of_docs.frameworks import detect_frameworks
 from mcp_zen_of_docs.frameworks import register_builtin_profiles
 from mcp_zen_of_docs.frameworks.base import AuthoringProfile
@@ -66,6 +67,12 @@ class _DummyProfile(AuthoringProfile):
         )
 
 
+class _CustomZensicalProfile(_DummyProfile):
+    @property
+    def framework(self) -> FrameworkName:
+        return FrameworkName.ZENSICAL
+
+
 class _IncompleteProfile(AuthoringProfile):
     pass
 
@@ -112,6 +119,48 @@ def test_register_builtin_profiles_registers_expected_frameworks() -> None:
         FrameworkName.VITEPRESS,
         FrameworkName.STARLIGHT,
     }
+
+
+def test_detect_frameworks_lazily_registers_builtin_profiles(tmp_path: Path) -> None:
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "index.md").write_text("# Home\n")
+
+    assert iter_profiles() == ()
+
+    detect_frameworks(tmp_path)
+
+    frameworks = {profile.framework for profile in iter_profiles()}
+    assert frameworks == {
+        FrameworkName.ZENSICAL,
+        FrameworkName.DOCUSAURUS,
+        FrameworkName.VITEPRESS,
+        FrameworkName.STARLIGHT,
+    }
+
+
+def test_detect_frameworks_preserves_custom_profile_registration(tmp_path: Path) -> None:
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "index.md").write_text("# Home\n")
+    custom = _CustomZensicalProfile()
+    register_profile(custom)
+
+    results = detect_frameworks(tmp_path)
+
+    assert get_profile(FrameworkName.ZENSICAL) is custom
+    assert any(
+        result.framework is FrameworkName.ZENSICAL and "custom" not in result.missing_signals
+        for result in results
+    )
+
+
+def test_detect_best_framework_uses_priority_for_equal_confidence(tmp_path: Path) -> None:
+    register_profile(_DummyProfile())
+    register_profile(_CustomZensicalProfile())
+
+    result = detect_best_framework(tmp_path)
+
+    assert result is not None
+    assert result.framework is FrameworkName.ZENSICAL
 
 
 def test_builtin_profiles_expose_expected_primitive_support() -> None:

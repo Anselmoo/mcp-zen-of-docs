@@ -17,9 +17,9 @@ from mcp_zen_of_docs.models import PlanDocsResponse
 from mcp_zen_of_docs.models import ScaffoldDocResponse
 from mcp_zen_of_docs.models import ScoreDocsQualityResponse
 from mcp_zen_of_docs.models import ValidateDocsResponse
-from mcp_zen_of_docs.server import detect_docs_context
-from mcp_zen_of_docs.server import scaffold_doc
-from mcp_zen_of_docs.server import validate_docs
+from mcp_zen_of_docs.server.app import detect_docs_context
+from mcp_zen_of_docs.server.app import scaffold_doc
+from mcp_zen_of_docs.server.app import validate_docs
 
 
 if TYPE_CHECKING:

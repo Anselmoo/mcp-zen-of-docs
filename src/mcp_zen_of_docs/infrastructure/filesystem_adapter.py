@@ -403,9 +403,11 @@ def required_init_artifacts(
     project_root: Path,
     *,
     deploy_provider: DocsDeployProvider = DocsDeployProvider.GITHUB_PAGES,
+    shell_targets: list[ShellScriptType] | None = None,
 ) -> list[Path]:
     """Return required shell scripts and state file paths for init completion."""
-    scripts = [shell_script_path(project_root, shell) for shell in ShellScriptType]
+    selected_shells = shell_targets or list(ShellScriptType)
+    scripts = [shell_script_path(project_root, shell) for shell in selected_shells]
     return [
         *scripts,
         *required_copilot_artifacts(project_root),

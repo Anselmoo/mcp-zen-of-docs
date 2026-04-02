@@ -1,7 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="analysis-title">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"
+     role="img" aria-labelledby="analysis-title">
   <title id="analysis-title">Analysis tool icon</title>
-  <rect width="64" height="64" rx="12" fill="#f2effb" />
-  <circle cx="29" cy="29" r="15" fill="none" stroke="#989cff" stroke-width="4" />
-  <path d="M40 40L47 47" fill="none" stroke="#2b2044" stroke-width="4" stroke-linecap="round" />
-  <path d="M23 34V28M29 34V24M35 34V30" fill="none" stroke="#2b2044" stroke-width="2.5" stroke-linecap="round" />
+  <defs>
+    <filter id="iconShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#17332e" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#f7fbf8" filter="url(#iconShadow)"/>
+  <rect width="64" height="64" rx="12" fill="none" stroke="#b8ddd0" stroke-width="1.5"/>
+  <!-- Magnifier lens (white node ring, jade border — api-constellation node) -->
+  <circle cx="27" cy="27" r="14" fill="#ffffff" stroke="#0ea27a" stroke-width="2.5"/>
+  <!-- Bar chart inside lens (dark jade bars, like chapter content fills) -->
+  <line x1="22" y1="33" x2="22" y2="26" stroke="#0b7a5c" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="27" y1="33" x2="27" y2="21" stroke="#0b7a5c" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="32" y1="33" x2="32" y2="28" stroke="#3fd9a8" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Handle -->
+  <line x1="37" y1="37" x2="45" y2="45" stroke="#0ea27a" stroke-width="3.5" stroke-linecap="round"/>
 </svg>

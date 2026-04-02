@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from enum import StrEnum
 from pathlib import Path
 from typing import Annotated
@@ -68,6 +70,82 @@ class ReadinessLevel(StrEnum):
     NONE = "none"
     PARTIAL = "partial"
     FULL = "full"
+
+
+class DetectMode(StrEnum):
+    """Routing modes for the composite detect tool."""
+
+    CONTEXT = "context"
+    READINESS = "readiness"
+    FULL = "full"
+
+
+class ProfileMode(StrEnum):
+    """Routing modes for the composite profile tool."""
+
+    SHOW = "show"
+    RESOLVE = "resolve"
+    TRANSLATE = "translate"
+
+
+class ScaffoldMode(StrEnum):
+    """Routing modes for the composite scaffold tool."""
+
+    WRITE = "write"
+    SINGLE = "single"
+    BATCH = "batch"
+    ENRICH = "enrich"
+
+
+class ValidateMode(StrEnum):
+    """Routing modes for the composite validate tool."""
+
+    ALL = "all"
+    SCORE = "score"
+    FRONTMATTER = "frontmatter"
+    NAV = "nav"
+
+
+class GenerateMode(StrEnum):
+    """Routing modes for the composite generate tool."""
+
+    VISUAL = "visual"
+    DIAGRAM = "diagram"
+    RENDER = "render"
+    SVG = "svg"
+    REFERENCE = "reference"
+    CHANGELOG = "changelog"
+
+
+class OnboardMode(StrEnum):
+    """Routing modes for the composite onboard tool."""
+
+    FULL = "full"
+    INIT = "init"
+    PHASE = "phase"
+    PLAN = "plan"
+    INSTALL = "install"
+
+
+class ThemeMode(StrEnum):
+    """Routing modes for the composite theme tool."""
+
+    CSS = "css"
+    EXTENSIONS = "extensions"
+
+
+class CopilotMode(StrEnum):
+    """Routing modes for the composite copilot tool."""
+
+    ARTIFACT = "artifact"
+    CONFIG = "config"
+
+
+class DocstringMode(StrEnum):
+    """Routing modes for the composite docstring tool."""
+
+    AUDIT = "audit"
+    OPTIMIZE = "optimize"
 
 
 class ModelBase(BaseModel):
@@ -1136,6 +1214,26 @@ class EphemeralInstallRequest(ModelBase):
             )
         return v
 
+    @field_validator("copy_artifacts", mode="after")
+    @classmethod
+    def validate_copy_artifacts(cls, values: list[str]) -> list[str]:
+        """Reject artifact patterns that could escape the ephemeral/project roots."""
+        for pattern in values:
+            normalized = pattern.replace("\\", "/")
+            components = [part for part in normalized.split("/") if part not in {"", "."}]
+            is_absolute = normalized.startswith(("/", "~")) or bool(
+                re.match(r"^[A-Za-z]:/", normalized)
+            )
+            if is_absolute or ".." in components:
+                _err_type = "unsafe_copy_artifact_pattern"
+                _err_msg = (
+                    "'{pattern}' is not a safe copy_artifacts pattern. "
+                    "Patterns must be relative to the ephemeral workspace and must not "
+                    "contain parent-directory traversal or absolute paths."
+                )
+                raise PydanticCustomError(_err_type, _err_msg, {"pattern": pattern})
+        return values
+
 
 class EphemeralInstallResponse(ModelBase):
     """Output contract for ephemeral uvx/npx install-in-tmp-and-copy runs."""
@@ -1380,6 +1478,14 @@ class InitProjectRequest(ModelBase):
         default=DocsDeployProvider.GITHUB_PAGES,
         description="Docs deploy provider used for generated CI/CD pipeline artifacts.",
     )
+    shell_targets: list[ShellScriptType] = Field(
+        default_factory=lambda: [
+            ShellScriptType.BASH,
+            ShellScriptType.ZSH,
+            ShellScriptType.POWERSHELL,
+        ],
+        description="Shell script targets to generate during initialization.",
+    )
 
 
 class InitProjectResponse(ModelBase):
@@ -1487,6 +1593,18 @@ class GatedBoilerplateGenerationRequest(ModelBase):
             ShellScriptType.POWERSHELL,
         ],
         description="Shell script targets to include during gated boilerplate generation.",
+    )
+    dev_url: AnyHttpUrl | None = Field(
+        default=None,
+        description="Deployment URL for the development environment when available.",
+    )
+    staging_url: AnyHttpUrl | None = Field(
+        default=None,
+        description="Deployment URL for the staging environment when available.",
+    )
+    production_url: AnyHttpUrl | None = Field(
+        default=None,
+        description="Deployment URL for the production environment when available.",
     )
 
 
@@ -2187,6 +2305,25 @@ class DetectProjectReadinessResponse(ModelBase):
     message: str | None = Field(default=None, description="Error or warning details when present.")
 
 
+class DetectResponse(ModelBase):
+    """Output contract for the composite detect tool."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True, frozen=True)
+
+    status: ToolStatus = Field(description="Tool execution status.")
+    tool: str = Field(default="detect", description="Tool identifier.")
+    mode: DetectMode = Field(description="Composite detect mode executed.")
+    context: DetectDocsContextResponse | None = Field(
+        default=None,
+        description="Documentation context payload when context detection is included.",
+    )
+    readiness: DetectProjectReadinessResponse | None = Field(
+        default=None,
+        description="Project readiness payload when readiness analysis is included.",
+    )
+    message: str | None = Field(default=None, description="Error or warning details when present.")
+
+
 class FrameworkAdvantageReference(ModelBase):
     """Reference link supporting one framework advantage claim."""
 
@@ -2533,7 +2670,7 @@ class OnboardProjectRequest(ModelBase):
         default=None, description="Optional output Markdown file path for onboarding skeleton."
     )
     mode: OnboardProjectMode = Field(
-        default=OnboardProjectMode.FULL,
+        default=OnboardProjectMode.SKELETON,
         description="Onboarding workflow mode to execute.",
     )
     include_checklist: bool = Field(
@@ -3828,6 +3965,7 @@ __all__ = [
     "CopilotAgentMode",
     "CopilotArtifactKind",
     "CopilotInitArtifactMetadata",
+    "CopilotMode",
     "CopilotPromptMode",
     "CreateAgentRequest",
     "CreateAgentResponse",
@@ -3845,8 +3983,10 @@ __all__ = [
     "DetectDocsContextResponse",
     "DetectFrameworkRequest",
     "DetectFrameworkResponse",
+    "DetectMode",
     "DetectProjectReadinessRequest",
     "DetectProjectReadinessResponse",
+    "DetectResponse",
     "DeterministicTurnPlan",
     "DeterministicTurnStep",
     "DiagramType",
@@ -3856,6 +3996,7 @@ __all__ = [
     "DocstringAuditRequest",
     "DocstringAuditResponse",
     "DocstringLanguage",
+    "DocstringMode",
     "DocstringOptimizerRequest",
     "DocstringOptimizerResponse",
     "DocstringStyle",
@@ -3889,6 +4030,7 @@ __all__ = [
     "GenerateDiagramResponse",
     "GenerateMcpToolsDocsRequest",
     "GenerateMcpToolsDocsResponse",
+    "GenerateMode",
     "GenerateProjectManifestDocsResponse",
     "GenerateReferenceDocsKind",
     "GenerateReferenceDocsRequest",
@@ -3912,6 +4054,7 @@ __all__ = [
     "ModuleOutputContract",
     "NavIssue",
     "NavIssueKind",
+    "OnboardMode",
     "OnboardProjectMode",
     "OnboardProjectRequest",
     "OnboardProjectResponse",
@@ -3934,6 +4077,7 @@ __all__ = [
     "PrimitiveSupportLookupRequest",
     "PrimitiveSupportLookupResponse",
     "PrimitiveTranslationGuidance",
+    "ProfileMode",
     "PromptFrontmatter",
     "QualityIssue",
     "QualityScore",
@@ -3949,6 +4093,7 @@ __all__ = [
     "RuntimeTrack",
     "ScaffoldDocRequest",
     "ScaffoldDocResponse",
+    "ScaffoldMode",
     "ScoreDocsQualityRequest",
     "ScoreDocsQualityResponse",
     "ShellScriptArtifactMetadata",
@@ -3972,6 +4117,7 @@ __all__ = [
     "SyncNavMode",
     "SyncNavRequest",
     "SyncNavResponse",
+    "ThemeMode",
     "ToolSignature",
     "TranslatePrimitiveSyntaxRequest",
     "TranslatePrimitiveSyntaxResponse",
@@ -3980,6 +4126,7 @@ __all__ = [
     "TurnPlanAction",
     "ValidateDocsRequest",
     "ValidateDocsResponse",
+    "ValidateMode",
     "VisualAssetBackend",
     "VisualAssetBackendMetadata",
     "VisualAssetConversionRequest",

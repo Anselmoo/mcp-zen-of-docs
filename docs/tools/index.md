@@ -63,6 +63,10 @@ mcp-zen-of-docs --human setup --project-root . --mode skeleton
 
 ## MCP tools at a glance
 
+<figure class="chapter-banner">
+    <img src="../assets/illustration-mcp-tools.svg" alt="A mountain-and-forest workflow scene showing the mcp-zen-of-docs tools as a calm journey instead of a dashboard." />
+</figure>
+
 | Tool | What it does | When to use it |
 |------|--------------|----------------|
 | [detect](detect.md) | Identify framework context and readiness | First step in any workflow |

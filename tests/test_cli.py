@@ -13,12 +13,13 @@ from pydantic import BaseModel
 from typer.testing import CliRunner
 
 from mcp_zen_of_docs.__main__ import main as entry_main
-from mcp_zen_of_docs.cli import _format_human_payload
-from mcp_zen_of_docs.cli import app
-from mcp_zen_of_docs.cli import main as cli_main
+from mcp_zen_of_docs.cli.app import _format_human_payload
+from mcp_zen_of_docs.cli.app import app
+from mcp_zen_of_docs.cli.app import main as cli_main
+from mcp_zen_of_docs.cli_presenters import format_human_payload as legacy_format_human_payload
 from mcp_zen_of_docs.models import VisualAssetOperation
-from mcp_zen_of_docs.server import create_copilot_artifact as mcp_create_copilot_artifact
-from mcp_zen_of_docs.server import onboard_project as mcp_onboard_project
+from mcp_zen_of_docs.server.app import create_copilot_artifact as mcp_create_copilot_artifact
+from mcp_zen_of_docs.server.app import onboard_project as mcp_onboard_project
 
 
 runner = CliRunner()
@@ -73,9 +74,18 @@ def test_cli_exposes_human_first_command_surface() -> None:
         "docstring",
         "story",
     ]:
-        assert (
-            f"│ {hidden_group}" not in help_text
-        ), f"Legacy command '{hidden_group}' leaked into help"
+        assert f"│ {hidden_group}" not in help_text, (
+            f"Legacy command '{hidden_group}' leaked into help"
+        )
+
+
+def test_legacy_cli_presenters_module_reexports_formatter() -> None:
+    class Payload(BaseModel):
+        status: str = "success"
+        tool: str = "demo"
+
+    payload = Payload()
+    assert legacy_format_human_payload(payload) == _format_human_payload(payload)
 
 
 def test_cli_main_no_args_returns_zero_without_traceback(capsys) -> None:
@@ -195,6 +205,42 @@ def test_onboard_project_command_defaults_project_name_like_mcp(tmp_path: Path) 
     assert result.exit_code == 0
     assert payload["tool"] == "onboard_project"
     assert payload["project_name"] == "Project"
+
+
+def test_onboard_project_command_propagates_deployment_urls(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("mcp_zen_of_docs.generators._execute_default_script", lambda **_: None)
+
+    result = runner.invoke(
+        app,
+        [
+            "onboard",
+            "full",
+            "--project-root",
+            str(tmp_path),
+            "--project-name",
+            "Demo",
+            "--gate-confirmed",
+            "--dev-url",
+            "https://dev.example.test",
+            "--staging-url",
+            "https://staging.example.test",
+            "--production-url",
+            "https://example.test",
+        ],
+    )
+
+    payload = json.loads(result.stdout)
+    assert result.exit_code == 0
+    assert payload["tool"] == "onboard_project"
+    assert payload["deployment_urls"]["dev_url"] == "https://dev.example.test/"
+    assert payload["deployment_urls"]["staging_url"] == "https://staging.example.test/"
+    assert payload["deployment_urls"]["production_url"] == "https://example.test/"
+    deployment_doc = (tmp_path / "docs" / "deployment.md").read_text(encoding="utf-8")
+    assert "https://dev.example.test" in deployment_doc
+    assert "https://staging.example.test" in deployment_doc
+    assert "https://example.test" in deployment_doc
 
 
 def test_onboard_full_command_defaults_to_full_mode_not_skeleton(tmp_path: Path) -> None:
@@ -483,7 +529,7 @@ def test_story_human_success_output_prioritizes_final_narrative() -> None:
 
 
 def test_story_human_tty_mode_can_continue_interactively() -> None:
-    with patch("mcp_zen_of_docs.cli._story_human_interactive_mode_enabled", return_value=True):
+    with patch("mcp_zen_of_docs.cli.app._story_human_interactive_mode_enabled", return_value=True):
         result = runner.invoke(
             app,
             ["--human", "story", "--prompt", "A simple story"],
@@ -552,6 +598,7 @@ def test_onboard_human_output_uses_dedicated_presenter(tmp_path: Path) -> None:
     assert "Setup checklist" in result.stdout
     assert "Channel: mcp" not in result.stdout
     assert "Tool: generate_onboarding_skeleton" not in result.stdout
+
 
 def test_onboard_human_output_summarizes_bootstrap_actions(tmp_path: Path) -> None:
     result = runner.invoke(
@@ -661,7 +708,7 @@ def test_validate_without_subcommand_runs_default_read_only_flow() -> None:
         title: str = "Docs look good"
 
     with patch(
-        "mcp_zen_of_docs.cli.validate_docs", return_value=ValidatePayload()
+        "mcp_zen_of_docs.cli.app.validate_docs", return_value=ValidatePayload()
     ) as mock_validate:
         result = runner.invoke(app, ["--json", "validate"])
 
