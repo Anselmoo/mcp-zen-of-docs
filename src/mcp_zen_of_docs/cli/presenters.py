@@ -10,11 +10,11 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ..models import AgentConfigResponse
-from ..models import ComposeDocsStoryResponse
-from ..models import OnboardProjectResponse
-from ..models import StoryGenerationResponse
-from ..models import ValidateDocsResponse
+from mcp_zen_of_docs.models import AgentConfigResponse
+from mcp_zen_of_docs.models import ComposeDocsStoryResponse
+from mcp_zen_of_docs.models import OnboardProjectResponse
+from mcp_zen_of_docs.models import StoryGenerationResponse
+from mcp_zen_of_docs.models import ValidateDocsResponse
 
 
 if TYPE_CHECKING:
