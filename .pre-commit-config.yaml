@@ -22,12 +22,8 @@ repos:
     hooks:
 
       - id: ty-check
-        name: ty check (installed by pre-commit venv)
-        entry: ty check
-        language: python
+        name: ty check (local install)
+        entry: uv run ty check
+        language: system
         types: [python]
         pass_filenames: false
-        additional_dependencies:
-          - "ty>=0.0.18"
-          - "-e"
-          - ".[dev]"
