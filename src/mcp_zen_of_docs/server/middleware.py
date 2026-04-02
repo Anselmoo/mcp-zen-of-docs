@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from fastmcp.server.middleware import CallNext
 from fastmcp.server.middleware import Middleware
 from fastmcp.server.middleware import MiddlewareContext
-from fastmcp.tools.tool import ToolResult
+from fastmcp.tools import ToolResult
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field

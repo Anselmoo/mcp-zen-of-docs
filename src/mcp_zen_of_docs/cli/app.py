@@ -1399,7 +1399,9 @@ def batch_scaffold_docs_command(
             for p in raw.get("pages", [])
         ]
     else:
-        pages_data = json.loads(pages_json.read_text(encoding="utf-8"))  # type: ignore[union-attr]
+        if pages_json is None:
+            _emit_error("Provide --pages-json or --plan-response-json.")
+        pages_data = json.loads(pages_json.read_text(encoding="utf-8"))
     _emit(
         batch_scaffold_docs(
             pages=[ScaffoldDocRequest.model_validate(p) for p in pages_data],
@@ -1428,7 +1430,9 @@ def page_batch_new_command(
             for p in raw.get("pages", [])
         ]
     else:
-        pages_data = json.loads(pages_json.read_text(encoding="utf-8"))  # type: ignore[union-attr]
+        if pages_json is None:
+            _emit_error("Provide --pages-json or --plan-response-json.")
+        pages_data = json.loads(pages_json.read_text(encoding="utf-8"))
     _emit(
         batch_scaffold_docs(
             pages=[ScaffoldDocRequest.model_validate(p) for p in pages_data],

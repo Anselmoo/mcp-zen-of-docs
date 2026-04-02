@@ -16,6 +16,7 @@ import tempfile
 from collections.abc import Callable
 from pathlib import Path
 from typing import Literal
+from typing import Protocol
 from typing import TypedDict
 
 from .asset_conversion import convert_visual_asset
@@ -714,6 +715,24 @@ class _ZensicalExtensionRegistryEntry(TypedDict):
     authoring_guides: list[str]
     extra_js: list[str]
     requires: list[ZensicalExtension]
+
+
+class _AgentConfigGenerator(Protocol):
+    """Callable shape for generated agent config content factories."""
+
+    def __call__(self, *, include_tools: bool) -> str:
+        """Return config content for one agent platform."""
+
+
+class _PlanSectionSpec(TypedDict):
+    """Typed section metadata used by the plan_docs workflow."""
+
+    slug: str
+    title: str
+    description: str
+    primitives: list[AuthoringPrimitive]
+    dependencies: list[str]
+    priority: Literal["high", "medium", "low"]
 
 
 def _generate_cargo_markdown(manifest_path: Path) -> tuple[str, str, str]:
@@ -1458,7 +1477,7 @@ def check_init_status(
     )
     initialized = readiness_level is not ReadinessLevel.NONE
     return CheckInitStatusResponse(
-        status="success" if not missing_artifacts else "warning",
+        status="warning" if missing_artifacts else "success",
         project_root=resolved_root,
         initialized=initialized,
         readiness_level=readiness_level,
@@ -2749,7 +2768,7 @@ def enrich_doc(
 # plan_docs — structured page plan with dependencies
 # ---------------------------------------------------------------------------
 
-_FULL_SECTIONS: list[dict[str, object]] = [
+_FULL_SECTIONS: list[_PlanSectionSpec] = [
     {
         "slug": "index",
         "title": "Home",
@@ -2967,7 +2986,7 @@ def _generic_config_content(*, include_tools: bool) -> str:
     )
 
 
-_PLATFORM_GENERATORS: dict[AgentPlatform, tuple[str, object]] = {
+_PLATFORM_GENERATORS: dict[AgentPlatform, tuple[str, _AgentConfigGenerator]] = {
     AgentPlatform.COPILOT: (".github/copilot-instructions.md", _copilot_config_content),
     AgentPlatform.CURSOR: (".cursor/rules/zen-docs.mdc", _cursor_config_content),
     AgentPlatform.WINDSURF: (".windsurfrules", _windsurf_config_content),
@@ -3002,7 +3021,7 @@ def generate_agent_config(request: AgentConfigRequest) -> AgentConfigResponse:
         )
 
     file_path, generator_fn = entry
-    content = generator_fn(include_tools=request.include_tools)  # type: ignore[operator]
+    content = generator_fn(include_tools=request.include_tools)
 
     return AgentConfigResponse(
         status="success",
@@ -3058,21 +3077,21 @@ def plan_docs(
 
     pages: list[PlannedPage] = []
     for section in sections:
-        slug: str = section["slug"]  # type: ignore[assignment]
+        slug = section["slug"]
         rel_path = str(request.docs_root / f"{slug}.md")
         dep_paths = [
             str(request.docs_root / f"{d}.md")
-            for d in section["dependencies"]  # type: ignore[union-attr]
+            for d in section["dependencies"]
             if d in allowed_slugs
         ]
         pages.append(
             PlannedPage(
                 path=rel_path,
-                title=section["title"],  # type: ignore[arg-type]
-                description=section["description"],  # type: ignore[arg-type]
-                suggested_primitives=list(section["primitives"]),  # type: ignore[arg-type]
+                title=section["title"],
+                description=section["description"],
+                suggested_primitives=list(section["primitives"]),
                 dependencies=dep_paths,
-                priority=section["priority"],  # type: ignore[arg-type]
+                priority=section["priority"],
                 exists=rel_path in existing_files,
             )
         )
@@ -3080,7 +3099,7 @@ def plan_docs(
     # Sort by priority then dependency order.
     pages.sort(key=lambda p: (_PRIORITY_ORDER.get(p.priority, 1), len(p.dependencies)))
 
-    existing_count = sum(1 for p in pages if p.exists)
+    existing_count = sum(p.exists for p in pages)
     return PlanDocsResponse(
         status="success",
         framework=detected_framework,

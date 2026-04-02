@@ -1366,10 +1366,19 @@ def render_diagram(
     output_path: str | None = None,
 ) -> RenderDiagramResponse:
     """Render Mermaid source to SVG/PNG via mmdc, or return install hint if unavailable."""
+    if output_format not in {"svg", "png"}:
+        return RenderDiagramResponse(
+            status="error",
+            output_format=output_format,
+            output_path=output_path,
+            install_hint="output_format must be 'svg' or 'png'.",
+        )
+
+    normalized_output_format: Literal["svg", "png"] = "png" if output_format == "png" else "svg"
     return render_diagram_impl(
         RenderDiagramRequest(
             mermaid_source=mermaid_source,
-            output_format=output_format,  # type: ignore[arg-type]
+            output_format=normalized_output_format,
             output_path=Path(output_path) if output_path else None,
         )
     )
