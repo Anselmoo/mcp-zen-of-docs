@@ -2071,7 +2071,7 @@ def create_svg_asset_command(  # noqa: PLR0913
     else:
         typer.echo("Error: provide --svg-markup or --svg-file", err=True)
         raise typer.Exit(1)
-    from ..models import CreateSvgAssetRequest  # noqa: PLC0415
+    from mcp_zen_of_docs.models import CreateSvgAssetRequest  # noqa: PLC0415
 
     _emit(
         create_svg_asset(
@@ -2105,7 +2105,7 @@ def asset_write_svg_command(  # noqa: PLR0913
         markup = svg_markup
     else:
         _emit_error("Provide --svg-markup or --svg-file.")
-    from ..models import CreateSvgAssetRequest  # noqa: PLC0415
+    from mcp_zen_of_docs.models import CreateSvgAssetRequest  # noqa: PLC0415
 
     _emit(
         create_svg_asset(
@@ -2231,8 +2231,8 @@ def generate_custom_theme_command(  # noqa: PLR0913
     font_code: Annotated[str | None, typer.Option("--font-code")] = None,
 ) -> None:
     """Generate framework-specific CSS/JS theme files with brand colors."""
-    from ..generators import generate_custom_theme_impl  # noqa: PLC0415
-    from ..models import GenerateCustomThemeRequest  # noqa: PLC0415
+    from mcp_zen_of_docs.generators import generate_custom_theme_impl  # noqa: PLC0415
+    from mcp_zen_of_docs.models import GenerateCustomThemeRequest  # noqa: PLC0415
 
     _emit(
         generate_custom_theme_impl(
@@ -2264,8 +2264,8 @@ def configure_zensical_extensions_command(
     ] = True,
 ) -> None:
     """Generate zensical.toml / mkdocs.yml config blocks for pymdownx extensions."""
-    from ..generators import configure_zensical_extensions_impl  # noqa: PLC0415
-    from ..models import ConfigureZensicalExtensionsRequest  # noqa: PLC0415
+    from mcp_zen_of_docs.generators import configure_zensical_extensions_impl  # noqa: PLC0415
+    from mcp_zen_of_docs.models import ConfigureZensicalExtensionsRequest  # noqa: PLC0415
 
     fmt: Literal["toml", "yaml", "both"] = (
         "toml" if output_format == "toml" else ("yaml" if output_format == "yaml" else "both")

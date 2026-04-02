@@ -16,8 +16,8 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from ..telemetry import TelemetrySpan
-from ..telemetry import emit_telemetry_span
+from mcp_zen_of_docs.telemetry import TelemetrySpan
+from mcp_zen_of_docs.telemetry import emit_telemetry_span
 
 
 if TYPE_CHECKING:

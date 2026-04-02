@@ -19,149 +19,149 @@ from fastmcp.server.elicitation import AcceptedElicitation
 from mcp.types import Icon
 from mcp.types import ToolAnnotations
 
-from ..docstring_optimizer import audit_docstrings_impl
-from ..docstring_optimizer import optimize_docstrings_impl
-from ..frameworks import list_framework_advantages
-from ..frameworks import list_general_docs_references
-from ..generators import check_init_status as check_init_status_impl
-from ..generators import configure_zensical_extensions_impl
-from ..generators import create_copilot_artifact_impl
-from ..generators import default_reference_output_file as default_reference_output_file_impl
-from ..generators import detect_framework as detect_framework_impl
-from ..generators import enrich_doc as enrich_doc_impl
-from ..generators import generate_agent_config as generate_agent_config_impl
-from ..generators import generate_changelog_impl
-from ..generators import generate_cli_docs as generate_cli_docs_impl
-from ..generators import generate_custom_theme_impl
-from ..generators import generate_diagram_impl
-from ..generators import generate_doc_boilerplate as generate_doc_boilerplate_impl
-from ..generators import (
+from mcp_zen_of_docs.docstring_optimizer import audit_docstrings_impl
+from mcp_zen_of_docs.docstring_optimizer import optimize_docstrings_impl
+from mcp_zen_of_docs.frameworks import list_framework_advantages
+from mcp_zen_of_docs.frameworks import list_general_docs_references
+from mcp_zen_of_docs.generators import check_init_status as check_init_status_impl
+from mcp_zen_of_docs.generators import configure_zensical_extensions_impl
+from mcp_zen_of_docs.generators import create_copilot_artifact_impl
+from mcp_zen_of_docs.generators import default_reference_output_file as default_reference_output_file_impl
+from mcp_zen_of_docs.generators import detect_framework as detect_framework_impl
+from mcp_zen_of_docs.generators import enrich_doc as enrich_doc_impl
+from mcp_zen_of_docs.generators import generate_agent_config as generate_agent_config_impl
+from mcp_zen_of_docs.generators import generate_changelog_impl
+from mcp_zen_of_docs.generators import generate_cli_docs as generate_cli_docs_impl
+from mcp_zen_of_docs.generators import generate_custom_theme_impl
+from mcp_zen_of_docs.generators import generate_diagram_impl
+from mcp_zen_of_docs.generators import generate_doc_boilerplate as generate_doc_boilerplate_impl
+from mcp_zen_of_docs.generators import (
     generate_material_reference_snippets as generate_material_reference_snippets_impl,
 )
-from ..generators import generate_mcp_tools_docs as generate_mcp_tools_docs_impl
-from ..generators import generate_onboarding_skeleton as generate_onboarding_skeleton_impl
-from ..generators import generate_project_manifest_docs as generate_project_manifest_docs_impl
-from ..generators import generate_reference_authoring_pack as generate_reference_authoring_pack_impl
-from ..generators import generate_story as generate_story_impl
-from ..generators import generate_visual_asset_impl
-from ..generators import (
+from mcp_zen_of_docs.generators import generate_mcp_tools_docs as generate_mcp_tools_docs_impl
+from mcp_zen_of_docs.generators import generate_onboarding_skeleton as generate_onboarding_skeleton_impl
+from mcp_zen_of_docs.generators import generate_project_manifest_docs as generate_project_manifest_docs_impl
+from mcp_zen_of_docs.generators import generate_reference_authoring_pack as generate_reference_authoring_pack_impl
+from mcp_zen_of_docs.generators import generate_story as generate_story_impl
+from mcp_zen_of_docs.generators import generate_visual_asset_impl
+from mcp_zen_of_docs.generators import (
     get_framework_capability_matrix_v2 as get_framework_capability_matrix_v2_impl,
 )
-from ..generators import get_runtime_onboarding_matrix as get_runtime_onboarding_matrix_impl
-from ..generators import init_framework_structure_impl
-from ..generators import init_project as init_project_impl
-from ..generators import list_authoring_primitives as list_authoring_primitives_impl
-from ..generators import lookup_primitive_support as lookup_primitive_support_impl
-from ..generators import plan_docs as plan_docs_impl
-from ..generators import render_diagram_impl
-from ..generators import render_framework_primitive as render_framework_primitive_impl
-from ..generators import run_ephemeral_install
-from ..generators import run_pipeline_phase as run_pipeline_phase_impl
-from ..generators import translate_primitive_syntax as translate_primitive_syntax_impl
-from ..generators import write_doc_impl
+from mcp_zen_of_docs.generators import get_runtime_onboarding_matrix as get_runtime_onboarding_matrix_impl
+from mcp_zen_of_docs.generators import init_framework_structure_impl
+from mcp_zen_of_docs.generators import init_project as init_project_impl
+from mcp_zen_of_docs.generators import list_authoring_primitives as list_authoring_primitives_impl
+from mcp_zen_of_docs.generators import lookup_primitive_support as lookup_primitive_support_impl
+from mcp_zen_of_docs.generators import plan_docs as plan_docs_impl
+from mcp_zen_of_docs.generators import render_diagram_impl
+from mcp_zen_of_docs.generators import render_framework_primitive as render_framework_primitive_impl
+from mcp_zen_of_docs.generators import run_ephemeral_install
+from mcp_zen_of_docs.generators import run_pipeline_phase as run_pipeline_phase_impl
+from mcp_zen_of_docs.generators import translate_primitive_syntax as translate_primitive_syntax_impl
+from mcp_zen_of_docs.generators import write_doc_impl
 from .middleware import build_default_middleware
-from ..models import COPILOT_DEFAULT_TOOLS
-from ..models import AgentConfigRequest
-from ..models import AgentConfigResponse
-from ..models import AgentPlatform
-from ..models import AuthoringPrimitive
-from ..models import BatchScaffoldRequest
-from ..models import BatchScaffoldResponse
-from ..models import ChangelogEntryFormat
-from ..models import CheckDocsLinksResponse
-from ..models import CheckLanguageStructureResponse
-from ..models import CheckOrphanDocsResponse
-from ..models import ComposeDocsStoryRequest
-from ..models import ComposeDocsStoryResponse
-from ..models import ConfigureZensicalExtensionsRequest
-from ..models import ConfigureZensicalExtensionsResponse
-from ..models import CopilotAgentMode
-from ..models import CopilotArtifactKind
-from ..models import CreateCopilotArtifactRequest
-from ..models import CreateCopilotArtifactResponse
-from ..models import CreateSvgAssetRequest
-from ..models import CreateSvgAssetResponse
-from ..models import CustomThemeTarget
-from ..models import DeploymentUrlConfig
-from ..models import DetectDocsContextRequest
-from ..models import DetectDocsContextResponse
-from ..models import DetectProjectReadinessRequest
-from ..models import DetectProjectReadinessResponse
-from ..models import DiagramType
-from ..models import DocsDeployProvider
-from ..models import DocsValidationCheck
-from ..models import DocstringAuditRequest
-from ..models import DocstringAuditResponse
-from ..models import DocstringOptimizerRequest
-from ..models import DocstringOptimizerResponse
-from ..models import EnrichDocRequest
-from ..models import EnrichDocResponse
-from ..models import EphemeralInstallRequest
-from ..models import EphemeralInstallResponse
-from ..models import FileWriteRecord
-from ..models import FrameworkName
-from ..models import FrontmatterAuditRequest
-from ..models import FrontmatterAuditResponse
-from ..models import GenerateChangelogRequest
-from ..models import GenerateChangelogResponse
-from ..models import GenerateCustomThemeRequest
-from ..models import GenerateCustomThemeResponse
-from ..models import GenerateDiagramRequest
-from ..models import GenerateDiagramResponse
-from ..models import GenerateReferenceDocsKind
-from ..models import GenerateReferenceDocsRequest
-from ..models import GenerateReferenceDocsResponse
-from ..models import GenerateVisualAssetRequest
-from ..models import GenerateVisualAssetResponse
-from ..models import GetAuthoringProfileResponse
-from ..models import InitFrameworkStructureRequest
-from ..models import InitFrameworkStructureResponse
-from ..models import OnboardProjectMode
-from ..models import OnboardProjectRequest
-from ..models import OnboardProjectResponse
-from ..models import OnboardProjectWarningMetadata
-from ..models import PipelineContext
-from ..models import PipelinePhase
-from ..models import PipelinePhaseRequest
-from ..models import PipelinePhaseResponse
-from ..models import PlanDocsRequest
-from ..models import PlanDocsResponse
-from ..models import PrimitiveResolutionMode
-from ..models import PrimitiveSupportLookupResponse
-from ..models import RenderDiagramRequest
-from ..models import RenderDiagramResponse
-from ..models import RenderPrimitiveSnippetResponse
-from ..models import ResolvePrimitiveRequest
-from ..models import ResolvePrimitiveResponse
-from ..models import ScaffoldDocRequest
-from ..models import ScaffoldDocResponse
-from ..models import ScoreDocsQualityRequest
-from ..models import ScoreDocsQualityResponse
-from ..models import ShellScriptType
-from ..models import SourceCodeHost
-from ..models import StoryMigrationMode
-from ..models import SyncNavMode
-from ..models import SyncNavRequest
-from ..models import SyncNavResponse
-from ..models import TranslatePrimitivesRequest
-from ..models import TranslatePrimitivesResponse
-from ..models import ValidateDocsRequest
-from ..models import ValidateDocsResponse
-from ..models import VisualAssetKind
-from ..models import VisualAssetOperation
-from ..models import WriteDocRequest
-from ..models import WriteDocResponse
-from ..models import ZensicalExtension
-from ..validators import _find_and_load_docs_config
-from ..validators import audit_frontmatter_impl
-from ..validators import batch_scaffold_docs as batch_scaffold_docs_impl
-from ..validators import check_docs_links as check_docs_links_impl
-from ..validators import check_language_structure as check_language_structure_impl
-from ..validators import check_orphan_docs as check_orphan_docs_impl
-from ..validators import scaffold_doc as scaffold_doc_impl
-from ..validators import score_docs_quality as score_docs_quality_impl
-from ..validators import sync_nav_impl
-from ..visual_assets import create_svg_asset_impl
+from mcp_zen_of_docs.models import COPILOT_DEFAULT_TOOLS
+from mcp_zen_of_docs.models import AgentConfigRequest
+from mcp_zen_of_docs.models import AgentConfigResponse
+from mcp_zen_of_docs.models import AgentPlatform
+from mcp_zen_of_docs.models import AuthoringPrimitive
+from mcp_zen_of_docs.models import BatchScaffoldRequest
+from mcp_zen_of_docs.models import BatchScaffoldResponse
+from mcp_zen_of_docs.models import ChangelogEntryFormat
+from mcp_zen_of_docs.models import CheckDocsLinksResponse
+from mcp_zen_of_docs.models import CheckLanguageStructureResponse
+from mcp_zen_of_docs.models import CheckOrphanDocsResponse
+from mcp_zen_of_docs.models import ComposeDocsStoryRequest
+from mcp_zen_of_docs.models import ComposeDocsStoryResponse
+from mcp_zen_of_docs.models import ConfigureZensicalExtensionsRequest
+from mcp_zen_of_docs.models import ConfigureZensicalExtensionsResponse
+from mcp_zen_of_docs.models import CopilotAgentMode
+from mcp_zen_of_docs.models import CopilotArtifactKind
+from mcp_zen_of_docs.models import CreateCopilotArtifactRequest
+from mcp_zen_of_docs.models import CreateCopilotArtifactResponse
+from mcp_zen_of_docs.models import CreateSvgAssetRequest
+from mcp_zen_of_docs.models import CreateSvgAssetResponse
+from mcp_zen_of_docs.models import CustomThemeTarget
+from mcp_zen_of_docs.models import DeploymentUrlConfig
+from mcp_zen_of_docs.models import DetectDocsContextRequest
+from mcp_zen_of_docs.models import DetectDocsContextResponse
+from mcp_zen_of_docs.models import DetectProjectReadinessRequest
+from mcp_zen_of_docs.models import DetectProjectReadinessResponse
+from mcp_zen_of_docs.models import DiagramType
+from mcp_zen_of_docs.models import DocsDeployProvider
+from mcp_zen_of_docs.models import DocsValidationCheck
+from mcp_zen_of_docs.models import DocstringAuditRequest
+from mcp_zen_of_docs.models import DocstringAuditResponse
+from mcp_zen_of_docs.models import DocstringOptimizerRequest
+from mcp_zen_of_docs.models import DocstringOptimizerResponse
+from mcp_zen_of_docs.models import EnrichDocRequest
+from mcp_zen_of_docs.models import EnrichDocResponse
+from mcp_zen_of_docs.models import EphemeralInstallRequest
+from mcp_zen_of_docs.models import EphemeralInstallResponse
+from mcp_zen_of_docs.models import FileWriteRecord
+from mcp_zen_of_docs.models import FrameworkName
+from mcp_zen_of_docs.models import FrontmatterAuditRequest
+from mcp_zen_of_docs.models import FrontmatterAuditResponse
+from mcp_zen_of_docs.models import GenerateChangelogRequest
+from mcp_zen_of_docs.models import GenerateChangelogResponse
+from mcp_zen_of_docs.models import GenerateCustomThemeRequest
+from mcp_zen_of_docs.models import GenerateCustomThemeResponse
+from mcp_zen_of_docs.models import GenerateDiagramRequest
+from mcp_zen_of_docs.models import GenerateDiagramResponse
+from mcp_zen_of_docs.models import GenerateReferenceDocsKind
+from mcp_zen_of_docs.models import GenerateReferenceDocsRequest
+from mcp_zen_of_docs.models import GenerateReferenceDocsResponse
+from mcp_zen_of_docs.models import GenerateVisualAssetRequest
+from mcp_zen_of_docs.models import GenerateVisualAssetResponse
+from mcp_zen_of_docs.models import GetAuthoringProfileResponse
+from mcp_zen_of_docs.models import InitFrameworkStructureRequest
+from mcp_zen_of_docs.models import InitFrameworkStructureResponse
+from mcp_zen_of_docs.models import OnboardProjectMode
+from mcp_zen_of_docs.models import OnboardProjectRequest
+from mcp_zen_of_docs.models import OnboardProjectResponse
+from mcp_zen_of_docs.models import OnboardProjectWarningMetadata
+from mcp_zen_of_docs.models import PipelineContext
+from mcp_zen_of_docs.models import PipelinePhase
+from mcp_zen_of_docs.models import PipelinePhaseRequest
+from mcp_zen_of_docs.models import PipelinePhaseResponse
+from mcp_zen_of_docs.models import PlanDocsRequest
+from mcp_zen_of_docs.models import PlanDocsResponse
+from mcp_zen_of_docs.models import PrimitiveResolutionMode
+from mcp_zen_of_docs.models import PrimitiveSupportLookupResponse
+from mcp_zen_of_docs.models import RenderDiagramRequest
+from mcp_zen_of_docs.models import RenderDiagramResponse
+from mcp_zen_of_docs.models import RenderPrimitiveSnippetResponse
+from mcp_zen_of_docs.models import ResolvePrimitiveRequest
+from mcp_zen_of_docs.models import ResolvePrimitiveResponse
+from mcp_zen_of_docs.models import ScaffoldDocRequest
+from mcp_zen_of_docs.models import ScaffoldDocResponse
+from mcp_zen_of_docs.models import ScoreDocsQualityRequest
+from mcp_zen_of_docs.models import ScoreDocsQualityResponse
+from mcp_zen_of_docs.models import ShellScriptType
+from mcp_zen_of_docs.models import SourceCodeHost
+from mcp_zen_of_docs.models import StoryMigrationMode
+from mcp_zen_of_docs.models import SyncNavMode
+from mcp_zen_of_docs.models import SyncNavRequest
+from mcp_zen_of_docs.models import SyncNavResponse
+from mcp_zen_of_docs.models import TranslatePrimitivesRequest
+from mcp_zen_of_docs.models import TranslatePrimitivesResponse
+from mcp_zen_of_docs.models import ValidateDocsRequest
+from mcp_zen_of_docs.models import ValidateDocsResponse
+from mcp_zen_of_docs.models import VisualAssetKind
+from mcp_zen_of_docs.models import VisualAssetOperation
+from mcp_zen_of_docs.models import WriteDocRequest
+from mcp_zen_of_docs.models import WriteDocResponse
+from mcp_zen_of_docs.models import ZensicalExtension
+from mcp_zen_of_docs.validators import _find_and_load_docs_config
+from mcp_zen_of_docs.validators import audit_frontmatter_impl
+from mcp_zen_of_docs.validators import batch_scaffold_docs as batch_scaffold_docs_impl
+from mcp_zen_of_docs.validators import check_docs_links as check_docs_links_impl
+from mcp_zen_of_docs.validators import check_language_structure as check_language_structure_impl
+from mcp_zen_of_docs.validators import check_orphan_docs as check_orphan_docs_impl
+from mcp_zen_of_docs.validators import scaffold_doc as scaffold_doc_impl
+from mcp_zen_of_docs.validators import score_docs_quality as score_docs_quality_impl
+from mcp_zen_of_docs.validators import sync_nav_impl
+from mcp_zen_of_docs.visual_assets import create_svg_asset_impl
 
 
 if TYPE_CHECKING:
@@ -1949,8 +1949,8 @@ def docstring(  # noqa: PLR0913
     context_hint: str | None = None,
 ) -> DocstringAuditResponse | DocstringOptimizerResponse:
     """Audit or optimize docstrings in source code."""
-    from ..docstring_optimizer import DocstringLanguage  # noqa: PLC0415
-    from ..docstring_optimizer import DocstringStyle  # noqa: PLC0415
+    from mcp_zen_of_docs.docstring_optimizer import DocstringLanguage  # noqa: PLC0415
+    from mcp_zen_of_docs.docstring_optimizer import DocstringStyle  # noqa: PLC0415
 
     lang = DocstringLanguage(language) if language else None
     if mode == "optimize":
