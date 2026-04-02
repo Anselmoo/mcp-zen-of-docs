@@ -118,8 +118,7 @@ scaffold_app = typer.Typer(name="scaffold", help="Create and write documentation
 validate_app = typer.Typer(
     name="validate",
     help=(
-        "Audit docs quality. Running `validate` without a subcommand "
-        "performs the standard checks."
+        "Audit docs quality. Running `validate` without a subcommand performs the standard checks."
     ),
 )
 generate_app = typer.Typer(name="generate", help="Generate visuals, diagrams, and references")
@@ -326,14 +325,19 @@ def _format_scalar(value: JsonScalar) -> str:
 
 def _looks_like_block_text(key: str, value: str) -> bool:
     """Return True when a field should be rendered as an indented text block."""
-    return "\n" in value or len(value) > BLOCK_TEXT_THRESHOLD or key in {
-        "markdown",
-        "mermaid_source",
-        "svg_content",
-        "svg_markup",
-        "narrative",
-        "content",
-    }
+    return (
+        "\n" in value
+        or len(value) > BLOCK_TEXT_THRESHOLD
+        or key
+        in {
+            "markdown",
+            "mermaid_source",
+            "svg_content",
+            "svg_markup",
+            "narrative",
+            "content",
+        }
+    )
 
 
 def _render_block(label: str, value: str, *, indent: int = 0) -> list[str]:
@@ -878,9 +882,7 @@ def _story_request_with_answers(
     resolved_context = _resolved_story_context(answer_slots)
     merged_context = {**base_request.context, **resolved_context}
     audience = (
-        base_request.audience
-        or resolved_context.get("audience")
-        or merged_context.get("audience")
+        base_request.audience or resolved_context.get("audience") or merged_context.get("audience")
     )
     return build_story_request(
         prompt=base_request.prompt,

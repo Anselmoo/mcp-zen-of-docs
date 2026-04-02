@@ -109,8 +109,10 @@ def detect(
         return svc.detect_project_readiness(project_root)
     context = svc.detect_docs_context(project_root)
     readiness = svc.detect_project_readiness(project_root)
-    status: str = "error" if "error" in {context.status, readiness.status} else (
-        "warning" if "warning" in {context.status, readiness.status} else "success"
+    status: str = (
+        "error"
+        if "error" in {context.status, readiness.status}
+        else ("warning" if "warning" in {context.status, readiness.status} else "success")
     )
     return DetectResponse(
         status=status,
@@ -465,8 +467,7 @@ async def onboard(  # noqa: PLR0913
             DocsDeployProvider.GITHUB_PAGES,
         ),
         shell_targets=[
-            _coerce_enum(target, ShellScriptType, ShellScriptType.BASH)
-            for target in shell_targets
+            _coerce_enum(target, ShellScriptType, ShellScriptType.BASH) for target in shell_targets
         ]
         if shell_targets
         else None,
@@ -499,8 +500,8 @@ async def theme(  # noqa: PLR0913
 ) -> GenerateCustomThemeResponse | ConfigureZensicalExtensionsResponse:
     """Dispatch the composite theme tool."""
     if mode is ThemeMode.EXTENSIONS:
-        output_format_value = "toml" if output_format == "toml" else (
-            "yaml" if output_format == "yaml" else "both"
+        output_format_value = (
+            "toml" if output_format == "toml" else ("yaml" if output_format == "yaml" else "both")
         )
         return await svc.configure_zensical_extensions(
             ConfigureZensicalExtensionsRequest(

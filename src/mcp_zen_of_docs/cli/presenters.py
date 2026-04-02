@@ -113,14 +113,10 @@ def _present_story(payload: ComposeDocsStoryResponse) -> HumanPresentation:
                 _labeled_items("Next actions", story.onboarding_guidance.next_actions)
             )
             guidance_lines.extend(
-                _labeled_items(
-                    "Follow-up questions", story.onboarding_guidance.follow_up_questions
-                )
+                _labeled_items("Follow-up questions", story.onboarding_guidance.follow_up_questions)
             )
             if guidance_lines:
-                sections.append(
-                    HumanSection(title="Onboarding guide", lines=tuple(guidance_lines))
-                )
+                sections.append(HumanSection(title="Onboarding guide", lines=tuple(guidance_lines)))
 
     message = payload.message or story.message
     return HumanPresentation(
@@ -166,15 +162,15 @@ def _present_validate(payload: ValidateDocsResponse) -> HumanPresentation:
                     "Issues",
                     _with_remaining_count(
                         [
-                        _join_non_empty(
-                            [
-                                Path(issue.file).name,
-                                issue.type,
-                                issue.target,
-                            ],
-                            separator=" — ",
-                        )
-                        for issue in payload.links.issues
+                            _join_non_empty(
+                                [
+                                    Path(issue.file).name,
+                                    issue.type,
+                                    issue.target,
+                                ],
+                                separator=" — ",
+                            )
+                            for issue in payload.links.issues
                         ],
                         limit=VALIDATE_DETAIL_LIMIT,
                     ),
@@ -185,9 +181,7 @@ def _present_validate(payload: ValidateDocsResponse) -> HumanPresentation:
     if payload.orphans is not None:
         has_orphan_issues = len(payload.orphans.orphans) > 0
         if has_orphan_issues or payload.orphans.status != "success":
-            orphan_lines: list[str] = [
-                f"Status: {_humanize_label(str(payload.orphans.status))}"
-            ]
+            orphan_lines: list[str] = [f"Status: {_humanize_label(str(payload.orphans.status))}"]
             orphan_lines.extend(
                 _labeled_items(
                     "Files",
@@ -199,9 +193,7 @@ def _present_validate(payload: ValidateDocsResponse) -> HumanPresentation:
     if payload.structure is not None:
         has_structure_issues = len(payload.structure.issues) > 0
         if has_structure_issues or payload.structure.status != "success":
-            struct_lines: list[str] = [
-                f"Status: {_humanize_label(str(payload.structure.status))}"
-            ]
+            struct_lines: list[str] = [f"Status: {_humanize_label(str(payload.structure.status))}"]
             struct_lines.extend(
                 _labeled_items(
                     "Required headers",
@@ -219,15 +211,15 @@ def _present_validate(payload: ValidateDocsResponse) -> HumanPresentation:
                     "Issues",
                     _with_remaining_count(
                         [
-                        _join_non_empty(
-                            [
-                                Path(issue.file).name,
-                                issue.type,
-                                issue.detail,
-                            ],
-                            separator=" — ",
-                        )
-                        for issue in payload.structure.issues
+                            _join_non_empty(
+                                [
+                                    Path(issue.file).name,
+                                    issue.type,
+                                    issue.detail,
+                                ],
+                                separator=" — ",
+                            )
+                            for issue in payload.structure.issues
                         ],
                         limit=VALIDATE_DETAIL_LIMIT,
                     ),
@@ -292,9 +284,7 @@ def _present_onboard_skeleton(payload: OnboardProjectResponse) -> HumanPresentat
     warning_lines = []
     if payload.warning_metadata is not None:
         warning_lines.append(payload.warning_metadata.detail)
-        warning_lines.extend(
-            f"Ignored key: {key}" for key in payload.warning_metadata.ignored_keys
-        )
+        warning_lines.extend(f"Ignored key: {key}" for key in payload.warning_metadata.ignored_keys)
     if warning_lines:
         sections.append(HumanSection(title="Warnings", lines=tuple(warning_lines)))
 
@@ -654,9 +644,7 @@ def _summarize_onboard_actions(payload: OnboardProjectResponse) -> list[str]:
                 payload.boilerplate_result.error_code,
                 payload.boilerplate_result.message,
             )
-            lines.append(
-                f"- Starter docs were not generated{reason}."
-            )
+            lines.append(f"- Starter docs were not generated{reason}.")
 
     deploy_pipelines = _unique_strings(
         [
@@ -684,9 +672,7 @@ def _collect_onboard_commands(payload: OnboardProjectResponse) -> list[str]:
 
     return [
         f"- {command}"
-        for command in _unique_strings(
-            [*guidance.setup_steps, *guidance.verification_commands]
-        )
+        for command in _unique_strings([*guidance.setup_steps, *guidance.verification_commands])
     ]
 
 
@@ -1030,14 +1016,19 @@ def _render_block(label: str, value: str, *, indent: int = 0) -> list[str]:
 
 def _looks_like_block_text(key: str, value: str) -> bool:
     """Return True when a field should be rendered as an indented text block."""
-    return "\n" in value or len(value) > BLOCK_TEXT_THRESHOLD or key in {
-        "markdown",
-        "mermaid_source",
-        "svg_content",
-        "svg_markup",
-        "narrative",
-        "content",
-    }
+    return (
+        "\n" in value
+        or len(value) > BLOCK_TEXT_THRESHOLD
+        or key
+        in {
+            "markdown",
+            "mermaid_source",
+            "svg_content",
+            "svg_markup",
+            "narrative",
+            "content",
+        }
+    )
 
 
 def _format_confidence(value: JsonValue) -> str | None:

@@ -479,9 +479,7 @@ def score_docs_quality(  # noqa: C901, PLR0912, PLR0915
                     suggestion="Add frontmatter with title and description metadata.",
                 )
             )
-            suggestions.add(
-                "Add frontmatter to all pages for navigation and metadata consistency."
-            )
+            suggestions.add("Add frontmatter to all pages for navigation and metadata consistency.")
         else:
             missing_keys = [key for key in DEFAULT_FRONTMATTER_KEYS if key not in frontmatter]
             if missing_keys:

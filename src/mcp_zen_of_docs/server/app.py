@@ -294,6 +294,7 @@ async def _elicit_deployment_urls(
     Returns ``None`` when elicitation is not applicable (wrong mode, no
     context, or user declines/cancels the prompt).
     """
+
     def _build_deployment_urls() -> DeploymentUrlConfig | None:
         if not (dev_url or staging_url or production_url):
             return None
@@ -902,9 +903,7 @@ async def onboard_project(  # noqa: PLR0913
         # roll back init artifacts to avoid a partially-onboarded repo.
         if boilerplate_result.status == "error" and (
             (init_result is not None and init_result.write_records)
-            or (
-                framework_init_result is not None and framework_init_result.copied_artifacts
-            )
+            or (framework_init_result is not None and framework_init_result.copied_artifacts)
         ):
             _rollback_onboard_files(
                 init_files=init_result.write_records if init_result is not None else [],
@@ -1828,9 +1827,7 @@ async def onboard(  # noqa: PLR0913
         include_checklist=include_checklist,
         include_shell_scripts=include_shell_scripts,
         shell_targets=(
-            [ShellScriptType(target) for target in shell_targets]
-            if shell_targets
-            else None
+            [ShellScriptType(target) for target in shell_targets] if shell_targets else None
         ),
         scaffold_docs=scaffold_docs,
         output_file=output_file,
