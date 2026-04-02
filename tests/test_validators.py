@@ -438,6 +438,7 @@ def test_check_orphan_docs_returns_error_when_no_config_found(tmp_path: Path) ->
     payload = CheckOrphanDocsResponse.model_validate(check_orphan_docs(docs_root=str(docs)))
 
     assert payload.status == "error"
+    assert payload.message is not None
     assert "No docs config found" in payload.message
 
 

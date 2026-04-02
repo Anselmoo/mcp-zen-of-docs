@@ -2,7 +2,7 @@ import mcp.types as mt
 import pytest
 
 from fastmcp.server.middleware import MiddlewareContext
-from fastmcp.tools.tool import ToolResult
+from fastmcp.tools import ToolResult
 
 from mcp_zen_of_docs.middleware import DEFAULT_CACHE_TTL_SECONDS
 from mcp_zen_of_docs.middleware import DEFAULT_RATE_LIMIT_MAX_CALLS
